@@ -1,0 +1,49 @@
+<?php
+
+
+namespace App\Domains\Player\Http\Controllers\Backend;
+
+use App\Domains\Auth\Models\User;
+use App\Http\Requests\DepositRequest;
+use Carbon\Carbon;
+
+class PlayerController extends \App\Http\Controllers\Controller
+{
+    public function index()
+    {
+        $user = auth()->user();
+        if ($user->hasRole('Administrator')) {
+            $pendingPlayers = User::where('type', 'user')->whereNull('email_verified_at')->get();
+        } else {
+            $pendingPlayers = $user->referrals()->whereNull('email_verified_at')->get();
+        }
+
+        return view('backend.player.index')->with('pendingPlayers', $pendingPlayers);
+    }
+
+    public function show(User $player)
+    {
+        return view('backend.player.show')->with('user', $player);
+    }
+
+    public function cashBalance(User $player)
+    {
+        return view('backend.player.wallet')->with('user', $player);
+    }
+
+    public function deposit(User $player, DepositRequest $request)
+    {
+        $player->depositFloat($request->get('amount'));
+
+        return redirect()->back()->withFlashSuccess("Cash Added Successfully");
+    }
+
+    public function verify(User $player)
+    {
+        $player->email_verified_at = Carbon::now();
+        $player->active = 1;
+        $player->save();
+
+        return redirect()->back()->withFlashSuccess("Player was verified");
+    }
+}

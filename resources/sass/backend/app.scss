@@ -1,0 +1,14 @@
+@import "../global";
+
+// COLORS
+$default:       #172b4d !default;
+$primary:       #5e72e4 !default;
+$secondary:     #f7fafc !default;
+$success:       #38c172 !default;
+$info:          #4dc0b5 !default;
+$warning:       #f6993f !default;
+$danger:        #e3342f !default;
+
+// Coreui
+@import '~@coreui/coreui/scss/coreui';
+@import '~@coreui/icons/css/free.min.css';
