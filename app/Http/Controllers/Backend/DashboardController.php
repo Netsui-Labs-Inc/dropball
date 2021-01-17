@@ -57,14 +57,14 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $company = Company::first();
-        $bettingRounders = User::doesntHave('roles')->onlyActive()->count();
+        $players = User::doesntHave('roles')->onlyActive()->count();
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
         return view('backend.dashboard.super-admin')
             ->with('company', $company)
-            ->with('players', $bettingRounders)
+            ->with('players', $players)
             ->with('events', $events)
             ->with('bettingRound', $bettingRound)
             ->with('bettingEvent', $bettingEvent)

@@ -10,20 +10,6 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h3 class="h3 text-white mb-0">
-                                @lang('Betting Round Pool Money')
-                            </h3>
-                        </div>
-                    </div>
-                </x-slot>
-                <x-slot name="body">
-                    @include('backend.betting-round.includes.bets')
-                </x-slot>
-            </x-backend.card>
-            <x-backend.card headerClass="bg-primary">
-                <x-slot name="header">
-                    <div class="row align-items-center">
-                        <div class="col">
-                            <h3 class="h3 text-white mb-0">
                                 @lang('Control')
                             </h3>
                         </div>
@@ -40,7 +26,7 @@
                     <div class="row align-items-center">
                         <div class="col">
                             <h3 class="h3 text-white mb-0">
-                                @lang('BettingRound Info')
+                                @lang('Betting Round Info')
                             </h3>
                         </div>
                     </div>

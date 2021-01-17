@@ -3,6 +3,7 @@
 namespace App\Domains\Bet\Services;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBetPlaced;
 
@@ -10,7 +11,7 @@ class PlaceBetService
 {
     public BettingRound $bettingRound;
 
-    public string $bet;
+    public BetOption $bet;
 
     public User $bettor;
 
@@ -27,9 +28,9 @@ class PlaceBetService
     }
 
     /**
-     * @param string $bet
+     * @param BetOption $bet
      */
-    public function setBet(string $bet): self
+    public function setBet(BetOption $bet): self
     {
         $this->bet = $bet;
 
@@ -67,10 +68,6 @@ class PlaceBetService
             throw new \Exception("Betting window is not open");
         }
 
-        if ($this->bettingRound->userBet($this->bettor->id)) {
-            throw new \Exception("You've already placed your bet to this play #".$this->bettingRound->id);
-        }
-
         if ($this->amount < 100) {
             throw new \Exception("Invalid bet amount");
         }
@@ -78,7 +75,7 @@ class PlaceBetService
         $this->bettingRound->bets()->create([
             'user_id' => $this->bettor->id,
             'bet_amount' => $this->amount,
-            'bet' => $this->bet,
+            'bet' => $this->bet->id,
         ]);
 
         event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor));

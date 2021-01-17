@@ -2,10 +2,10 @@
 
 namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 
-use App\Domains\BettingRound\Models\BettingRound;
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Http\Requests\StorebettingEventBettingRoundRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
-use App\Exceptions\GeneralException;
+use App\Domains\BettingRound\Models\BettingRound;
 use App\Http\Controllers\Controller;
 
 class BettingEventBettingRoundController extends Controller
@@ -17,6 +17,7 @@ class BettingEventBettingRoundController extends Controller
         return view('backend.betting-round.show')
             ->with('bettingEvent', $bettingEvent)
             ->with('bettingRound', $bettingRound)
+            ->with('bettingOptions', BetOption::all())
             ->with('nextBettingRound', $nextBettingRound);
     }
 

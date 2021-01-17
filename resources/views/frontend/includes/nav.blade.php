@@ -3,7 +3,7 @@
         <x-utils.link
             :href="route('frontend.index')"
             :text="appName()"
-            icon="fa fa-ball"
+            icon="fa fa-circle-notch"
             class="navbar-brand" />
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="@lang('Toggle navigation')">

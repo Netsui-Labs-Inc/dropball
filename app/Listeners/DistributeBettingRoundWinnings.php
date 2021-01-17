@@ -67,26 +67,19 @@ class DistributeBettingRoundWinnings
 
     public function payout($bet)
     {
-        /** @var BettingRound $bettingRound */
-        $bettingRound = $bet->bettingRound;
-        $totalMeron = $bettingRound->totalBetType('meron');
-        $totalWala = $bettingRound->totalBetType('wala');
-
-        $meronPayout = ($totalMeron * $bet->bet_amount) / $totalWala;
-        $meronPayout = $meronPayout - ($meronPayout * .10);
-
-        $walaPayout = ($totalWala * $bet->bet_amount) / $totalMeron;
-        $walaPayout = $walaPayout - ($walaPayout * .10);
-
-        return $bet->bet === 'meron' ? $meronPayout :$walaPayout;
+        return increaseBy($bet->bet_amount, .5);
     }
 
-    public function processMasterAgentCommission(BettingRound $bettingRound, User $bettingRounder, $payout)
+    public function processMasterAgentCommission(BettingRound $bettingRound, User $player, $payout)
     {
-        $masterAgent = $bettingRounder->masterAgent;
+        $masterAgent = $player->masterAgent;
+        if (! $masterAgent) {
+            return;
+        }
+
         $commission = $payout * .01;
         logger("Master agent will receive $commission from BettingRound #{$bettingRound->id}");
-        $bettingRound->forceTransferFloat($masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bettingRounder->id]);
+        $bettingRound->forceTransferFloat($masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id]);
     }
 
     public function processCompanyCommission(BettingRound $bettingRound, $payout)
@@ -97,6 +90,11 @@ class DistributeBettingRoundWinnings
             logger("Transferring amount of $commission to Company");
             $bettingRound->forceTransferFloat($company, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true]);
         }
+    }
+
+    public function hasWinningBet($userBets, $bettingRound)
+    {
+        return $userBets->contains('bet', '=',  $bettingRound->result);
     }
 
     public function processLosers($bet)

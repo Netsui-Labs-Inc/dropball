@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -20,7 +21,8 @@ class BettingRoundController extends Controller
 
     public function show(BettingRound $bettingRound)
     {
-        return view('backend.betting-round.show', $bettingRound);
+        return view('backend.betting-round.show')
+            ->with('bettingRound',$bettingRound);
     }
 
     public function openBetting(BettingRound $bettingRound)

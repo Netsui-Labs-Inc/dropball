@@ -16,6 +16,7 @@ class CreateBetOptionsTable extends Migration
         Schema::create('bet_options', function (Blueprint $table) {
             $table->integerIncrements('id');
             $table->string('name');
+            $table->string('color');
         });
     }
 

@@ -24,7 +24,7 @@
     </tr>
     <tr>
         <th>@lang('Result')</th>
-        <td>{!! $bettingRound->resultLabel() ?? 'N/A'!!}</td>
+        <td class="surtitle uppercase">{!! $bettingRound->betOption ?  strtoupper( $bettingRound->betOption->name): 'N/A'!!}</td>
     </tr>
     <tr>
         <th>@lang('Note')</th>

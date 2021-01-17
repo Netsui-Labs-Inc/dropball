@@ -6,7 +6,8 @@
     'buttonClass' => '',
     'icon' => false,
     'permission' => false,
-    'attr' => ''
+    'attr' => '',
+    'bgColor' => '',
 ])
 
 @if ($permission)
@@ -15,7 +16,7 @@
             @csrf
             @method($method)
 
-            <button type="submit" class="{{ $buttonClass }}" {{$attr}}>
+            <button type="submit" class="{{ $buttonClass }}" {{$attr}} @if($bgColor !== '') style="background-color:{{$bgColor}};color:#fff" @endif>
                 @if ($icon)<i class="{{ $icon }}"></i> @endif{{ $slot }}
             </button>
         </form>
@@ -25,7 +26,7 @@
         @csrf
         @method($method)
 
-        <button type="submit" class="{{ $buttonClass }}" {{$attr}}>
+        <button type="submit" class="{{ $buttonClass }}" {{$attr}} @if($bgColor !== '') style="background-color:{{$bgColor}};color:#fff" @endif>
             @if ($icon)<i class="{{ $icon }}"></i> @endif{{ $slot }}
         </button>
     </form>

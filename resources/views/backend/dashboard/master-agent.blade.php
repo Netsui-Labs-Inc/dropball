@@ -16,7 +16,7 @@
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-info">{{number_format($user->referrals()->count())}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total BettingRounds")</small>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Players")</small>
                 </x-slot>
             </x-backend.card>
         </div>
@@ -35,7 +35,7 @@
                                 icon="fas fa-eye"
                                 name="view-betting-round"
                             >
-                                @lang('Moderate Betting Event BettingRound')
+                                @lang('Moderate Betting Round')
                             </x-utils.form-button>
                         @else
                             <span class="lead text-lg-center"> No Betting Round Available</span>

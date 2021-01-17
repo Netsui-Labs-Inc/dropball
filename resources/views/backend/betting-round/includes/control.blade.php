@@ -30,7 +30,7 @@
             button-class="btn btn-success"
             name="open-betting"
         >
-            @lang("Start BettingRound")
+            @lang("Start Drop Ball")
         </x-utils.form-button>
         @endif
         <x-utils.form-button
@@ -49,43 +49,27 @@
     <div class="col">
         <hr>
         <h4>Set Result</h4>
-
-            <x-utils.form-button
-                :action="route('admin.betting-rounds.results', $bettingRound)"
-                method="post"
-                button-class="btn btn-danger"
-                icon="fa fa-check-circle"
-                name="open-betting"
-                :attr="$bettingRound->status !== 'ongoing' ? 'disabled' : ''"
-            >
-                <input type="hidden" name="result" value="meron">
-                @lang('MERON')
-            </x-utils.form-button>
-
-            <x-utils.form-button
-                :action="route('admin.betting-rounds.results', $bettingRound)"
-                method="post"
-                button-class="btn btn-info"
-                icon="fa fa-circle"
-                name="open-betting"
-                :attr="$bettingRound->status !== 'ongoing' ? 'disabled' : ''"
-
-            >
-                <input type="hidden" name="result" value="wala">
-                @lang('WALA')
-            </x-utils.form-button>
-
-            <x-utils.form-button
-                :action="route('admin.betting-rounds.results', $bettingRound)"
-                method="post"
-                button-class="btn btn-dark"
-                icon="fa fa-minus"
-                name="open-betting"
-                :attr="$bettingRound->status !== 'ongoing' ? 'disabled' : ''"
-            >
-                <input type="hidden" name="result" value="draw">
-                @lang('DRAW')
-            </x-utils.form-button>
+        <div class="row">
+            @foreach ($bettingOptions as $option)
+                <div class="col-6 p-2">
+                <x-utils.form-button
+                    :action="route('admin.betting-rounds.results', $bettingRound)"
+                    method="post"
+                    button-class="btn btn-lg btn-block"
+                    name="open-betting"
+                    :bgColor="$option->color"
+                    :attr="
+                    $bettingRound->status == 'ended' ||
+                    $bettingRound->status == 'upcoming' ||
+                    $bettingRound->status == 'placing_bets' ? 'disabled' : ''"
+                >
+                    <input type="hidden" name="result" value="{{$option->id}}">
+                    @lang($option->name)
+                </x-utils.form-button>
+                    PHP {{number_format($bettingRound->totalBetType($option->id))}}
+                </div>
+            @endforeach
+        </div>
     </div>
 </div>
 

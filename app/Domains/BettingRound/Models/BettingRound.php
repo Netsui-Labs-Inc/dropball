@@ -3,6 +3,7 @@
 namespace App\Domains\BettingRound\Models;
 
 use App\Domains\Bet\Models\Bet;
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Models\Traits\Uuid;
 use Bavix\Wallet\Interfaces\Wallet;
@@ -113,9 +114,25 @@ class BettingRound extends Model implements Wallet, WalletFloat
         return $this->bets()->betType($type)->sum('bet_amount');
     }
 
+    public function totalBetTypeByUser($type, $userId)
+    {
+        return $this->bets()->where('user_id', $userId)->betType($type)->sum('bet_amount');
+    }
+
     public function userBet($userId)
     {
         return $this->bets()->where('user_id', $userId)->first();
+    }
+
+    public function userBets($userId)
+    {
+        return $this->bets()->where('user_id', $userId);
+
+    }
+
+    public function betOption()
+    {
+        return $this->belongsTo(BetOption::class, 'result');
     }
 
     public function winners()

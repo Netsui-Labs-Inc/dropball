@@ -81,14 +81,15 @@ class Bet extends Model
         return "<span class='$class'>$sign".number_format($this->gain_loss)."</span>";
     }
 
-    public function scopeMeron($query)
+    public function option()
     {
-        return $query->where('bet', 'meron');
+        return $this->belongsTo(BetOption::class, 'bet');
     }
 
-    public function scopeWala($query)
+    public function bettingRound()
     {
-        return $query->where('bet', 'wala');
+        return $this->belongsTo(BettingRound::class, 'betting_round_id');
+
     }
 
     public function scopeBetType($query, $type)

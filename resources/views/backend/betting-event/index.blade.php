@@ -19,7 +19,7 @@
                             icon="fas fa-eye"
                             name="view-play"
                         >
-                            @lang('Moderate Betting Event BettingRound')
+                            @lang('Moderate Betting Round')
                         </x-utils.form-button>
                     @else
                         <span class="lead text-lg-center"> No BettingRound Available</span>

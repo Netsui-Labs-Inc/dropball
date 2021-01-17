@@ -2,9 +2,10 @@
 
 namespace App\Http\Livewire\Frontend;
 
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingRound\Models\BettingRound;
 use Livewire\Component;
 
 class BetForm extends Component
@@ -17,7 +18,7 @@ class BetForm extends Component
 
     public $userCanBet = false;
 
-    public $userBet;
+    public $userBets;
 
     public $user;
 
@@ -25,20 +26,16 @@ class BetForm extends Component
 
     public $poolMoney = 0;
 
-    public $totalMeron = 0;
+    public $betOptions = [];
 
-    public $totalWala = 0;
+    public $betColor;
 
-    public $meronPayout = 0;
+    public $payout = 0;
 
-    public $walaPayout = 0;
-
-    public $meronRatio = 0;
-
-    public $walaRatio = 0;
+    public $totalBetAmount = 0;
 
     protected $rules = [
-        'amount' => 'required',
+        'amount' => 'required|numeric|min:100',
     ];
 
     public $betChoices = [
@@ -47,15 +44,16 @@ class BetForm extends Component
 
     public function mount($bettingEventId)
     {
+        $this->betOptions = BetOption::all();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
         $this->userCanBet = $this->canBetToBettingRound();
-        $this->userBet = $this->bettingRound ? $this->bettingRound->userBet(auth()->user()->id) : null;
+        $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
         $this->updateTotal();
 
-        if ($this->userBet) {
-            $this->amount = $this->userBet->bet_amount;
+        if ($this->userBets->isNotEmpty()) {
+            $this->amount = $this->userBets->sum('bet_amount');
         }
         $this->balance = $this->user->balanceFloat;
         $this->setPayouts();
@@ -74,6 +72,7 @@ class BetForm extends Component
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'updateBettingRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'updateBettingRound',
             "amountUpdated" => 'setAmount',
+            "betPlaced" => 'placeBet',
         ];
     }
 
@@ -103,15 +102,15 @@ class BetForm extends Component
 
     public function updateBettingRound($data)
     {
-        if (! $data['play']) {
+        if (! $data['bettingRound']) {
             $this->bettingRound = null;
 
             return;
         }
-        $this->bettingRound = BettingRound::find($data['play']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
-        $this->userBet = $this->bettingRound->userBet(auth()->user()->id);
-        if (! $this->userBet) {
+        $this->userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
+        if ($this->userBets->isEmpty()) {
             $this->amount = null;
         }
         $this->userCanBet = $this->canBetToBettingRound();
@@ -131,46 +130,26 @@ class BetForm extends Component
             return false;
         }
 
-        return $this->bettingRound->is_betting_open && ! $this->bettingRound->userBet(auth()->user()->id);
+        return true;
     }
 
-
-    public function betMeron(PlaceBetService $placeBetService)
+    public function placeBet(PlaceBetService $placeBetService, $bet)
     {
         $this->validate($this->rules);
-
+        $bet = BetOption::find($bet);
         try {
             $this->validateBalance();
             $placeBetService
                 ->setBettingRound($this->bettingRound)
-                ->setBet('meron')
-                ->setAmount((int) $this->amount)
-                ->setBettor(auth()->user())
-                ->place();
-            $this->addToPoolMoney();
-            $this->alert('meron');
-        } catch (\Exception $e) {
-            $this->addError('amount', "Insufficient balance");
-        }
-    }
-
-    public function betWala(PlaceBetService $placeBetService)
-    {
-        $this->validate($this->rules);
-
-        try {
-            $this->validateBalance();
-            $placeBetService
-                ->setBettingRound($this->bettingRound)
-                ->setBet('wala')
+                ->setBet($bet)
                 ->setAmount((int) $this->amount)
                 ->setBettor(auth()->user())
                 ->place();
 
             $this->addToPoolMoney();
-            $this->alert('wala');
+            $this->alert($bet);
         } catch (\Exception $e) {
-            $this->addError('amount', "Insufficient balance");
+            $this->addError('amount', $e->getMessage());
         }
     }
 
@@ -193,45 +172,24 @@ class BetForm extends Component
 
     public function alert($bet)
     {
-        switch ($bet) {
-            case 'wala':
-                $class = 'text-success';
-
-                break;
-            default:
-                $class = 'text-danger';
-
-                break;
-        }
         $this->emit('swal:modal', [
             'icon' => 'success',
-            'title' => "BettingRound #".$this->bettingRound->queue,
-            'text' => "<h1>You've placed a bet worth of <strong>".number_format($this->amount). "</strong> to <strong class='$class'>".strtoupper($bet). "</strong>  </h1><h1>Good luck!</h1>",
+            'title' => "Betting Round #".$this->bettingRound->queue,
+            'text' => "<h1>You've placed a bet worth of <strong class='text-success'>PHP ".number_format($this->amount). "</strong> to <strong style='color:{$bet->color}'>".strtoupper($bet->name). "</strong>  </h1><h1>Good luck!</h1>",
         ]);
     }
 
     public function updateTotal()
     {
         if ($this->bettingRound) {
-            $this->totalMeron = $this->bettingRound->totalBetType('meron');
-            $this->totalWala = $this->bettingRound->totalBetType('wala');
+
         }
     }
 
     public function setPayouts($amountPreview = 0)
     {
-        if ($this->amount) {
-            $betMeron = $this->totalMeron + $amountPreview;
-            $betWala = $this->totalWala + $amountPreview;
-            $meronPayout = $this->totalWala ? ($betMeron * $this->amount) / $this->totalWala : 0;
-            logger("MERON PAYOUT: $betMeron * $this->amount /  $this->totalWala = $meronPayout");
-            $this->meronPayout = $meronPayout - ($meronPayout * .10);
-
-            $walaPayout = $this->totalMeron ? ($betWala * $this->amount) / $this->totalMeron : 0;
-            logger("WALA PAYOUT : $betWala * $this->amount /  $this->totalMeron = $walaPayout");
-
-            $this->walaPayout = $walaPayout - ($walaPayout * .10);
-
+        if ($this->userBets->isNotEmpty()) {
+            $this->totalBetAmount = $this->userBets->sum('bet_amount');
             return;
         }
         $this->resetBets();
@@ -239,25 +197,20 @@ class BetForm extends Component
 
     public function setRatio()
     {
-        $totalBets = $this->totalMeron + $this->totalWala;
-        if ($totalBets) {
-            $this->meronRatio = ($this->totalMeron / $totalBets) * 100;
-            $this->walaRatio = ($this->totalWala / $totalBets) * 100;
-        }
+
     }
 
     public function resetBets()
     {
-        $this->meronRatio = 0;
-        $this->walaRatio = 0;
-        $this->meronPayout = 0;
-        $this->walaPayout = 0;
+        $this->totalBetAmount = 0;
+        $this->amount = 0;
     }
+
     public function render()
     {
         return view('livewire.frontend.bet-form')
             ->with('play', $this->bettingRound)
             ->with('user', auth()->user())
-            ->with('userBet', $this->userBet);
+            ->with('userBets', $this->userBets);
     }
 }

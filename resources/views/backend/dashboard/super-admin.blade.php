@@ -23,8 +23,8 @@
         <div class="col-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-danger">{{number_format($bettingRounders ?? 0)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total BettingRounds")</small>
+                    <div class="text-value-lg text-danger">{{number_format($players ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Players")</small>
                 </x-slot>
             </x-backend.card>
         </div>
@@ -32,7 +32,7 @@
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-warning">{{number_format($bettingRound ?? 0)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total BettingRounds")</small>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Betting Rounds")</small>
                 </x-slot>
             </x-backend.card>
         </div>
@@ -52,10 +52,10 @@
                                 icon="fas fa-eye"
                                 name="view-betting-round"
                             >
-                                @lang('Moderate Betting Event BettingRound')
+                                @lang('Moderate Betting Round')
                             </x-utils.form-button>
                         @else
-                            <span class="lead text-lg-center"> No BettingRound Available</span>
+                            <span class="lead text-lg-center"> No Betting Round Available</span>
                         @endif
                     @else
                         <span class="lead text-lg-center"> No Event for Today</span>

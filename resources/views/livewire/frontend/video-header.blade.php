@@ -8,22 +8,15 @@
             <span class="text-white h3">No BettingRound Info</span>
         @endif
     </div>
-    @if($userBet)
+    @if($userBets->isNotEmpty())
     <div class="col-auto">
         <span class="h3 text-white">
-            YOUR BET:
-            <div class="badge badge-lg badge-light">
-                <span class="text-gray-dark"> {{number_format($userBet->bet_amount)}}</span>
-            </div>
-            <span class="badge badge-lg badge-light {{$userBet->bet == 'meron' ? 'text-danger' : 'text-success'}}"> {{$userBet->bet}} </span>
-        </span>
-    </div>
-    <div class="col-auto">
-        <span class="h3 text-white">
-             PAYOUT:
-            <div class="badge badge-lg badge-light">
-                <span class="text-gray-dark"> {{number_format($payout)}}</span>
-            </div>
+            YOUR BET/S:
+            @foreach($userBets->groupBy('bet') as $optionId => $bet)
+                <div class="badge badge-lg badge-light" style="background-color: {{$bet->first()->option->color}}; color:#F0F0F0">
+                    {{$bet->first()->option->name}} {{$bet->sum('bet_amount')}}
+                </div>
+            @endforeach
         </span>
     </div>
     @endif

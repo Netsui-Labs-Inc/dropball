@@ -50,3 +50,10 @@ if (! function_exists('homeRoute')) {
         return 'frontend.index';
     }
 }
+
+if (! function_exists('increaseBy')) {
+    function increaseBy($number, $percentage)
+    {
+        return $number + ($number * $percentage);
+    }
+}

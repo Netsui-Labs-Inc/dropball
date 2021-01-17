@@ -15,13 +15,6 @@ class EventBettingRound extends Component
 
     public $payout = 0;
 
-    public $totalMeron = 0;
-
-    public $totalWala = 0;
-
-    public $meronPayout = 0;
-
-    public $walaPayout = 0;
 
     public function mount($bettingEventId)
     {
@@ -45,61 +38,44 @@ class EventBettingRound extends Component
 
     public function showStatus($data)
     {
-        $this->bettingRound = BettingRound::find($data['play']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
 
         $this->emit('swal:alert', [
             'icon' => 'info',
-            'title' => 'BettingRound #'.$this->bettingRound->queue ." is now ".$this->bettingRound->status,
+            'title' => 'Betting Round #'.$this->bettingRound->queue ." is now ".$this->bettingRound->status,
         ]);
     }
 
+    public function hasWinningBet($userBets)
+    {
+        return $userBets->contains('bet', '=',  $this->bettingRound->result);
+    }
+
+
     public function showResult($data)
     {
-        $this->bettingRound = BettingRound::find($data['play']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
-        /** @var Bet $userBet */
-        $userBet = $this->bettingRound->userBet(auth()->user()->id);
-        $this->setPayouts();
-        switch ($this->bettingRound->result) {
-            case 'meron':
-                $class = 'text-danger';
+        $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
+        $winningBet = $this->hasWinningBet($userBets) ? $userBets->firstwhere('bet', $this->bettingRound->result) : null;
 
-                break;
-            case 'wala':
-                $class = 'text-success';
+        $result = "<h1 class='text-gray'>".strtoupper($this->bettingRound->result)."</h1>";
 
-                break;
-            case 'draw':
-                $class = 'text-gray';
-
-                break;
-            case 'cancelled':
-                $class = 'text-warning';
-
-                break;
-            default:
-                $class = '';
-
-                break;
-        }
-
-        $result = "<h1 class='$class'>".strtoupper($this->bettingRound->result)."</h1>";
-
-        if (! $userBet) {
+        if ($userBets->isEmpty()) {
             $icon = 'info';
-            $title = 'BettingRound #'.$this->bettingRound->queue;
+            $title = 'Betting Round #'.$this->bettingRound->queue;
         } elseif (in_array($this->bettingRound->result,  ['draw','cancelled'])) {
             $icon = 'info';
-            $title = "<h1 class='$class'>".strtoupper($this->bettingRound->result)."</h1>";
-            $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBet->bet_amount). "</strong>";
-        } elseif ($userBet->bet === $this->bettingRound->result) {
+            $title = "<h1 class='text-gray'>".strtoupper($this->bettingRound->result)."</h1>";
+            $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
+        } elseif ($this->hasWinningBet($userBets)) {
             $icon = 'success';
-            $title = "<h1 class='$class'>".strtoupper($this->bettingRound->result)."</h1>";
-            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
+            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
+            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->getPayout($winningBet)). "</strong>";
         } else {
             $icon = 'error';
-            $title = "<h1 class='$class'>".strtoupper($this->bettingRound->result)."</h1>";
-            $result = "YOU'VE LOST <strong class='text-danger'>-".number_format($userBet->bet_amount). "</strong>";
+            $title = "<h1 class='text-danger'>".strtoupper($this->bettingRound->result)."</h1>";
+            $result = "YOU'VE LOST <strong class='text-danger'>-".number_format($userBets->sum('bet_amount')). "</strong>";
         }
 
         $nextBettingRound = $this->bettingEvent->bettingRounds()->where('queue', $this->bettingRound->queue + 1)->first();
@@ -109,7 +85,7 @@ class EventBettingRound extends Component
             'confirmText' => 'View next play',
             'text' => "<h1 class='animate__animated animate__pulse animate__infinite infinite'>$result</h1>",
             'method' => "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting",
-            'params' => ['play' => $nextBettingRound ? $nextBettingRound->toArray() : null],
+            'params' => ['bettingRound' => $nextBettingRound ? $nextBettingRound->toArray() : null],
         ]);
     }
 
@@ -129,7 +105,7 @@ class EventBettingRound extends Component
 
     public function startingBettingRound($data)
     {
-        if (! $data['play']) {
+        if (! $data['bettingRound']) {
             $this->bettingRound = null;
             $this->emit('swal:alert', [
                 'icon' => 'info',
@@ -139,39 +115,32 @@ class EventBettingRound extends Component
             return;
         }
 
-        $this->bettingRound = BettingRound::find($data['play']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->emit('swal:alert', [
             'icon' => 'info',
             'title' => "<span>Upcoming BettingRound #{$this->bettingRound->queue}</span>",
         ]);
     }
 
-
     public function updatedBettingWindow($data)
     {
-        $this->bettingRound = BettingRound::find($data['play']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $status = $this->bettingRound->is_betting_open ? "<strong class='text-success'>OPEN</strong>" : "<strong class='text-danger'>CLOSED</strong>";
         $this->emit('swal:alert', [
             'icon' => $this->bettingRound->is_betting_open ? 'success' : 'error',
-            'title' => "<span>Betting for BettingRound #{$this->bettingRound->queue} is now $status </span>",
+            'title' => "<span>Betting for Round#{$this->bettingRound->queue} is now $status </span>",
         ]);
+    }
+
+    public function getPayout(Bet $userBet)
+    {
+        return $userBet->bet_amount + ($userBet->bet_amount * .5);
     }
 
     public function setPayouts()
     {
         $userBet = $this->bettingRound->userBet(auth()->user()->id);
-        $totalMeron = $this->bettingRound->totalBetType('meron');
-        $totalWala = $this->bettingRound->totalBetType('wala');
-        if ($userBet) {
-            $meronPayout = ($totalMeron * $userBet->bet_amount) / $totalWala;
-            $this->meronPayout = $meronPayout - $meronPayout * .10;
-
-            $walaPayout = ($totalWala * $userBet->bet_amount) / $totalMeron;
-            $this->walaPayout = $walaPayout - $walaPayout * .10;
-
-            $this->payout = $userBet->bet === 'meron' ? $this->meronPayout : $this->walaPayout;
-        }
     }
 
     public function render()
