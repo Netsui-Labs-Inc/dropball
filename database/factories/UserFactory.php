@@ -70,6 +70,27 @@ $factory->state(User::class, 'bet_admin', function () {
     ];
 });
 
+$factory->state(User::class, 'satoshi', function () {
+    return [
+        'type' => User::TYPE_ADMIN,
+        'active' => true,
+    ];
+});
+
+$factory->state(User::class, 'virtual-hub', function () {
+    return [
+        'type' => User::TYPE_ADMIN,
+        'active' => true,
+    ];
+});
+
+$factory->state(User::class, 'player', function () {
+    return [
+        'type' => User::TYPE_USER,
+        'active' => true,
+    ];
+});
+
 $factory->state(User::class, 'inactive', function () {
     return [
         'active' => false,
@@ -110,4 +131,16 @@ $factory->afterCreatingState(User::class,'master_agent',function($user) {
 
 $factory->afterCreatingState(User::class,'bet_admin',function($user) {
     $user->assignRole('Bet Admin');
+});
+
+$factory->afterCreatingState(User::class,'virtual-hub',function($user) {
+    $user->assignRole('Virtual Hub');
+});
+
+$factory->afterCreatingState(User::class,'player',function($user) {
+    $user->assignRole('Player');
+});
+
+$factory->afterCreatingState(User::class,'satoshi',function($user) {
+    $user->assignRole('Satoshi');
 });

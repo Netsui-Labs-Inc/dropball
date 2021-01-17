@@ -145,7 +145,7 @@ Route::get('players/{player}/wallet', [PlayerController::class, 'cashBalance'])
     ->middleware('can:admin.access.players.wallet')
     ->breadcrumbs(function (Trail $trail, $bettingRounder) {
         $trail->parent('admin.players.index');
-        $trail->push("BettingRound Wallet", route('admin.players.wallet', $bettingRounder));
+        $trail->push("Player Wallet", route('admin.players.wallet', $bettingRounder));
     });
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');

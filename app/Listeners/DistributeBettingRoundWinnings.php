@@ -61,40 +61,56 @@ class DistributeBettingRoundWinnings
             'gain_loss' => $payout,
         ]);
         $bettingRound->forceTransferFloat($bet->user, $payout, ['betting_round_id' => $bettingRound->id]);
-        $this->processCompanyCommission($bettingRound, $payout);
-        $this->processMasterAgentCommission($bettingRound, $bet->user, $payout);
+        $operator = $this->processOperatorCommission($bettingRound, $bet->bet_amount);
+        $this->processMasterAgentCommission($bettingRound, $operator, $bet->user, $bet->bet_amount);
+        $this->processDevelopersCommission($bettingRound, $operator, $bet->bet_amount);
     }
 
     public function payout($bet)
     {
-        return increaseBy($bet->bet_amount, .5);
+        return getPayout($bet->bet_amount);
     }
 
-    public function processMasterAgentCommission(BettingRound $bettingRound, User $player, $payout)
+    public function processMasterAgentCommission(BettingRound $bettingRound, Company $operator, User $player, $bet)
     {
         $masterAgent = $player->masterAgent;
         if (! $masterAgent) {
             return;
         }
 
-        $commission = $payout * .01;
-        logger("Master agent will receive $commission from BettingRound #{$bettingRound->id}");
-        $bettingRound->forceTransferFloat($masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id]);
-    }
+        $commission = $bet * .02;
 
-    public function processCompanyCommission(BettingRound $bettingRound, $payout)
-    {
-        $company = Company::first();
-        $commission = $payout * .09;
-        if ($commission > 0) {
-            logger("Transferring amount of $commission to Company");
-            $bettingRound->forceTransferFloat($company, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true]);
+        logger("Master agent will receive $commission from Operator #{$operator->id}");
+
+        $operator->forceTransferFloat($masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id]);
+
+        if ($masterAgent->hasRole('Player') && $masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent) {
+            $commission = $bet * .01;
+            logger("Master agent referral will receive $commission from Operator #{$operator->id}");
+            $operator->forceTransfer($masterAgent->masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'unilevel' => true]);
         }
     }
 
-    public function hasWinningBet($userBets, $bettingRound)
+    public function processOperatorCommission(BettingRound $bettingRound, $bet)
     {
-        return $userBets->contains('bet', '=',  $bettingRound->result);
+        $operator = $this->getOperator();
+        $commission = $bet * .10;
+        if ($commission > 0) {
+            logger("Transferring amount of $commission to Operator");
+            $bettingRound->forceTransferFloat($operator, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true]);
+        }
+
+        return $operator;
+    }
+
+    public function processDevelopersCommission(BettingRound $bettingRound, Company $operator, $bet)
+    {
+        $developers = $this->getDevelopers();
+        $commission = $bet * .01;
+        if ($commission > 0) {
+            logger("Transferring amount of $commission to Developers");
+            $operator->forceTransferFloat($developers, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true]);
+        }
     }
 
     public function processLosers($bet)
@@ -103,5 +119,20 @@ class DistributeBettingRoundWinnings
             'status' => 'lose',
             'gain_loss' => $bet->bet_amount * -1,
         ]);
+    }
+
+    public function hasWinningBet($userBets, $bettingRound)
+    {
+        return $userBets->contains('bet', '=',  $bettingRound->result);
+    }
+
+    public function getOperator()
+    {
+        return Company::firstOrCreate(['name' => 'Operator']);
+    }
+
+    public function getDevelopers()
+    {
+        return Company::firstOrCreate(['name' => 'Developers']);
     }
 }

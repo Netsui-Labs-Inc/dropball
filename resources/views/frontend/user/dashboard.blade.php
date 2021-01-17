@@ -55,6 +55,7 @@
                             <thead class="thead-light">
                                 <tr>
                                     <th>BettingRound #</th>
+                                    <th>Bet </th>
                                     <th>Bet Amount</th>
                                     <th>Status</th>
                                     <th>Gain/Loss</th>
@@ -64,6 +65,7 @@
                             @forelse($bets as $bet)
                                 <tr>
                                     <td>#{{$bet->betting_round_id}}</td>
+                                    <td><span class="badge" style="background-color: {{$bet->option->color}}; color: #fff">{{strtoupper($bet->option->name)}}</span></td>
                                     <td>PHP {{number_format($bet->bet_amount)}}</td>
                                     <td>{!! $bet->statusLabel() !!}</td>
                                     <td>{!! $bet->gainLossLabel() !!}</td>

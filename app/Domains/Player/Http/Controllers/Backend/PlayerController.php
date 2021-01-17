@@ -33,9 +33,18 @@ class PlayerController extends \App\Http\Controllers\Controller
 
     public function deposit(User $player, DepositRequest $request)
     {
-        $player->depositFloat($request->get('amount'));
-
-        return redirect()->back()->withFlashSuccess("Cash Added Successfully");
+        $user = $request->user();
+        try {
+            if ($user->hasRole('Master Agent')) {
+                $user->transferFloat($player, $request->get('amount'));
+            }
+            if ($user->hasRole('Administrator')) {
+                $player->depositFloat($request->get('amount'));
+            }
+            return redirect()->back()->withFlashSuccess("Cash Added Successfully");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors($e->getMessage());
+        }
     }
 
     public function verify(User $player)

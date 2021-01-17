@@ -72,6 +72,9 @@ class CommissionsTable extends TableComponent
                 }),
             Column::make(__('Betting Round ID'), )
                 ->format(function (Transaction $model) {
+                    if(!isset($model->meta['betting_round_id'])) {
+                        return "N/A";
+                    }
                     $bettingRound = BettingRound::find($model->meta['betting_round_id']);
 
                     $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);

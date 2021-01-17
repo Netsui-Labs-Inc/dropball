@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Domains\Hub\Models;
 
-use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\HasWalletFloat;
+use Bavix\Wallet\Traits\HasWallets;
 use Illuminate\Database\Eloquent\Model;
 
-class Company extends Model implements Wallet, WalletFloat
+class Hub extends Model implements WalletFloat
 {
+    use HasWallets;
     use HasWalletFloat;
 
-    protected $fillable = ['name'];
 }

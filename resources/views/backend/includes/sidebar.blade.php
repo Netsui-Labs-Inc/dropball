@@ -38,15 +38,25 @@
         </li>
         @endcan
         @can('admin.access.wallets.manage')
-        <li class="c-sidebar-nav-title">@lang('BettingRound Cash-in/Cash-out')</li>
+        <li class="c-sidebar-nav-title">@lang('Cash-in/Cash-out')</li>
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
                 :href="route('admin.wallet.index')"
                 :active="activeClass(Route::is('admin.wallet.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
-                :text="__('Wallet')" />
+                :text="__('Players Wallet')" />
         </li>
+        @endcan
+        @can('admin.access.master-agents.manage')
+            <li class="c-sidebar-nav-item">
+            <x-utils.link
+                class="c-sidebar-nav-link"
+                :href="route('admin.wallet.index')"
+                :active="activeClass(Route::is('admin.wallet.index'), 'c-active')"
+                icon="c-sidebar-nav-icon cil-wallet"
+                :text="__('Master Agents Wallet')" />
+            </li>
         @endcan
         @if (
             $logged_in_user->hasAllAccess() ||

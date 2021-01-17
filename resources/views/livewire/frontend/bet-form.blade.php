@@ -37,7 +37,7 @@
                 <div class="text-muted surtitle">
                     @php $userBetTotal = $bettingRound->totalBetTypeByUser($option->id, auth()->user()->id) @endphp
                     <span class="h5 text-muted ">PHP {{number_format($userBetTotal)}} </span>
-                    @if($userBetTotal) | <span class="h5 text-success">+ PHP {{number_format(increaseBy($userBetTotal, .5))}}</span>@endif
+                    @if($userBetTotal) | <span class="h5 text-success">+ PHP {{number_format(getPayout($userBetTotal))}}</span>@endif
                 </div>
                 <button  class="btn btn-lg btn-block mb-1" style="background-color: {{$option->color}}; color: #FFF"  wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}> {{strtoupper($option->name)}}</button>
             </div>

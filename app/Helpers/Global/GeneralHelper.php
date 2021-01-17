@@ -57,3 +57,10 @@ if (! function_exists('increaseBy')) {
         return $number + ($number * $percentage);
     }
 }
+
+if (! function_exists('getPayout')) {
+    function getPayout($bet, $commission = .10)
+    {$payout = $bet * 2;
+        return $payout - ($payout * $commission);
+    }
+}

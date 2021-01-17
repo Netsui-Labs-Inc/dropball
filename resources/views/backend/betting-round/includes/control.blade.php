@@ -66,7 +66,6 @@
                     <input type="hidden" name="result" value="{{$option->id}}">
                     @lang($option->name)
                 </x-utils.form-button>
-                    PHP {{number_format($bettingRound->totalBetType($option->id))}}
                 </div>
             @endforeach
         </div>
