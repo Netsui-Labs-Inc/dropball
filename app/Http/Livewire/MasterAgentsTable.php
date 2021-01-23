@@ -34,10 +34,9 @@ class MasterAgentsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $admin = false): void
+    public function mount($status = 'active'): void
     {
         $this->status = $status;
-        $this->admin = $admin;
     }
 
     /**
@@ -45,15 +44,9 @@ class MasterAgentsTable extends TableComponent
      */
     public function query(): Builder
     {
-        if ($this->admin && $this->status === 'unverified') {
-            return User::doesntHave('roles')->whereNull('email_verified_at');
-        }
-        if ($this->admin) {
-            return User::doesntHave('roles')->onlyActive();
-        }
-        $user = auth()->user();
-        $query = $user->roles('Master Agent')->getQuery();
-
+        $query = User::whereHas('roles', function ($query) {
+            return $query->where('name', 'Master Agent');
+        });
 
         if ($this->status === 'unverified') {
             return $query->where('email_verified_at', null);
@@ -98,7 +91,7 @@ class MasterAgentsTable extends TableComponent
                 }),
             Column::make(__('Actions'))
                 ->format(function (User $model) {
-                    return view("backend.player.action", ['user' => $model]);
+                    return view("backend.master-agent.action", ['user' => $model]);
                 }),
         ];
     }

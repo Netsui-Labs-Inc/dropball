@@ -34,11 +34,8 @@
                 :href="route('admin.players.index')"
                 :active="activeClass(Route::is('admin.players.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-user"
-                :text="__('Players')" />
+                :text="__('Players List')" />
         </li>
-        @endcan
-        @can('admin.access.wallets.manage')
-        <li class="c-sidebar-nav-title">@lang('Cash-in/Cash-out')</li>
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
@@ -49,15 +46,26 @@
         </li>
         @endcan
         @can('admin.access.master-agents.manage')
+            <li class="c-sidebar-nav-title">@lang('Master Agents')</li>
             <li class="c-sidebar-nav-item">
-            <x-utils.link
-                class="c-sidebar-nav-link"
-                :href="route('admin.wallet.index')"
-                :active="activeClass(Route::is('admin.wallet.index'), 'c-active')"
-                icon="c-sidebar-nav-icon cil-wallet"
-                :text="__('Master Agents Wallet')" />
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.master-agents.index')"
+                    :active="activeClass(Request::is('admin/master-agents/*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-user"
+                    :text="__('Master Agents List')" />
             </li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.master-agents.transactions')"
+                    :active="activeClass(Request::is('admin/master-agents-transactions*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-wallet"
+                    :text="__('Master Agents Wallet')" />
+            </li>
+
         @endcan
+
         @if (
             $logged_in_user->hasAllAccess() ||
             (

@@ -3,29 +3,27 @@
 @section('title', __('View User'))
 
 @section('content')
-    <div class="container py-4">
-        <div class="row justify-content-center">
-            <div class="col-md-12">
-                <x-frontend.card headerClass="bg-primary">
-                    <x-slot name="header">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h3 class="h3 text-white mb-0"> @lang("Withdrawal / Deposit History")</h3>
-                            </div>
-                            <div class="col text-right">
-                                <x-utils.link
-                                    class="btn btn-info text-white"
-                                    dataTarget="#addCash"
-                                    :text="__('Add Cash')"
-                                />
-                            </div>
+    <div class="row justify-content-center py-2">
+        <div class="col-md-12">
+            <x-frontend.card headerClass="bg-primary">
+                <x-slot name="header">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="h3 text-white mb-0"> @lang("Withdrawal / Deposit History")</h3>
                         </div>
-                    </x-slot>
-                    <x-slot name="body">
-                        <livewire:transactions-table :user="$user" />
-                    </x-slot>
-                </x-frontend.card>
-            </div>
+                        <div class="col text-right">
+                            <x-utils.link
+                                class="btn btn-info text-white"
+                                dataTarget="#addCash"
+                                :text="__('Add Cash')"
+                            />
+                        </div>
+                    </div>
+                </x-slot>
+                <x-slot name="body">
+                    <livewire:transactions-table :user="$user" />
+                </x-slot>
+            </x-frontend.card>
         </div>
     </div>
     <x-utils.modal

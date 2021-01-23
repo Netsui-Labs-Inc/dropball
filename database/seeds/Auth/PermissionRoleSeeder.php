@@ -129,7 +129,43 @@ class PermissionRoleSeeder extends Seeder
             new Permission([
                 'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.players.wallet',
-                'description' => 'Manage Players Wallet',
+                'description' => 'View Player Wallet',
+                'sort' => 15,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.wallet',
+                'description' => 'Manage Master Agents Wallet',
+                'sort' => 14,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.transactions',
+                'description' => 'Manage Master Agents Transactions',
+                'sort' => 14,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.list',
+                'description' => 'View Master Agents',
+                'sort' => 14,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.create',
+                'description' => 'Create Master Agent',
+                'sort' => 14,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.info',
+                'description' => 'View Master Agent Info',
+                'sort' => 15,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.wallet',
+                'description' => 'Manage Master Agents Wallet',
                 'sort' => 14,
             ]),
             new Permission([
@@ -186,6 +222,42 @@ class PermissionRoleSeeder extends Seeder
                 'description' => 'Manage Master Agents',
                 'sort' => 23,
             ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.list',
+                'description' => 'Virtual Hubs List',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.create',
+                'description' => 'Create Virtual Hub',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.show',
+                'description' => 'Show Virtual Hub Info',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.update',
+                'description' => 'Update Virtual Hub',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.delete',
+                'description' => 'Delete Virtual Hub',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.wallet',
+                'description' => 'Manage Virtual Hub Wallet',
+                'sort' => 23,
+            ]),
         ]);
 
         // Assign Permissions to other Roles
@@ -238,6 +310,11 @@ class PermissionRoleSeeder extends Seeder
 
         $role->givePermissionTo([
             'admin.access.master-agents.manage',
+            'admin.access.master-agents.list',
+            'admin.access.master-agents.info',
+            'admin.access.master-agents.wallet',
+            'admin.access.master-agents.create',
+            'admin.access.master-agents.transactions',
         ]);
     }
 
@@ -250,6 +327,11 @@ class PermissionRoleSeeder extends Seeder
 
         $role->givePermissionTo([
             'admin.access.virtual.hub.wallet',
+            'admin.access.hubs.list',
+            'admin.access.hubs.update',
+            'admin.access.hubs.create',
+            'admin.access.hubs.delete',
+            'admin.access.hubs.wallet',
         ]);
     }
 }

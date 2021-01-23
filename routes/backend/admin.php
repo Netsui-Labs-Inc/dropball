@@ -9,6 +9,7 @@ use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
 
 use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
+use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
 
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
@@ -135,24 +136,59 @@ Route::get('players', [PlayerController::class, 'index'])
     ->middleware('can:admin.access.players.list')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("BettingRounds", route('admin.players.index'));
+        $trail->push("Players", route('admin.players.index'));
     });
 
 Route::get('players/{player}', [PlayerController::class, 'show'])
     ->name('players.info')
     ->middleware('can:admin.access.players.info')
-    ->breadcrumbs(function (Trail $trail, $bettingRounder) {
+    ->breadcrumbs(function (Trail $trail, $player) {
         $trail->parent('admin.players.index');
-        $trail->push("BettingRounds", route('admin.players.info', $bettingRounder));
+        $trail->push("Players", route('admin.players.info', $player));
     });
 
 Route::get('players/{player}/wallet', [PlayerController::class, 'cashBalance'])
     ->name('players.wallet')
     ->middleware('can:admin.access.players.wallet')
-    ->breadcrumbs(function (Trail $trail, $bettingRounder) {
+    ->breadcrumbs(function (Trail $trail, $player) {
         $trail->parent('admin.players.index');
-        $trail->push("Player Wallet", route('admin.players.wallet', $bettingRounder));
+        $trail->push("Player Wallet", route('admin.players.wallet', $player));
     });
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');
 Route::post('players/{player}/verification', [PlayerController::class, 'verify'])->name('players.verify');
+
+/** Master Agents */
+
+Route::get('master-agents', [MasterAgentController::class, 'index'])->name('master-agents.index')
+    ->middleware('can:admin.access.master-agents.list')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Master Agents", route('admin.master-agents.index'));
+    });
+
+Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])
+    ->name('master-agents.info')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $masterAgent) {
+        $trail->parent('admin.master-agents.index');
+        $trail->push("Master Agents", route('admin.master-agents.info', $masterAgent));
+    });
+
+Route::get('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 'cashBalance'])
+    ->name('master-agents.wallet')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $masterAgent) {
+        $trail->parent('admin.master-agents.index');
+        $trail->push("Master Agent Wallet", route('admin.master-agents.wallet', $masterAgent));
+    });
+
+Route::post('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 'deposit'])->name('master-agents.wallet.deposit');
+
+
+Route::get('master-agent-transactions', [MasterAgentController::class, 'transactions'])->name('master-agents.transactions')
+    ->middleware('can:admin.access.master-agents.transactions')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
+    });

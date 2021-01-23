@@ -1,11 +1,11 @@
 @extends('backend.layouts.app')
 
-@section('title', __('View Player'))
+@section('title', __('View Master Agent'))
 
 @section('content')
     <x-backend.card>
         <x-slot name="header">
-            @lang('Player Info')
+            @lang('Mater Agent Info')
         </x-slot>
 
         <x-slot name="headerActions">

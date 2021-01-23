@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingRound\Models\BettingRound;
+use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 
@@ -21,12 +22,14 @@ class DashboardController extends Controller
 
         /** @var User $user */
         $user = auth()->user();
-        if ($user->hasRole('Master Agent')) {
+        if ($user->hasRole('Administrator')) {
+            return $this->superAdmin();
+        } elseif ($user->hasRole('Master Agent')) {
             return $this->masterAgent();
         } elseif ($user->hasRole('Bet Admin')) {
             return $this->betAdmin();
-        } else {
-            return $this->superAdmin();
+        } elseif ($user->hasRole('Virtual Hub')) {
+            return $this->virtualHub();
         }
     }
 
@@ -68,7 +71,16 @@ class DashboardController extends Controller
             ->with('bettingRound', $bettingRound)
             ->with('bettingEvent', $bettingEvent)
             ->with('transactions', $company->transactions);
+    }
 
+    public function virtualHub()
+    {
+        $user = auth()->user();
+        $hub = Hub::where('admin_id', $user->id)->first();
+        $masterAgents = User::role('Master Agent')->onlyActive()->count();
+        return view('backend.dashboard.virtual-hub')
+            ->with('masterAgents', $masterAgents)
+            ->with('hub', $hub);
 
     }
 }
