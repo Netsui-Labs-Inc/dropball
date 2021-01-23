@@ -31,6 +31,7 @@ class MasterAgentController extends Controller
     {
         $user = $request->user();
         $hub = Hub::where('admin_id', $user->id)->first();
+
         try {
             if ($user->hasRole('Virtual Hub')) {
                 $hub->transferFloat($masterAgent, $request->get('amount'));
@@ -38,6 +39,7 @@ class MasterAgentController extends Controller
             if ($user->hasRole('Administrator')) {
                 $masterAgent->depositFloat($request->get('amount'));
             }
+
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
@@ -56,6 +58,7 @@ class MasterAgentController extends Controller
     public function transactions()
     {
         $pendingTransactions = Transaction::query()->where("payable_type", User::class)->where('confirmed', false)->whereIn('payable_id', User::role('Master Agent')->get()->pluck('id'));
+
         return view('backend.master-agent.transactions')->with('pendingTransactions', $pendingTransactions);
     }
 }

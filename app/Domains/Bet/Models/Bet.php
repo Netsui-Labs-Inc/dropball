@@ -37,7 +37,6 @@ class Bet extends Model
 
     public function betLabel()
     {
-
         return "<span class=\"badge\" style=\"background-color: {$this->option->color}; color: #fff \">".strtoupper($this->option->name)."</span>";
     }
 
@@ -88,7 +87,6 @@ class Bet extends Model
     public function bettingRound()
     {
         return $this->belongsTo(BettingRound::class, 'betting_round_id');
-
     }
 
     public function scopeBetType($query, $type)

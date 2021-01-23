@@ -127,7 +127,6 @@ class BettingRound extends Model implements Wallet, WalletFloat
     public function userBets($userId)
     {
         return $this->bets()->where('user_id', $userId);
-
     }
 
     public function betOption()

@@ -21,14 +21,15 @@ class BettingRoundController extends Controller
     public function show(BettingRound $bettingRound)
     {
         return view('backend.betting-round.show')
-            ->with('bettingRound',$bettingRound);
+            ->with('bettingRound', $bettingRound);
     }
 
     public function openBetting(BettingRound $bettingRound)
     {
         $activeBettingRoundId = $bettingRound->bettingEvent->activeBettingRound()->first()->id ?? null;
-        if($activeBettingRoundId !== $bettingRound->id) {
-            $activeBettingRoundLink = route('admin.betting-events.betting-rounds.show',[$bettingRound->bettingEvent, $activeBettingRoundId]);
+        if ($activeBettingRoundId !== $bettingRound->id) {
+            $activeBettingRoundLink = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $activeBettingRoundId]);
+
             throw new GeneralException("Cannot Open Betting Round Yet. <a href='$activeBettingRoundLink'>Betting Round #$activeBettingRoundId</a> is still ongoing");
         }
         if ($bettingRound->status !== 'upcoming') {
