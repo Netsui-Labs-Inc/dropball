@@ -38,7 +38,6 @@ class DashboardController extends Controller
 
         return view('backend.dashboard.master-agent')
             ->with('user', $user)
-            ->with('bettingEvent', $bettingEvent)
             ->with('transactions', $user->transactions);
     }
 

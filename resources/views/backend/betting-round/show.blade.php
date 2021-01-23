@@ -37,7 +37,7 @@
             </x-backend.card>
         </div>
     </div>
-
+    @can('admin.access.betting-rounds.bets')
     <x-backend.card headerClass="bg-info">
         <x-slot name="header">
             <div class="row align-items-center">
@@ -52,7 +52,7 @@
             <livewire:bets-table :bettingRound="$bettingRound" />
         </x-slot>
     </x-backend.card>
-
+    @endcan
 @endsection
 @section('page-action')
     @if($nextBettingRound)

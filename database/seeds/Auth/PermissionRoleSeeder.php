@@ -110,15 +110,21 @@ class PermissionRoleSeeder extends Seeder
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.betting-rounds.create',
+                'description' => 'Create Betting Rounds',
+                'sort' => 13,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.players.list',
                 'description' => 'View Players',
-                'sort' => 12,
+                'sort' => 14,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.players.info',
                 'description' => 'View Player Info',
-                'sort' => 13,
+                'sort' => 15,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
@@ -128,37 +134,37 @@ class PermissionRoleSeeder extends Seeder
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.list',
+                'name' => 'admin.access.betting-rounds.list',
                 'description' => 'View Betting Rounds',
                 'sort' => 15,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.create',
+                'name' => 'admin.access.betting-rounds.create',
                 'description' => 'Create Betting Round',
                 'sort' => 16,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.edit',
+                'name' => 'admin.access.betting-rounds.edit',
                 'description' => 'Edit Betting Round',
                 'sort' => 17,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.show',
-                'description' => 'Edit Betting Round',
+                'name' => 'admin.access.betting-rounds.show',
+                'description' => 'Show Betting Round',
                 'sort' => 18,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.bets',
+                'name' => 'admin.access.betting-rounds.bets',
                 'description' => 'View Drop Ball Bets',
                 'sort' => 19,
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
-                'name' => 'admin.access.plays.moderate',
+                'name' => 'admin.access.betting-rounds.moderate',
                 'description' => 'Moderate Betting Round',
                 'sort' => 20,
             ]),
@@ -203,10 +209,6 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.players.list',
             'admin.access.players.info',
             'admin.access.players.wallet',
-            'admin.access.betting-events.list',
-            'admin.access.betting-events.show',
-            'admin.access.betting-events.create',
-            'admin.access.plays.list',
             'admin.access.wallets.manage',
         ]);
     }
@@ -221,11 +223,9 @@ class PermissionRoleSeeder extends Seeder
         $role->givePermissionTo([
             'admin.access.betting-events.list',
             'admin.access.betting-events.show',
-            'admin.access.plays.list',
-            'admin.access.plays.create',
-            'admin.access.plays.edit',
-            'admin.access.plays.bets',
-            'admin.access.plays.moderate',
+            'admin.access.betting-rounds.list',
+            'admin.access.betting-rounds.edit',
+            'admin.access.betting-rounds.moderate',
         ]);
     }
 

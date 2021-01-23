@@ -35,12 +35,13 @@
                             @lang('View Active Betting Round')
                         </x-utils.form-button>
                     @endif
-
+                    @can('admin.access.betting-rounds.create')
                     <x-utils.link
                         class="btn btn-info text-white"
                         dataTarget="#createBettingRound"
                         :text="__('Create Betting Round')"
                     />
+                    @endcan
                 </div>
             </div>
         </x-slot>

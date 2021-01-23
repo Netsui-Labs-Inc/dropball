@@ -109,16 +109,22 @@ Route::get('betting-rounds/{bettingRound}', [BettingRoundController::class, 'sho
     });
 
 Route::post('betting-rounds', [BettingRoundController::class, 'store'])->middleware('can:admin.access.betting-rounds.create');
-Route::put('betting-rounds/{bettingRound}', [BettingRoundController::class, 'update']);
 
-Route::post('betting-rounds/{bettingRound}/open-betting', [BettingRoundController::class, 'openBetting'])->name('betting-rounds.betting.open');
-Route::post('betting-rounds/{bettingRound}/last-call', [BettingRoundController::class, 'lastCallBetting'])->name('betting-rounds.betting.last-call');
-Route::post('betting-rounds/{bettingRound}/close-betting', [BettingRoundController::class, 'closeBetting'])->name('betting-rounds.betting.close');
 
-Route::post('betting-rounds/{bettingRound}/starts', [BettingRoundController::class, 'startBettingRound'])->name('betting-rounds.start');
-Route::post('betting-rounds/{bettingRound}/ends', [BettingRoundController::class, 'endBettingRound'])->name('betting-rounds.end');
-Route::post('betting-rounds/{bettingRound}/cancel', [BettingRoundController::class, 'cancelBettingRound'])->name('betting-rounds.cancel');
-Route::post('betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
+Route::group(['middleware' => 'can:admin.access.betting-rounds.moderate'], function() {
+
+    Route::put('betting-rounds/{bettingRound}', [BettingRoundController::class, 'update']);
+
+    Route::post('betting-rounds/{bettingRound}/open-betting', [BettingRoundController::class, 'openBetting'])->name('betting-rounds.betting.open');
+    Route::post('betting-rounds/{bettingRound}/last-call', [BettingRoundController::class, 'lastCallBetting'])->name('betting-rounds.betting.last-call');
+    Route::post('betting-rounds/{bettingRound}/close-betting', [BettingRoundController::class, 'closeBetting'])->name('betting-rounds.betting.close');
+
+    Route::post('betting-rounds/{bettingRound}/starts', [BettingRoundController::class, 'startBettingRound'])->name('betting-rounds.start');
+    Route::post('betting-rounds/{bettingRound}/ends', [BettingRoundController::class, 'endBettingRound'])->name('betting-rounds.end');
+    Route::post('betting-rounds/{bettingRound}/cancel', [BettingRoundController::class, 'cancelBettingRound'])->name('betting-rounds.cancel');
+    Route::post('betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
+});
+
 
 /** End BettingRounds */
 

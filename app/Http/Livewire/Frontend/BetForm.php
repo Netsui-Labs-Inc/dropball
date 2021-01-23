@@ -39,7 +39,7 @@ class BetForm extends Component
     ];
 
     public $betChoices = [
-        100, 300, 500, 1000, 5000, 10000,
+        50, 100, 300, 500, 1000, 5000, 10000,
     ];
 
     public function mount($bettingEventId)

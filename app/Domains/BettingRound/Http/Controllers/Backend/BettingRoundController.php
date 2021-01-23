@@ -2,7 +2,6 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
-use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;

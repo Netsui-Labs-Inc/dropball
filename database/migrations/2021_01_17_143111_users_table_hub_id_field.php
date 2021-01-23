@@ -27,6 +27,7 @@ class UsersTableHubIdField extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign('users_hub_id_foreign');
             $table->dropColumn('hub_id');
         });
     }

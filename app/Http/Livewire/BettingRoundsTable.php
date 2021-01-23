@@ -55,7 +55,7 @@ class BettingRoundsTable extends TableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('BettingRound ID'), 'id')
+            Column::make(__('Betting Round ID'), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function (BettingRound $model) {
