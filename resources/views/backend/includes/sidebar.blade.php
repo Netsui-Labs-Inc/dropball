@@ -65,7 +65,25 @@
             </li>
 
         @endcan
-
+        @can('admin.access.hubs.manage')
+            <li class="c-sidebar-nav-title">@lang('Hubs')</li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.hubs.index')"
+                    :active="activeClass(Request::is('admin/hubs/*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-building"
+                    :text="__('Hubs List')" />
+            </li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.hubs.transactions')"
+                    :active="activeClass(Request::is('admin/hubs-transactions*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-wallet"
+                    :text="__('Hubs Wallet')" />
+            </li>
+        @endcan
         @if (
             $logged_in_user->hasAllAccess() ||
             (

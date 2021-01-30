@@ -59,7 +59,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $company = Company::first();
-        $players = User::doesntHave('roles')->onlyActive()->count();
+        $players = User::role('Player')->onlyActive()->count();
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;

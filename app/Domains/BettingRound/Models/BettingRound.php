@@ -98,7 +98,7 @@ class BettingRound extends Model implements Wallet, WalletFloat
                 break;
         }
 
-        return "<span class=\"badge $class $additionalClass\">".strtoupper($this->result)."</span>";
+        return "<span class=\"badge $class $additionalClass\">".strtoupper($this->betOption->name)."</span>";
     }
 
     public function bettingOpenLabel()

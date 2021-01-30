@@ -3,13 +3,14 @@
 use App\Domains\BettingEvent\Http\Controllers\Backend\BettingEventBettingRoundController;
 use App\Domains\BettingEvent\Http\Controllers\Backend\BettingEventController;
 use App\Domains\BettingRound\Http\Controllers\Backend\BettingRoundController;
+use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
 use App\Domains\Player\Http\Controllers\Backend\PlayerController;
+use App\Domains\Hub\Http\Controllers\Backend\HubController;
+
+
 use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
-
-
 use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
-use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
 
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
@@ -112,8 +113,7 @@ Route::get('betting-rounds/{bettingRound}', [BettingRoundController::class, 'sho
 Route::post('betting-rounds', [BettingRoundController::class, 'store'])->middleware('can:admin.access.betting-rounds.create');
 
 
-Route::group(['middleware' => 'can:admin.access.betting-rounds.moderate'], function() {
-
+Route::group(['middleware' => 'can:admin.access.betting-rounds.moderate'], function () {
     Route::put('betting-rounds/{bettingRound}', [BettingRoundController::class, 'update']);
 
     Route::post('betting-rounds/{bettingRound}/open-betting', [BettingRoundController::class, 'openBetting'])->name('betting-rounds.betting.open');
@@ -191,4 +191,40 @@ Route::get('master-agent-transactions', [MasterAgentController::class, 'transact
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
         $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
+    });
+
+
+/** Hubs */
+
+Route::get('hubs', [HubController::class, 'index'])->name('hubs.index')
+    ->middleware('can:admin.access.hubs.list')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Hubs", route('admin.hubs.index'));
+    });
+
+Route::get('hubs/{hub}', [HubController::class, 'show'])
+    ->name('hubs.info')
+    ->middleware('can:admin.access.hubs.info')
+    ->breadcrumbs(function (Trail $trail, $hub) {
+        $trail->parent('admin.hubs.index');
+        $trail->push("Hubs", route('admin.hubs.info', $hub));
+    });
+
+Route::get('hubs/{hub}/wallet', [HubController::class, 'cashBalance'])
+    ->name('hubs.wallet')
+    ->middleware('can:admin.access.hubs.wallet')
+    ->breadcrumbs(function (Trail $trail, $hub) {
+        $trail->parent('admin.hubs.index');
+        $trail->push("Hub Wallet", route('admin.hubs.wallet', $hub));
+    });
+
+Route::post('hubs/{hub}/wallet', [HubController::class, 'deposit'])->name('hubs.wallet.deposit');
+
+
+Route::get('hubs-transactions', [HubController::class, 'transactions'])->name('hubs.transactions')
+    ->middleware('can:admin.access.hubs.transactions')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Hub Transactions", route('admin.hubs.transactions'));
     });

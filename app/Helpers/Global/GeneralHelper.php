@@ -60,7 +60,7 @@ if (! function_exists('increaseBy')) {
 
 if (! function_exists('getPayout')) {
     function getPayout($bet, $commission = .10)
-    {$payout = $bet * 2;
-        return $payout - ($payout * $commission);
+    {   $payout = $bet * 2;
+        return $payout - ($bet * $commission);
     }
 }

@@ -27,6 +27,9 @@ class BettingRoundController extends Controller
     public function openBetting(BettingRound $bettingRound)
     {
         $activeBettingRoundId = $bettingRound->bettingEvent->activeBettingRound()->first()->id ?? null;
+        logger("BettingRound#{$bettingRound->id} betting window is open");
+        logger("---------- BettingRound#{$bettingRound->id} Betting Start ------------");
+
         if ($activeBettingRoundId !== $bettingRound->id) {
             $activeBettingRoundLink = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $activeBettingRoundId]);
 
@@ -75,6 +78,8 @@ class BettingRoundController extends Controller
         $bettingRound->is_betting_open = false;
         $bettingRound->save();
         event(new BettingRoundStatusUpdated($bettingRound->fresh()));
+        logger("BettingRound#{$bettingRound->id} has started : Betting window is closed");
+        logger("---------- BettingRound#{$bettingRound->id} BETTING CLOSED ------------");
 
         return redirect()->back()->withFlashSuccess(__('BettingRound started'));
     }
@@ -114,6 +119,7 @@ class BettingRoundController extends Controller
         $bettingRound->save();
 
         event(new BettingRoundResultUpdated($bettingRound->fresh()));
+        logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }

@@ -224,6 +224,12 @@ class PermissionRoleSeeder extends Seeder
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.manage',
+                'description' => 'Virtual Hubs Manage',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.hubs.list',
                 'description' => 'Virtual Hubs List',
                 'sort' => 23,
@@ -327,6 +333,7 @@ class PermissionRoleSeeder extends Seeder
 
         $role->givePermissionTo([
             'admin.access.virtual.hub.wallet',
+            'admin.access.hubs.manage',
             'admin.access.hubs.list',
             'admin.access.hubs.update',
             'admin.access.hubs.create',

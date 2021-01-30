@@ -46,10 +46,10 @@ class PlayersTable extends TableComponent
     public function query(): Builder
     {
         if ($this->admin && $this->status === 'unverified') {
-            return User::doesntHave('roles')->whereNull('email_verified_at');
+            return User::role('Player')->whereNull('email_verified_at');
         }
         if ($this->admin) {
-            return User::doesntHave('roles')->onlyActive();
+            return User::role('Player')->onlyActive();
         }
         $user = auth()->user();
         $query = $user->referrals()->getQuery();

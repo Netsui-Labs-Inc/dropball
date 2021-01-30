@@ -110,6 +110,6 @@ class VideoHeader extends Component
     public function render()
     {
         return view('livewire.frontend.video-header')
-            ->with('play', $this->bettingRound);
+            ->with('bettingRound', $this->bettingRound);
     }
 }

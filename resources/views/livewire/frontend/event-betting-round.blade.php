@@ -1,7 +1,7 @@
 <div class="row justify-content-center">
     @if($bettingRound)
     <div class="col">
-        <h3 class="text-white text-uppercase mb-0">@lang('BettingRound #'){{$bettingRound->queue}}</h3>
+        <h3 class="text-white text-uppercase mb-0">@lang('Round #'){{$bettingRound->queue}}</h3>
     </div>
 
     <div class="col">

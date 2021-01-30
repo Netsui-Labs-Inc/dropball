@@ -35,7 +35,7 @@ class BetForm extends Component
     public $totalBetAmount = 0;
 
     protected $rules = [
-        'amount' => 'required|numeric|min:100',
+        'amount' => 'required|numeric|min:50',
     ];
 
     public $betChoices = [
@@ -149,7 +149,7 @@ class BetForm extends Component
             $this->addToPoolMoney();
             $this->alert($bet);
         } catch (\Exception $e) {
-            $this->addError('amount', $e->getMessage());
+            $this->addError('amount', $e->getTraceAsString());
         }
     }
 
@@ -163,7 +163,7 @@ class BetForm extends Component
 
     public function addToPoolMoney()
     {
-        $this->user->forceTransferFloat($this->bettingRound, $this->amount, ['play' => $this->bettingRound->id]);
+        $this->user->forceTransferFloat($this->bettingRound, $this->amount, ['bettingRound' => $this->bettingRound->id]);
 
         $this->poolMoney = $this->bettingRound->balanceFloat;
 
@@ -209,7 +209,7 @@ class BetForm extends Component
     public function render()
     {
         return view('livewire.frontend.bet-form')
-            ->with('play', $this->bettingRound)
+            ->with('bettingRound', $this->bettingRound)
             ->with('user', auth()->user())
             ->with('userBets', $this->userBets);
     }

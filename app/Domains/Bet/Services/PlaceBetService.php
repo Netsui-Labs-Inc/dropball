@@ -68,17 +68,18 @@ class PlaceBetService
             throw new \Exception("Betting window is not open");
         }
 
-        if ($this->amount < 100) {
+        if ($this->amount < 50) {
             throw new \Exception("Invalid bet amount");
         }
 
-        $this->bettingRound->bets()->create([
+        $bet = $this->bettingRound->bets()->create([
             'user_id' => $this->bettor->id,
             'bet_amount' => $this->amount,
             'bet' => $this->bet->id,
         ]);
 
         event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor));
+        logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
 
         return $this->bettingRound;
     }

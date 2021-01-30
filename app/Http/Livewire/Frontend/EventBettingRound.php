@@ -59,22 +59,22 @@ class EventBettingRound extends Component
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
         $winningBet = $this->hasWinningBet($userBets) ? $userBets->firstwhere('bet', $this->bettingRound->result) : null;
 
-        $result = "<h1 class='text-gray'>".strtoupper($this->bettingRound->result)."</h1>";
+        $result = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
 
         if ($userBets->isEmpty()) {
             $icon = 'info';
             $title = 'Betting Round #'.$this->bettingRound->queue;
         } elseif (in_array($this->bettingRound->result,  ['draw','cancelled'])) {
             $icon = 'info';
-            $title = "<h1 class='text-gray'>".strtoupper($this->bettingRound->result)."</h1>";
+            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
         } elseif ($this->hasWinningBet($userBets)) {
             $icon = 'success';
             $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
-            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->getPayout($winningBet)). "</strong>";
+            $result = "YOU'VE WON <strong class='text-success'>".number_format(getPayout($winningBet->bet_amount)). "</strong>";
         } else {
             $icon = 'error';
-            $title = "<h1 class='text-danger'>".strtoupper($this->bettingRound->result)."</h1>";
+            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE LOST <strong class='text-danger'>-".number_format($userBets->sum('bet_amount')). "</strong>";
         }
 
@@ -82,7 +82,7 @@ class EventBettingRound extends Component
         $this->emit('swal:confirm', [
             'icon' => $icon,
             'title' => $title,
-            'confirmText' => 'View next play',
+            'confirmText' => 'View next round',
             'text' => "<h1 class='animate__animated animate__pulse animate__infinite infinite'>$result</h1>",
             'method' => "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting",
             'params' => ['bettingRound' => $nextBettingRound ? $nextBettingRound->toArray() : null],
@@ -133,11 +133,6 @@ class EventBettingRound extends Component
         ]);
     }
 
-    public function getPayout(Bet $userBet)
-    {
-        return $userBet->bet_amount + ($userBet->bet_amount * .5);
-    }
-
     public function setPayouts()
     {
         $userBet = $this->bettingRound->userBet(auth()->user()->id);
@@ -146,6 +141,6 @@ class EventBettingRound extends Component
     public function render()
     {
         return view('livewire.frontend.event-betting-round')
-            ->with('play', $this->bettingRound);
+            ->with('bettingRound', $this->bettingRound);
     }
 }

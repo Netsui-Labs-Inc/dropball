@@ -3,6 +3,7 @@
 @section('title', __('Dashboard'))
 
 @section('content')
+    <h2 class="mb-4">Welcome Bet Admin {{$logged_in_user->name}}</h2>
     <div class="row">
         <div class="col-12">
             <x-backend.card headerClass="bg-gradient-info" class="text-center">
