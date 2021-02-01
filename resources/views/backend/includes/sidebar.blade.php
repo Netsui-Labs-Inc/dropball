@@ -23,9 +23,6 @@
                 :text="__('Betting Events')" />
         </li>
         @endcan
-{{--        <li class="c-sidebar-nav-title">@lang('BettingRounds')</li>--}}
-{{--        <li class="c-sidebar-nav-title">@lang('Bets')</li>--}}
-{{--        <li class="c-sidebar-nav-title">@lang('Loading Station')</li>--}}
         @can('admin.access.players.list')
         <li class="c-sidebar-nav-title">@lang('Players')</li>
         <li class="c-sidebar-nav-item">
@@ -44,6 +41,17 @@
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />
         </li>
+        @role('Master Agent')
+        <li class="c-sidebar-nav-title">@lang('My Wallet')</li>
+        <li class="c-sidebar-nav-item">
+            <x-utils.link
+                class="c-sidebar-nav-link"
+                :href="route('admin.my.wallet.transactions')"
+                :active="activeClass(Route::is('admin.my.wallet.transactions'), 'c-active')"
+                icon="c-sidebar-nav-icon cil-wallet"
+                :text="__('Wallet Transactions')" />
+        </li>
+        @endrole
         @endcan
         @can('admin.access.master-agents.manage')
             <li class="c-sidebar-nav-title">@lang('Master Agents')</li>

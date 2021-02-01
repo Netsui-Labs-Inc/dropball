@@ -228,3 +228,13 @@ Route::get('hubs-transactions', [HubController::class, 'transactions'])->name('h
         $trail->parent('admin.dashboard');
         $trail->push("Hub Transactions", route('admin.hubs.transactions'));
     });
+
+
+Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.transactions')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("My Wallet Transactions", route('admin.my.wallet.transactions'));
+    });
+
+Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
+

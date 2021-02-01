@@ -8,7 +8,7 @@ use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class TransactionsTable extends TableComponent
+class MasterAgentTransactionsTable extends TableComponent
 {
     use HtmlComponents;
     /**
@@ -50,7 +50,6 @@ class TransactionsTable extends TableComponent
      */
     public function query(): Builder
     {
-        $user = auth()->user();
         $query = Transaction::query();
         $query->whereNull('meta');
 
@@ -61,11 +60,6 @@ class TransactionsTable extends TableComponent
             $query->where('confirmed', false);
         }
 
-        if ($user->hasRole('Master Agent')) {
-            $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) use ($user) {
-                $query->where('referred_by', $user->id);
-            });
-        }
 
         return $query;
     }
@@ -75,7 +69,6 @@ class TransactionsTable extends TableComponent
      */
     public function columns(): array
     {
-        $user = auth()->user();
         $columns = [
             Column::make(__('Transaction ID'), 'uuid')
                 ->searchable()
@@ -126,7 +119,7 @@ class TransactionsTable extends TableComponent
             array_shift($columns);
             array_unshift(
                 $columns,
-                Column::make(__('User'))
+                Column::make(__('BettingRound'))
                     ->format(function (Transaction $model) {
                         return $this->html($model->payable->name);
                     })

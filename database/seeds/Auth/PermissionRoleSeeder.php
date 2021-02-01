@@ -288,6 +288,9 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.players.info',
             'admin.access.players.wallet',
             'admin.access.wallets.manage',
+            'admin.access.master-agents.wallet',
+            'admin.access.master-agents.create',
+            'admin.access.master-agents.transactions',
         ]);
     }
 

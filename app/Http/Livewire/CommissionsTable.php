@@ -51,6 +51,10 @@ class CommissionsTable extends TableComponent
     {
         $query = Transaction::query();
 
+        if (auth()->user()->hasRole('Master Agent')) {
+            return $this->model->transactions()->whereHas('wallet', fn ($query) => $query->where('slug', 'income-wallet'))->getQuery();
+        }
+
         if ($this->model) {
             return $this->model->transactions()->getQuery();
         }
@@ -72,7 +76,7 @@ class CommissionsTable extends TableComponent
                 }),
             Column::make(__('Betting Round ID'), )
                 ->format(function (Transaction $model) {
-                    if(!isset($model->meta['betting_round_id'])) {
+                    if (! isset($model->meta['betting_round_id'])) {
                         return "N/A";
                     }
                     $bettingRound = BettingRound::find($model->meta['betting_round_id']);

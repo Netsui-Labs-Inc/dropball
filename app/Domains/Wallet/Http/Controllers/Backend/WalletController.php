@@ -3,7 +3,10 @@
 
 namespace App\Domains\Wallet\Http\Controllers\Backend;
 
+use App\Domains\Auth\Models\User;
+use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
+use Illuminate\Http\Request;
 
 class WalletController extends \App\Http\Controllers\Controller
 {
@@ -22,8 +25,40 @@ class WalletController extends \App\Http\Controllers\Controller
     public function confirm(Transaction $transaction)
     {
         $user = $transaction->payable;
-        $user->confirm($transaction);
+        if($user->hasRole('Master Agent')) {
+            $user->getWallet('income-wallet')->confirm($transaction);
+        } else {
+            $user->confirm($transaction);
+        }
 
         return redirect()->back()->withFlashSuccess("Request confirmed");
+    }
+
+
+    public function myWallet(Request $request)
+    {
+        $user = $request->user();
+        if (! $user->hasWallet('income-wallet')) {
+            $user = $user->createWallet([
+               'name' => 'Income Wallet',
+               'slug' => 'income-wallet',
+            ]);
+        }
+        return view('backend.wallet.my-wallet')
+            ->with('user', $user);
+    }
+
+    public function withdraw(WithdrawalRequest $request)
+    {
+        /** @var User $user */
+        $user = $request->user()->getWallet('income-wallet');
+
+        try {
+            $user->withdrawFloat($request->get('amount'), null, false);
+
+            return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balance));
+        }
     }
 }
