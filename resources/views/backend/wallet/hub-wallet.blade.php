@@ -32,14 +32,14 @@
                 <div class="tab-pane fade show active" id="credit-wallet" role="tabpanel" aria-labelledby="credit-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :wallet="'default'" />
+                            <livewire:transactions-table :model="$hub" :wallet="'default'" />
                         </x-slot>
                     </x-backend.card>
                 </div>
                 <div class="tab-pane fade show" id="income-wallet" role="tabpanel" aria-labelledby="income-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :wallet="'income-wallet'" />
+                            <livewire:transactions-table :model="$hub" :wallet="'income-wallet'" />
                         </x-slot>
                     </x-backend.card>
                 </div>
@@ -56,7 +56,7 @@
         <div>
             <p class="pb-2 text-center">
                 Current Income Wallet Balance <br>
-                <span class="lead">{{number_format(auth()->user()->getWallet('income-wallet')->balanceFloat)}}</span>
+                <span class="lead">{{number_format($hubWallet->balanceFloat)}}</span>
             </p>
             <div class="row">
                 <label for="amount" class="col col-form-label">@lang('Amount')</label>

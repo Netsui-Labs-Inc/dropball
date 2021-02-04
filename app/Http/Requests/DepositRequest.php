@@ -25,6 +25,7 @@ class DepositRequest extends FormRequest
     {
         return [
             'amount' => 'required',
+            'password' => 'required',
         ];
     }
 }

@@ -4,6 +4,7 @@
 namespace App\Domains\Wallet\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Http\Request;
@@ -25,7 +26,11 @@ class WalletController extends \App\Http\Controllers\Controller
     public function confirm(Transaction $transaction)
     {
         $user = $transaction->payable;
-        if($user->hasRole('Master Agent')) {
+        if ($user->hasRole('Master Agent')) {
+            /** @var User $hubAdmin */
+            $hubAdmin = auth()->user();
+            $hub = Hub::where('admin_id', $hubAdmin->id)->first();
+            $hub->withdrawFloat($transaction->amountFloat);
             $user->getWallet('income-wallet')->confirm($transaction);
         } else {
             $user->confirm($transaction);
@@ -44,8 +49,21 @@ class WalletController extends \App\Http\Controllers\Controller
                'slug' => 'income-wallet',
             ]);
         }
-        return view('backend.wallet.my-wallet')
-            ->with('user', $user);
+
+        if ($request->user()->hasRole('Virtual Hub')) {
+            $hub = Hub::where('admin_id',  $request->user()->id)->first();
+            if(!$hub->hasWallet('income-wallet')) {
+                $hubWallet = $hub->createWallet([
+                    'name' => 'Income Wallet',
+                    'slug' => 'income-wallet',
+                ]);
+            } else {
+                $hubWallet = $hub->getWallet('income-wallet');
+            }
+            return view('backend.wallet.hub-wallet')->with('hub', $hub)->with('hubWallet', $hubWallet);
+        } elseif ($request->user()->hasRole('Master Agent')) {
+            return view('backend.wallet.master-agent-wallet')->with('user',  $request->user());
+        }
     }
 
     public function withdraw(WithdrawalRequest $request)

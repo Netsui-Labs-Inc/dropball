@@ -6,6 +6,7 @@ namespace App\Domains\Player\Http\Controllers\Backend;
 use App\Domains\Auth\Models\User;
 use App\Http\Requests\DepositRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class PlayerController extends \App\Http\Controllers\Controller
 {
@@ -34,6 +35,9 @@ class PlayerController extends \App\Http\Controllers\Controller
     public function deposit(User $player, DepositRequest $request)
     {
         $user = $request->user();
+        if (! Hash::check($request->get('password'), $user->password)) {
+            return redirect()->back()->withErrors("Invalid Password");
+        }
 
         try {
             if ($user->hasRole('Master Agent')) {

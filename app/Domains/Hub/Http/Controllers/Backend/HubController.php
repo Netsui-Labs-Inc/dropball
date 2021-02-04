@@ -4,11 +4,11 @@
 namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
-use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class HubController extends Controller
 {
@@ -30,12 +30,14 @@ class HubController extends Controller
     public function deposit(User $hub, DepositRequest $request)
     {
         $user = $request->user();
+        if (! Hash::check($request->get('password'), $user->password)) {
+            return redirect()->back()->withErrors("Invalid Password");
+        }
 
         try {
             if ($user->hasRole('Satoshi')) {
-                $user->transferFloat($hub, $request->get('amount'));
-            }
-            if ($user->hasRole('Administrator')) {
+                $hub->depositFloat($request->get('amount'));
+            } elseif ($user->hasRole('Administrator')) {
                 $hub->depositFloat($request->get('amount'));
             }
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class MasterAgentController extends Controller
 {
@@ -30,6 +31,11 @@ class MasterAgentController extends Controller
     public function deposit(User $masterAgent, DepositRequest $request)
     {
         $user = $request->user();
+
+        if (! Hash::check($request->get('password'), $user->password)) {
+            return redirect()->back()->withErrors("Invalid Password");
+        }
+
         $hub = Hub::where('admin_id', $user->id)->first();
 
         try {

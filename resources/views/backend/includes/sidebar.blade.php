@@ -41,7 +41,8 @@
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />
         </li>
-        @role('Master Agent')
+        @endcan
+        @can('admin.access.my-wallet')
         <li class="c-sidebar-nav-title">@lang('My Wallet')</li>
         <li class="c-sidebar-nav-item">
             <x-utils.link
@@ -51,7 +52,6 @@
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Wallet Transactions')" />
         </li>
-        @endrole
         @endcan
         @can('admin.access.master-agents.manage')
             <li class="c-sidebar-nav-title">@lang('Master Agents')</li>

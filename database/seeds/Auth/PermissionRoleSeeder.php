@@ -31,6 +31,7 @@ class PermissionRoleSeeder extends Seeder
             'name' => 'Player',
         ]);
 
+
         // Non Grouped Permissions
         //
 
@@ -264,6 +265,12 @@ class PermissionRoleSeeder extends Seeder
                 'description' => 'Manage Virtual Hub Wallet',
                 'sort' => 23,
             ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.my-wallet',
+                'description' => 'Manage My Wallet',
+                'sort' => 24,
+            ]),
         ]);
 
         // Assign Permissions to other Roles
@@ -272,8 +279,17 @@ class PermissionRoleSeeder extends Seeder
         $this->betAdmin();
         $this->virtualHub();
         $this->satoshi();
+        $this->operator();
 
         $this->enableForeignKeys();
+    }
+
+    public function operator()
+    {
+        Role::create([
+            'type' => User::TYPE_ADMIN,
+            'name' => 'Operator',
+        ]);
     }
 
     public function masterAgent()
@@ -291,6 +307,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.master-agents.wallet',
             'admin.access.master-agents.create',
             'admin.access.master-agents.transactions',
+            'admin.access.my-wallet'
         ]);
     }
 
@@ -324,6 +341,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.master-agents.wallet',
             'admin.access.master-agents.create',
             'admin.access.master-agents.transactions',
+            'admin.access.my-wallet',
         ]);
     }
 

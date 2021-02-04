@@ -144,3 +144,7 @@ $factory->afterCreatingState(User::class,'player',function($user) {
 $factory->afterCreatingState(User::class,'satoshi',function($user) {
     $user->assignRole('Satoshi');
 });
+
+$factory->afterCreatingState(User::class,'operator',function($user) {
+    $user->assignRole('Operator');
+});

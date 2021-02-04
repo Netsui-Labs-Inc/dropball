@@ -24,6 +24,7 @@ class UserRoleSeeder extends Seeder
         $player = factory(User::class)->state('player')->create(['email' => 'dropball@player.com', 'referred_by' => $masterAgent->id]);
         $virtualHub = factory(User::class)->state('virtual-hub')->create(['email' => 'admin@hub.com']);
         $satoshi = factory(User::class)->state('satoshi')->create(['email' => 'satoshi@nakamoto.com']);
+        $operator = factory(User::class)->state('operator')->create(['email' => 'operator@admin.com']);
 
         $this->enableForeignKeys();
     }

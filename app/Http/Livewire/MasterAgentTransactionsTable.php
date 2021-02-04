@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\BettingRound\Models\BettingRound;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
@@ -28,7 +29,7 @@ class MasterAgentTransactionsTable extends TableComponent
     public $confirmed;
     public $action;
     public $withUser;
-
+    public $wallet;
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -36,13 +37,14 @@ class MasterAgentTransactionsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false): void
+    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = 'default'): void
     {
         $this->status = $status;
         $this->user = $user;
         $this->confirmed = $confirmed;
         $this->action = $action;
         $this->withUser = $withUser;
+        $this->wallet = $wallet;
     }
 
     /**
@@ -51,15 +53,14 @@ class MasterAgentTransactionsTable extends TableComponent
     public function query(): Builder
     {
         $query = Transaction::query();
-        $query->whereNull('meta');
 
         if ($this->user) {
-            $query = $this->user->transactions()->whereNull('meta')->getQuery();
+            $query = $this->user->transactions()->getQuery();
         }
         if (! $this->confirmed) {
             $query->where('confirmed', false);
         }
-
+        $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
 
         return $query;
     }
@@ -75,12 +76,6 @@ class MasterAgentTransactionsTable extends TableComponent
                 ->sortable()
                 ->format(function (Transaction $model) {
                     return $this->html("#".$model->id);
-                }),
-            Column::make(__('Wallet'), 'wallet')
-                ->format(function (Transaction $model) {
-                    $class = $model->wallet->slug == 'default' ? 'badge-success' : 'badge-info';
-
-                    return $this->html("<span class='badge $class'> {$model->wallet->name}</span>");
                 }),
             Column::make(__('Type'), 'type')
                 ->sortable()
@@ -133,6 +128,25 @@ class MasterAgentTransactionsTable extends TableComponent
                         return $this->html("#".$model->id);
                     })
             );
+        }
+        if ($this->wallet === 'income-wallet') {
+            $transactionIdCol = array_shift($columns);
+            array_unshift(
+                $columns,
+                Column::make(__('Betting Round'))
+                    ->format(function (Transaction $model) {
+                        if (! isset($model->meta['betting_round_id'])) {
+                            return "N/A";
+                        }
+                        $bettingRound = BettingRound::find($model->meta['betting_round_id']);
+
+                        $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
+
+                        return $this->html("<a href='$linkToBettingRound'> #".$model->meta['betting_round_id']."</a>");
+                    }),
+            );
+            array_unshift($columns, $transactionIdCol);
+
         }
 
         return $columns;

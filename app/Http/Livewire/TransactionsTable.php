@@ -28,6 +28,8 @@ class TransactionsTable extends TableComponent
     public $confirmed;
     public $action;
     public $withUser;
+    public $wallet;
+    public $model;
 
 
     protected $options = [
@@ -36,13 +38,15 @@ class TransactionsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false): void
+    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $model = false, $wallet = 'default'): void
     {
         $this->status = $status;
         $this->user = $user;
         $this->confirmed = $confirmed;
         $this->action = $action;
         $this->withUser = $withUser;
+        $this->model = $model;
+        $this->wallet = $wallet;
     }
 
     /**
@@ -59,6 +63,9 @@ class TransactionsTable extends TableComponent
         }
         if (! $this->confirmed) {
             $query->where('confirmed', false);
+        }
+        if($this->model) {
+            $query = $this->model->transactions()->whereHas('wallet',  fn ($query) => $query->where('slug', $this->wallet))->getQuery();
         }
 
         if ($user->hasRole('Master Agent')) {

@@ -30,6 +30,8 @@ class DashboardController extends Controller
             return $this->betAdmin();
         } elseif ($user->hasRole('Virtual Hub')) {
             return $this->virtualHub();
+        } elseif ($user->hasRole('Operator')) {
+            return $this->operator();
         }
     }
 
@@ -78,9 +80,17 @@ class DashboardController extends Controller
         $user = auth()->user();
         $hub = Hub::where('admin_id', $user->id)->first();
         $masterAgents = User::role('Master Agent')->onlyActive()->count();
+
         return view('backend.dashboard.virtual-hub')
             ->with('masterAgents', $masterAgents)
             ->with('hub', $hub);
+    }
 
+    public function operator()
+    {
+        $operator = Company::where('name', 'Operator')->first();
+
+        return view('backend.dashboard.operator')
+            ->with('operator', $operator);
     }
 }

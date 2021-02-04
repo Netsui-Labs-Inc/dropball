@@ -46,6 +46,14 @@
                     <input type="number" class="form-control" name="amount" min="1" step="1">
                 </div>
             </div>
+            <div class="row">
+                <label for="password" class="col col-form-label">@lang('Enter Password')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <input type="password" class="form-control" name="password" >
+                </div>
+            </div>
         </div>
     </x-utils.modal>
 @endsection
