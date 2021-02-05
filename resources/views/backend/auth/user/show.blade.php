@@ -81,6 +81,16 @@
                     <th>@lang('Roles')</th>
                     <td>{!! $user->roles_label !!}</td>
                 </tr>
+                @if($user->masterAgent)
+                    <tr>
+                        <th>@lang('Master Agent')</th>
+                        <td>{{ $user->masterAgent->name }}</td>
+                    </tr>
+                @endif
+                <tr>
+                    <th>@lang('Balance')</th>
+                    <td>{!! $user->balanceFloat !!}</td>
+                </tr>
 
                 <tr>
                     <th>@lang('Additional Permissions')</th>

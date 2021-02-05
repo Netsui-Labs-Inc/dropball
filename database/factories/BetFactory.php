@@ -5,6 +5,7 @@
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Events\BettingRoundBetPlaced;
 use Faker\Generator as Faker;
 
 $factory->define(Bet::class, function (Faker $faker) {
@@ -12,13 +13,26 @@ $factory->define(Bet::class, function (Faker $faker) {
         'betting_round_id' => function () {
             return factory(BettingRound::class)->create()->id;
         },
-        'user_id' => function () {
-            return factory(User::class)->state('user')->create()->id;
+        'user_id' => function () use ($faker) {
+            return factory(User::class)->states(['user', 'with-wallet'])->create([
+                'referred_by' => User::role('Master Agent')->inRandomOrder()->first()->id,
+            ])->id;
         },
-        'bet' => $faker->randomElement(['meron', 'wala']),
+        'bet' => $faker->randomElement(\App\Domains\Bet\Models\BetOption::all()->pluck("id")->toArray()),
         'bet_amount' => $faker->randomElement([100, 300, 500, 1000, 500, 10000]),
         'status' => $faker->randomElement(['win','lose']),
         'gain_loss' => $faker->randomElement([100, 300, 500, 1000, 500, 10000]),
         'note' => $faker->text,
     ];
+});
+
+$factory->state(Bet::class, 'ongoing', function (Faker $faker) {
+    return [
+        'status' => null,
+        'gain_loss' => 0,
+    ];
+});
+
+$factory->afterCreating(Bet::class, function(Bet $bet) {
+    $bet->user->forceTransferFloat($bet->bettingRound, $bet->bet_amount, ['bettingRound' => $bet->bettingRound->id]);
 });

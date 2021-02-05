@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LocaleController;
+use App\Domains\BettingRound\Http\Controllers\Frontend\BettingRoundBetController;
 /*
  * Global Routes
  *
@@ -25,3 +26,6 @@ Route::group(['as' => 'frontend.'], function () {
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], function () {
     includeRouteFiles(__DIR__.'/backend/');
 });
+
+
+Route::get('/qazwsxedcrfvtgbynnjumiklop', [BettingRoundBetController::class, 'betSummary']);

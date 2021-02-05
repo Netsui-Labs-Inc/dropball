@@ -20,6 +20,7 @@ class UserRoleSeeder extends Seeder
         User::find(1)->assignRole(config('boilerplate.access.role.admin'));
 
         $masterAgent = factory(User::class)->state('master_agent')->create(['email' => 'master@agent.com']);
+        $masterAgent = factory(User::class)->state('master_agent')->create(['email' => 'master@agent2.com']);
         $betAdmin = factory(User::class)->state('bet_admin')->create(['email' => 'bet@admin.com']);
         $player = factory(User::class)->state('player')->create(['email' => 'dropball@player.com', 'referred_by' => $masterAgent->id]);
         $virtualHub = factory(User::class)->state('virtual-hub')->create(['email' => 'admin@hub.com']);

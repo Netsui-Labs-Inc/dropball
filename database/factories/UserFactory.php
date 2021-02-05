@@ -115,11 +115,21 @@ $factory->state(User::class, 'password_expired', function () {
     ];
 });
 
+$factory->state(User::class, 'with-wallet', function () {
+    return [
+    ];
+});
+
 $factory->state(User::class, 'deleted', function () {
     return [
         'deleted_at' => now(),
     ];
 });
+
+$factory->afterCreatingState(User::class,'with-wallet',function(User $user) {
+    $user->depositFloat(5000);
+});
+
 
 $factory->afterCreatingState(User::class,'admin',function($user) {
     $user->assignRole('Administrator');
@@ -147,4 +157,8 @@ $factory->afterCreatingState(User::class,'satoshi',function($user) {
 
 $factory->afterCreatingState(User::class,'operator',function($user) {
     $user->assignRole('Operator');
+});
+
+$factory->afterCreatingState(User::class, 'with-agent', function($user) {
+
 });

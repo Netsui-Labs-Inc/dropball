@@ -77,7 +77,7 @@ class BetsTable extends TableComponent
                 ->format(function (Bet $model) {
                     return $this->html('PHP '.number_format($model->bet_amount, 0));
                 }),
-            Column::make(__('BettingRound'), 'user_id')
+            Column::make(__('Player'), 'user_id')
                 ->searchable()
                 ->sortable()
                 ->hideIf(! is_null($this->user->id ?? null))
