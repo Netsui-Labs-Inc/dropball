@@ -231,6 +231,12 @@ class PermissionRoleSeeder extends Seeder
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.hubs.transactions',
+                'description' => 'Virtual Hubs Transactions',
+                'sort' => 23,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.hubs.list',
                 'description' => 'Virtual Hubs List',
                 'sort' => 23,
@@ -296,6 +302,14 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.betting-events.show',
             'admin.access.betting-rounds.list',
             'admin.access.betting-rounds.edit',
+            'admin.access.virtual.hub.wallet',
+            'admin.access.virtual.hub.wallet',
+            'admin.access.hubs.manage',
+            'admin.access.hubs.list',
+            'admin.access.hubs.update',
+            'admin.access.hubs.create',
+            'admin.access.hubs.delete',
+            'admin.access.hubs.wallet',
         ]);
     }
 
@@ -362,6 +376,7 @@ class PermissionRoleSeeder extends Seeder
 
         $role->givePermissionTo([
             'admin.access.virtual.hub.wallet',
+            'admin.access.hubs.transactions',
             'admin.access.hubs.manage',
             'admin.access.hubs.list',
             'admin.access.hubs.update',
