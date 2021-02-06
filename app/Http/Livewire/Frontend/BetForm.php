@@ -51,9 +51,10 @@ class BetForm extends Component
         $this->userCanBet = $this->canBetToBettingRound();
         $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
         $this->updateTotal();
-
-        if ($this->userBets->isNotEmpty()) {
-            $this->amount = $this->userBets->sum('bet_amount');
+        if($this->bettingRound) {
+            if ($this->userBets->isNotEmpty()) {
+                $this->amount = $this->userBets->sum('bet_amount');
+            }
         }
         $this->balance = $this->user->balanceFloat;
         $this->setPayouts();
@@ -188,6 +189,9 @@ class BetForm extends Component
 
     public function setPayouts($amountPreview = 0)
     {
+        if(!$this->bettingRound) {
+            return;
+        }
         if ($this->userBets->isNotEmpty()) {
             $this->totalBetAmount = $this->userBets->sum('bet_amount');
             return;

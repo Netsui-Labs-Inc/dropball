@@ -36,22 +36,24 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.wallet.index')"
-                :active="activeClass(Route::is('admin.wallet.index'), 'c-active')"
+                :href="route('admin.players.transactions')"
+                :active="activeClass(Route::is('admin.players.transactions'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />
         </li>
         @endcan
         @can('admin.access.my-wallet')
-        <li class="c-sidebar-nav-title">@lang('My Wallet')</li>
-        <li class="c-sidebar-nav-item">
-            <x-utils.link
-                class="c-sidebar-nav-link"
-                :href="route('admin.my.wallet.transactions')"
-                :active="activeClass(Route::is('admin.my.wallet.transactions'), 'c-active')"
-                icon="c-sidebar-nav-icon cil-wallet"
-                :text="__('Wallet Transactions')" />
-        </li>
+        @if(!$logged_in_user->hasRole('Administrator'))
+            <li class="c-sidebar-nav-title">@lang('My Wallet')</li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.my.wallet.transactions')"
+                    :active="activeClass(Route::is('admin.my.wallet.transactions'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-wallet"
+                    :text="__('Wallet Transactions')" />
+            </li>
+        @endif
         @endcan
         @can('admin.access.master-agents.manage')
             <li class="c-sidebar-nav-title">@lang('Master Agents')</li>

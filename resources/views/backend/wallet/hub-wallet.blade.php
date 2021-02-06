@@ -32,14 +32,14 @@
                 <div class="tab-pane fade show active" id="credit-wallet" role="tabpanel" aria-labelledby="credit-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:transactions-table :model="$hub" :wallet="'default'" />
+                            <livewire:transactions-table :model="$hub" :wallet="'default'" :action="true" />
                         </x-slot>
                     </x-backend.card>
                 </div>
                 <div class="tab-pane fade show" id="income-wallet" role="tabpanel" aria-labelledby="income-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:transactions-table :model="$hub" :wallet="'income-wallet'" />
+                            <livewire:transactions-table :model="$hub" :wallet="'income-wallet'" :action="true" />
                         </x-slot>
                     </x-backend.card>
                 </div>
@@ -66,6 +66,26 @@
                     <input type="number" class="form-control" name="amount" min="1" step="1">
                 </div>
             </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Channel')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <select name="channel" class="form-control">
+                        <option value="gcash">GCash</option>
+                        <option value="gcash">Paymaya</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Details')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <textarea class="form-control" name="details"></textarea>
+                </div>
+            </div>
+
             <div class="row">
                 <label for="password" class="col col-form-label">@lang('Enter Password')</label>
             </div>

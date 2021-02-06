@@ -7,7 +7,7 @@
         <x-slot name="header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="h3 text-white mb-0">
+                    <h3 class="h3 mb-0">
                         @lang('Master Agents')
                     </h3>
                 </div>

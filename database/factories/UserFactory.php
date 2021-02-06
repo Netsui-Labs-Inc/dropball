@@ -49,6 +49,13 @@ $factory->state(User::class, 'active', function () {
     ];
 });
 
+$factory->state(User::class, 'player', function () {
+    return [
+        'type' => User::TYPE_USER,
+        'active' => true,
+    ];
+});
+
 $factory->state(User::class, 'admin', function () {
     return [
         'type' => User::TYPE_ADMIN,
@@ -60,6 +67,7 @@ $factory->state(User::class, 'master_agent', function () {
     return [
         'type' => User::TYPE_ADMIN,
         'active' => true,
+        'hub_id' => \App\Domains\Hub\Models\Hub::first()->id
     ];
 });
 
@@ -87,6 +95,12 @@ $factory->state(User::class, 'virtual-hub', function () {
 $factory->state(User::class, 'player', function () {
     return [
         'type' => User::TYPE_USER,
+        'active' => true,
+    ];
+});
+$factory->state(User::class, 'operator', function () {
+    return [
+        'type' => User::TYPE_ADMIN,
         'active' => true,
     ];
 });
@@ -133,6 +147,10 @@ $factory->afterCreatingState(User::class,'with-wallet',function(User $user) {
 
 $factory->afterCreatingState(User::class,'admin',function($user) {
     $user->assignRole('Administrator');
+});
+
+$factory->afterCreatingState(User::class,'player',function($user) {
+    $user->assignRole('Player');
 });
 
 $factory->afterCreatingState(User::class,'master_agent',function($user) {

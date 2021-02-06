@@ -23,6 +23,7 @@ Route::get('dashboard', [DashboardController::class, 'index'])
 
 // Wallet
 Route::get('wallet-transactions', [WalletController::class, 'index'])->name('wallet.index');
+Route::get('wallet-transactions/{transaction}', [WalletController::class, 'show'])->name('wallet.show');
 Route::post('wallet-transactions/{transaction}', [WalletController::class, 'confirm'])->name('wallet.confirm');
 
 /** Betting Events */
@@ -153,6 +154,14 @@ Route::get('players/{player}/wallet', [PlayerController::class, 'cashBalance'])
     ->breadcrumbs(function (Trail $trail, $player) {
         $trail->parent('admin.players.index');
         $trail->push("Player Wallet", route('admin.players.wallet', $player));
+    });
+
+Route::get('players-transactions', [PlayerController::class, 'transactions'])
+    ->name('players.transactions')
+    ->middleware('can:admin.access.players.wallet')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.players.index');
+        $trail->push("Player Transactions", route('admin.players.transactions'));
     });
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');

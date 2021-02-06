@@ -109,7 +109,7 @@ class EventBettingRound extends Component
             $this->bettingRound = null;
             $this->emit('swal:alert', [
                 'icon' => 'info',
-                'title' => "<span>No BettingRound Available</span>",
+                'title' => "<span>No Betting Round Available</span>",
             ]);
 
             return;

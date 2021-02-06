@@ -3,14 +3,13 @@
 namespace App\Http\Livewire;
 
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Domains\Hub\Models\Hub;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class MasterAgentTransactionsTable extends TableComponent
+class PlayersTransactionsTable extends TableComponent
 {
     use HtmlComponents;
     /**
@@ -38,7 +37,7 @@ class MasterAgentTransactionsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = null): void
+    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = 'default'): void
     {
         $this->status = $status;
         $this->user = $user;
@@ -54,24 +53,17 @@ class MasterAgentTransactionsTable extends TableComponent
     public function query(): Builder
     {
         $query = Transaction::query();
-        $user = auth()->user();
-        $query = $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) use ($user) {
-            if ($user->hasRole('Virtual Hub')) {
-                $hub = Hub::where('admin_id', $user->id)->first();
-                $query->where('hub_id', $hub->id);
-            }
-            $query->whereHas('roles', function ($query) {
-                return $query->where('name', 'Master Agent');
-            });
-        });
-        if($this->wallet) {
-            $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
-        }
 
         if (! $this->confirmed) {
             $query->where('confirmed', false);
         }
 
+        $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
+        $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
+            $query->whereHas('roles', function ($query) {
+                return $query->where('name', 'Player');
+            });
+        });
 
         return $query;
     }
@@ -88,7 +80,7 @@ class MasterAgentTransactionsTable extends TableComponent
                 ->format(function (Transaction $model) {
                     return $this->html("#".$model->id);
                 }),
-            Column::make(__('Agent'), 'payable')
+            Column::make(__('Player'), 'payable')
                 ->format(function (Transaction $model) {
                     return $this->html($model->payable->name);
                 }),
@@ -125,26 +117,7 @@ class MasterAgentTransactionsTable extends TableComponent
                     return view('backend.wallet.action', ['transaction' => $model]);
                 });
         }
-        if ($this->withUser) {
-            array_shift($columns);
-            array_unshift(
-                $columns,
-                Column::make(__('BettingRound'))
-                    ->format(function (Transaction $model) {
-                        return $this->html($model->payable->name);
-                    })
-            );
-            array_unshift(
-                $columns,
-                Column::make(__('Transaction ID'), 'uuid')
-                    ->searchable()
-                    ->sortable()
-                    ->format(function (Transaction $model) {
-                        return $this->html("#".$model->id);
-                    })
-            );
-        }
-        if ($this->wallet === 'income-wallet' && $this->confirmed) {
+        if ($this->wallet === 'income-wallet') {
             $transactionIdCol = array_shift($columns);
             array_unshift(
                 $columns,

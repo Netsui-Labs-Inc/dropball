@@ -1,6 +1,7 @@
 <?php
 
 use App\Domains\Auth\Models\User;
+use App\Models\Company;
 use Illuminate\Database\Seeder;
 
 /**
@@ -18,6 +19,10 @@ class UserRoleSeeder extends Seeder
         $this->disableForeignKeys();
 
         User::find(1)->assignRole(config('boilerplate.access.role.admin'));
+        $hub = factory(\App\Domains\Hub\Models\Hub::class)->create();
+        $hub->depositFloat(100000);
+
+        $operator = Company::firstOrCreate(['name' => 'Operator']);
 
         $masterAgent = factory(User::class)->state('master_agent')->create(['email' => 'master@agent.com']);
         $masterAgent = factory(User::class)->state('master_agent')->create(['email' => 'master@agent2.com']);

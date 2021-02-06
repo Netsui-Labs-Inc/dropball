@@ -22,7 +22,7 @@
                         </div>
                     </x-slot>
                     <x-slot name="body">
-                        <livewire:transactions-table :user="$user" />
+                        <livewire:transactions-table :user="$user" :excludeBetTransactions="true" />
                     </x-slot>
                 </x-frontend.card>
             </div>
@@ -36,17 +36,28 @@
         submitBtn="Send Request"
     >
         <div>
-            <p class="pb-2 text-center">
+            <p class="text-center">
                 Current Balance <br>
                 <span class="lead">{{number_format(auth()->user()->balanceFloat)}}</span>
             </p>
-            <div class="row">
-                <label for="amount" class="col col-form-label">@lang('Amount')</label>
+            <label for="amount" class="col-form-label">@lang('Amount')</label>
+            <div class="form-group mb-0">
+                <input type="number" class="form-control" name="amount" min="1" step="1">
             </div>
-            <div class="form-group row">
-                <div class="col">
-                    <input type="number" class="form-control" name="amount" min="1" step="1">
-                </div>
+                <label for="amount" class=" col-form-label">@lang('Channel')</label>
+            <div class="form-group mb-0">
+                <select name="channel" class="form-control">
+                    <option value="gcash">GCash</option>
+                    <option value="gcash">Paymaya</option>
+                </select>
+            </div>
+                <label for="amount" class="col-form-label">@lang('Details')</label>
+            <div class="form-group mb-0">
+                    <textarea class="form-control" name="details"></textarea>
+            </div>
+                <label for="password" class="col-form-label">@lang('Enter Password')</label>
+            <div class="form-group mb-0">
+                    <input type="password" class="form-control" name="password" >
             </div>
         </div>
     </x-utils.modal>

@@ -30,6 +30,7 @@ class TransactionsTable extends TableComponent
     public $withUser;
     public $wallet;
     public $model;
+    public $excludeBetTransactions;
 
 
     protected $options = [
@@ -38,7 +39,7 @@ class TransactionsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $model = false, $wallet = 'default'): void
+    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $model = false, $wallet = null, $excludeBetTransactions = false): void
     {
         $this->status = $status;
         $this->user = $user;
@@ -47,6 +48,7 @@ class TransactionsTable extends TableComponent
         $this->withUser = $withUser;
         $this->model = $model;
         $this->wallet = $wallet;
+        $this->excludeBetTransactions = $excludeBetTransactions;
     }
 
     /**
@@ -56,23 +58,24 @@ class TransactionsTable extends TableComponent
     {
         $user = auth()->user();
         $query = Transaction::query();
-        $query->whereNull('meta');
 
         if ($this->user) {
-            $query = $this->user->transactions()->whereNull('meta')->getQuery();
+            $query = $this->user->transactions()->getQuery();
         }
         if (! $this->confirmed) {
             $query->where('confirmed', false);
         }
-        if($this->model) {
-            $query = $this->model->transactions()->whereHas('wallet',  fn ($query) => $query->where('slug', $this->wallet))->getQuery();
+        if ($this->model) {
+            $query = $this->model->transactions()->getQuery();
+        }
+        if ($this->wallet) {
+            $query->whereHas('wallet',  fn ($query) => $query->where('slug', $this->wallet));
         }
 
-        if ($user->hasRole('Master Agent')) {
-            $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) use ($user) {
-                $query->where('referred_by', $user->id);
-            });
+        if ($this->excludeBetTransactions) {
+            $query->whereNull('meta->bettingRound');
         }
+
 
         return $query;
     }

@@ -10,7 +10,7 @@ use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class MasterAgentTransactionsTable extends TableComponent
+class HubsTransactionsTable extends TableComponent
 {
     use HtmlComponents;
     /**
@@ -38,7 +38,7 @@ class MasterAgentTransactionsTable extends TableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = null): void
+    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = 'default'): void
     {
         $this->status = $status;
         $this->user = $user;
@@ -54,24 +54,11 @@ class MasterAgentTransactionsTable extends TableComponent
     public function query(): Builder
     {
         $query = Transaction::query();
-        $user = auth()->user();
-        $query = $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) use ($user) {
-            if ($user->hasRole('Virtual Hub')) {
-                $hub = Hub::where('admin_id', $user->id)->first();
-                $query->where('hub_id', $hub->id);
-            }
-            $query->whereHas('roles', function ($query) {
-                return $query->where('name', 'Master Agent');
-            });
-        });
-        if($this->wallet) {
-            $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
-        }
+        $query->where('payable_type', Hub::class);
 
         if (! $this->confirmed) {
             $query->where('confirmed', false);
         }
-
 
         return $query;
     }
@@ -88,7 +75,9 @@ class MasterAgentTransactionsTable extends TableComponent
                 ->format(function (Transaction $model) {
                     return $this->html("#".$model->id);
                 }),
-            Column::make(__('Agent'), 'payable')
+            Column::make(__('Hub'), 'hub')
+                ->searchable()
+                ->sortable()
                 ->format(function (Transaction $model) {
                     return $this->html($model->payable->name);
                 }),
@@ -124,43 +113,6 @@ class MasterAgentTransactionsTable extends TableComponent
                 ->format(function (Transaction $model) {
                     return view('backend.wallet.action', ['transaction' => $model]);
                 });
-        }
-        if ($this->withUser) {
-            array_shift($columns);
-            array_unshift(
-                $columns,
-                Column::make(__('BettingRound'))
-                    ->format(function (Transaction $model) {
-                        return $this->html($model->payable->name);
-                    })
-            );
-            array_unshift(
-                $columns,
-                Column::make(__('Transaction ID'), 'uuid')
-                    ->searchable()
-                    ->sortable()
-                    ->format(function (Transaction $model) {
-                        return $this->html("#".$model->id);
-                    })
-            );
-        }
-        if ($this->wallet === 'income-wallet' && $this->confirmed) {
-            $transactionIdCol = array_shift($columns);
-            array_unshift(
-                $columns,
-                Column::make(__('Betting Round'))
-                    ->format(function (Transaction $model) {
-                        if (! isset($model->meta['betting_round_id'])) {
-                            return "N/A";
-                        }
-                        $bettingRound = BettingRound::find($model->meta['betting_round_id']);
-
-                        $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
-
-                        return $this->html("<a href='$linkToBettingRound'> #".$model->meta['betting_round_id']."</a>");
-                    }),
-            );
-            array_unshift($columns, $transactionIdCol);
         }
 
         return $columns;

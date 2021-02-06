@@ -1,3 +1,1 @@
-@if(!$transaction->confirmed)
-    <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-@endif
+<a href='{{route('admin.wallet.show',$transaction)}}' class='btn btn-sm btn-primary text-white'><i class='fa fa-eye'></i> View Transaction</a>

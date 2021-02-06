@@ -286,9 +286,16 @@ class PermissionRoleSeeder extends Seeder
 
     public function operator()
     {
-        Role::create([
+        $role = Role::create([
             'type' => User::TYPE_ADMIN,
             'name' => 'Operator',
+        ]);
+
+        $role->givePermissionTo([
+            'admin.access.betting-events.list',
+            'admin.access.betting-events.show',
+            'admin.access.betting-rounds.list',
+            'admin.access.betting-rounds.edit',
         ]);
     }
 
@@ -324,6 +331,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.betting-rounds.list',
             'admin.access.betting-rounds.edit',
             'admin.access.betting-rounds.moderate',
+            'admin.access.betting-rounds.bets'
         ]);
     }
 

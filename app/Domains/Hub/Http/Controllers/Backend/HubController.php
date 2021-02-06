@@ -4,6 +4,7 @@
 namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
 use Bavix\Wallet\Models\Transaction;
@@ -58,7 +59,9 @@ class HubController extends Controller
 
     public function transactions()
     {
-        $pendingTransactions = Transaction::query()->where("payable_type", User::class)->where('confirmed', false)->whereIn('payable_id', User::role('Master Agent')->get()->pluck('id'));
+        $pendingTransactions = Transaction::query()
+            ->where("payable_type", Hub::class)
+            ->where('confirmed', false);
 
         return view('backend.hub.transactions')->with('pendingTransactions', $pendingTransactions);
     }

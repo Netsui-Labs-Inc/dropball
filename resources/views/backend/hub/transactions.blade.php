@@ -30,14 +30,14 @@
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:transactions-table :with-user="true" />
+                    <livewire:hubs-transactions-table :with-user="true" :action="true" />
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:transactions-table :confirmed="false" :action="true" :with-user="true"/>
+                    <livewire:hubs-transactions-table :confirmed="false" :action="true" :with-user="true" />
                 </x-slot>
             </x-backend.card>
         </div>

@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 
-@section('title', __('Master Agent Wallet Management'))
+@section('title', __('View User'))
 
 @section('content')
     <nav>
@@ -30,14 +30,14 @@
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:master-agent-transactions-table :action="true" />
+                    <livewire:players-transactions-table :action="true"  />
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:master-agent-transactions-table :confirmed="false" :action="true" :wallet="'income-wallet'" />
+                    <livewire:players-transactions-table :confirmed="false" :action="true" />
                 </x-slot>
             </x-backend.card>
         </div>

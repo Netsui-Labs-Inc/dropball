@@ -88,7 +88,7 @@ class DashboardController extends Controller
 
     public function operator()
     {
-        $operator = Company::where('name', 'Operator')->first();
+        $operator = Company::firstOrCreate(['name' => 'Operator']);
 
         return view('backend.dashboard.operator')
             ->with('operator', $operator);

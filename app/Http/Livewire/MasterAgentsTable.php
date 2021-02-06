@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
@@ -44,9 +45,18 @@ class MasterAgentsTable extends TableComponent
      */
     public function query(): Builder
     {
+        $user = auth()->user();
+
         $query = User::whereHas('roles', function ($query) {
             return $query->where('name', 'Master Agent');
         });
+
+        if($user->hasRole('Virtual Hub')) {
+            $hub = Hub::where('admin_id', $user->id)->first();
+
+            $query->where('hub_id', $hub->id);
+        }
+
 
         if ($this->status === 'unverified') {
             return $query->where('email_verified_at', null);

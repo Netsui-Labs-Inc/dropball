@@ -32,7 +32,7 @@ $factory->state(BettingRound::class, 'ongoing-with-bets', function (Faker $faker
 });
 
 $factory->afterCreatingState(BettingRound::class, 'ongoing-with-bets', function (BettingRound $bettingRound, Faker $faker) {
-    factory(Bet::class, 50)->state('ongoing')->create(['betting_round_id' => $bettingRound->id]);
+    factory(Bet::class, 1000)->state('ongoing')->create(['betting_round_id' => $bettingRound->id]);
 
     return [];
 });

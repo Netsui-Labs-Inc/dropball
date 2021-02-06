@@ -14,14 +14,14 @@ $factory->define(Bet::class, function (Faker $faker) {
             return factory(BettingRound::class)->create()->id;
         },
         'user_id' => function () use ($faker) {
-            return factory(User::class)->states(['user', 'with-wallet'])->create([
+            return factory(User::class)->states(['player', 'with-wallet'])->create([
                 'referred_by' => User::role('Master Agent')->inRandomOrder()->first()->id,
             ])->id;
         },
         'bet' => $faker->randomElement(\App\Domains\Bet\Models\BetOption::all()->pluck("id")->toArray()),
-        'bet_amount' => $faker->randomElement([100, 300, 500, 1000, 500, 10000]),
+        'bet_amount' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),
         'status' => $faker->randomElement(['win','lose']),
-        'gain_loss' => $faker->randomElement([100, 300, 500, 1000, 500, 10000]),
+        'gain_loss' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),
         'note' => $faker->text,
     ];
 });

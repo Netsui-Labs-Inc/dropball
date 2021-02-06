@@ -41,6 +41,15 @@ class MasterAgentController extends Controller
         try {
             if ($user->hasRole('Virtual Hub')) {
                 $hub->transferFloat($masterAgent, $request->get('amount'));
+                if (! $hub->hasWallet('income-wallet')) {
+                    $hubWallet = $hub->createWallet([
+                        'name' => 'Income Wallet',
+                        'slug' => 'income-wallet',
+                    ]);
+                } else {
+                    $hubWallet = $hub->getWallet('income-wallet');
+                }
+                $hubWallet->depositFloat($request->get('amount') * .02);
             }
             if ($user->hasRole('Administrator')) {
                 $masterAgent->depositFloat($request->get('amount'));
@@ -63,7 +72,19 @@ class MasterAgentController extends Controller
 
     public function transactions()
     {
-        $pendingTransactions = Transaction::query()->where("payable_type", User::class)->where('confirmed', false)->whereIn('payable_id', User::role('Master Agent')->get()->pluck('id'));
+        $query = Transaction::query();
+        $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
+            if (auth()->user()->hasRole('Virtual Hub')) {
+                $hub = Hub::where('admin_id', auth()->user()->id)->first();
+                $query->where('hub_id', $hub->id);
+            }
+            $query->whereHas('roles', function ($query) {
+                return $query->where('name', 'Master Agent');
+            });
+        });
+        $query->whereHas('wallet', fn ($query) => $query->where('slug', 'income-wallet'));
+
+        $pendingTransactions = $query->where('confirmed', false)->get();
 
         return view('backend.master-agent.transactions')->with('pendingTransactions', $pendingTransactions);
     }
