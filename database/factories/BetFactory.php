@@ -33,5 +33,6 @@ $factory->state(Bet::class, 'ongoing', function (Faker $faker) {
 });
 
 $factory->afterCreating(Bet::class, function (Bet $bet) {
+    $bet->bettingRound->increment('pool_money', $bet->bet_amount);
     $bet->user->forceTransferFloat($bet->bettingRound, $bet->bet_amount, ['bettingRound' => $bet->bettingRound->id]);
 });

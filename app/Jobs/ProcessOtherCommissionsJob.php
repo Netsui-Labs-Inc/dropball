@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Models\Company;
+use App\Jobs\Traits\WalletAndCommission;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -13,6 +13,7 @@ use Illuminate\Queue\SerializesModels;
 class ProcessOtherCommissionsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use WalletAndCommission;
 
     public $bettingRound;
     /**
@@ -33,31 +34,24 @@ class ProcessOtherCommissionsJob implements ShouldQueue
     public function handle()
     {
         // Developer
-        $developer = $this->getDevelopers();
         $bettingRound = $this->bettingRound;
-        $commission = $bettingRound->balanceFloat * .01;
-        logger("BettingRound#{$bettingRound->id} Transferring the 1% money to Developer from pool money ({$bettingRound->balanceFloat}) : $commission");
-        $bettingRound->forceTransferFloat($developer, $commission,  ['betting_round_id' => $bettingRound->id]);
 
         // Operator
         $remainingMoney = $bettingRound->balanceFloat;
+        $operator = $this->getOperator();
+
+        logger("BettingRound#{$bettingRound->id} Operator current balance is : {$operator->balanceFloat}");
 
         logger("BettingRound#{$bettingRound->id} Transferring the remaining money to Operator : $remainingMoney");
 
-        $operator = $this->getOperator();
-
         $bettingRound->forceTransferFloat($operator, $remainingMoney,  ['betting_round_id' => $bettingRound->id]);
+        logger("BettingRound#{$bettingRound->id} Operator new balance is : {$operator->balanceFloat}");
+
+        $bettingRound->update([
+            'meta' => [
+                'operator' => $operator->balanceFloat,
+                'balanceFromRemaining' => $remainingMoney,
+            ],
+        ]);
     }
-
-    public function getDevelopers()
-    {
-        return Company::firstOrCreate(['name' => 'Developers']);
-    }
-
-
-    public function getOperator()
-    {
-        return Company::firstOrCreate(['name' => 'Operator']);
-    }
-
 }

@@ -277,6 +277,12 @@ class PermissionRoleSeeder extends Seeder
                 'description' => 'Manage My Wallet',
                 'sort' => 24,
             ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.betting-rounds.report',
+                'description' => 'Betting Rounds Detaild Report',
+                'sort' => 25,
+            ]),
         ]);
 
         // Assign Permissions to other Roles

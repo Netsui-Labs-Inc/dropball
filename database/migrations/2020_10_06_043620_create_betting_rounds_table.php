@@ -23,6 +23,7 @@ class CreateBettingRoundsTable extends Migration
             $table->boolean('is_betting_open')->default(false);
             $table->float('pool_money')->nullable();
             $table->text('note')->nullable();
+            $table->json('meta')->nullable();
             $table->timestamps();
             $table->softDeletes();
 

@@ -8,6 +8,7 @@ use App\Domains\Auth\Models\Traits\Relationship\UserRelationship;
 use App\Domains\Auth\Models\Traits\Scope\UserScope;
 use App\Domains\Auth\Notifications\Frontend\ResetPasswordNotification;
 use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
+use App\Models\Traits\HasBetCommission;
 use Bavix\Wallet\Interfaces\Confirmable;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
@@ -41,7 +42,8 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         UserAttribute,
         UserMethod,
         UserRelationship,
-        UserScope;
+        UserScope,
+        HasBetCommission;
 
     public const TYPE_ADMIN = 'admin';
     public const TYPE_USER = 'user';

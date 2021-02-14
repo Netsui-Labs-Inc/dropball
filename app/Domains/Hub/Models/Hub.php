@@ -3,6 +3,7 @@
 namespace App\Domains\Hub\Models;
 
 use App\Domains\Auth\Models\User;
+use App\Models\Traits\HasBetCommission;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\CanConfirm;
@@ -15,6 +16,7 @@ class Hub extends Model implements WalletFloat, Wallet
     use HasWallets;
     use HasWalletFloat;
     use CanConfirm;
+    use HasBetCommission;
 
     protected $fillable = [
         'name', 'admin_id'

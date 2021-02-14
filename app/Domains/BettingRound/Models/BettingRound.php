@@ -30,6 +30,7 @@ class BettingRound extends Model implements Wallet, WalletFloat
         'status',
         'is_betting_open',
         'pool_money',
+        'meta',
         'note',
     ];
 

@@ -90,6 +90,11 @@ class Bet extends Model
         return $this->belongsTo(BettingRound::class, 'betting_round_id');
     }
 
+    public function commissions()
+    {
+        return $this->hasMany(BetCommission::class);
+    }
+
     public function scopeBetType($query, $type)
     {
         return $query->where('bet', $type);

@@ -43,6 +43,7 @@ class DistributeBettingRoundWinnings
         $bettingRound->bets()->where('bet', '!=', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
             dispatch(new ProcessBetLossesDistributionJob($bets, $bettingRound))->onQueue('low');
         });
+        logger("BettingRound#{$bettingRound->id} Processing Other Commissions");
 
         dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('low');
 

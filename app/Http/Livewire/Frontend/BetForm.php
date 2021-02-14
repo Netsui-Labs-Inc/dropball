@@ -127,6 +127,7 @@ class BetForm extends Component
         }
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
+        $this->balance = auth()->user()->balanceFloat;
     }
 
     public function updateBalance($data)

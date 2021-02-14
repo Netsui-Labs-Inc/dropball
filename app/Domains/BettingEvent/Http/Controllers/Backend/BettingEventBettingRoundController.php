@@ -48,4 +48,15 @@ class BettingEventBettingRoundController extends Controller
 
         return redirect()->back()->withFlashSuccess(__('Betting Rounds created'));
     }
+
+    public function report(BettingEvent $bettingEvent, BettingRound $bettingRound)
+    {
+        $nextBettingRound = $bettingEvent->bettingRounds()->where('queue', $bettingRound->queue + 1)->first();
+
+        return view('backend.betting-round.report')
+            ->with('bettingEvent', $bettingEvent)
+            ->with('bettingRound', $bettingRound)
+            ->with('bettingOptions', BetOption::all())
+            ->with('nextBettingRound', $nextBettingRound);
+    }
 }
