@@ -41,7 +41,7 @@ class BettingEventBettingRoundController extends Controller
 
         foreach (range(1, $request->get('quantity')) as $index) {
             $bettingEvent->bettingRounds()->create([
-                    'queue' => $queue++,
+                    'queue' => ++$queue,
                     'note' => $request->get('note'),
                 ]);
         }

@@ -75,6 +75,7 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')],
+            'mobile' => ['required', 'string', 'max:11', Rule::unique('users')],
             'password' => array_merge(['max:100'], PasswordRules::register($data['email'] ?? null)),
             'terms' => ['required', 'in:1'],
             'referral_id' => ['required', 'exists:users,referral_id'],

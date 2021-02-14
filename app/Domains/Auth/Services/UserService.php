@@ -333,6 +333,7 @@ class UserService extends BaseService
             'type' => $data['type'] ?? $this->model::TYPE_USER,
             'name' => $data['name'] ?? null,
             'email' => $data['email'] ?? null,
+            'mobile' => $data['mobile'] ?? null,
             'referral_id' => $data['referral_id'] ?? null,
             'referred_by' => $data['referred_by'] ?? null,
             'password' => $data['password'] ?? null,

@@ -26,7 +26,7 @@
         @csrf
         @method($method)
 
-        <button type="submit" class="{{ $buttonClass }}" {{$attr}} @if($bgColor !== '') style="background-color:{{$bgColor}};color:#fff" @endif>
+        <button type="submit" class="{{ $buttonClass }}" {{$attr}} @if($bgColor !== '') style="border: 1px solid #8898aa ;background-color:{{$bgColor}};color:{{$bgColor == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}}" @endif>
             @if ($icon)<i class="{{ $icon }}"></i> @endif{{ $slot }}
         </button>
     </form>

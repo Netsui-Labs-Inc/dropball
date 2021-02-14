@@ -33,7 +33,7 @@
     <span class="h4 surtitle text-muted">Choose a color to bet</span>
     <div class="row justify-content-center mt-3">
         @foreach($betOptions as $option)
-            <div class="col-6 pb-2 justify-content-center">
+            <div class="col-12 pb-2 justify-content-center">
                 @if($bettingRound)
                     <div class="text-muted surtitle">
                         @php $userBetTotal = $bettingRound->totalBetTypeByUser($option->id, auth()->user()->id) @endphp
@@ -41,7 +41,7 @@
                         @if($userBetTotal) | <span class="h5 text-success">+ PHP {{number_format(getPayout($userBetTotal))}}</span>@endif
                     </div>
                 @endif
-                <button  class="btn btn-lg btn-block mb-1" style="background-color: {{$option->color}}; color: #FFF"  wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}> {{strtoupper($option->name)}}</button>
+                <button  class="btn btn-lg btn-block mb-1" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};"  wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}> {{strtoupper($option->name)}}</button>
             </div>
         @endforeach
     </div>

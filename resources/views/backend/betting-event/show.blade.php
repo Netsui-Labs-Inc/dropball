@@ -66,12 +66,5 @@
                 </div>
             </div>
         </div>
-        <div class="form-group row">
-            <label for="name" class="col-md-3 col-form-label">@lang('Note')</label>
-            <div class="col-md-9">
-                <textarea name="note" class="form-control" cols="10" rows="5"></textarea>
-            </div>
-        </div>
-
     </x-utils.modal>
 @endsection

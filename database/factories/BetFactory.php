@@ -5,7 +5,6 @@
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Events\BettingRoundBetPlaced;
 use Faker\Generator as Faker;
 
 $factory->define(Bet::class, function (Faker $faker) {
@@ -33,6 +32,6 @@ $factory->state(Bet::class, 'ongoing', function (Faker $faker) {
     ];
 });
 
-$factory->afterCreating(Bet::class, function(Bet $bet) {
+$factory->afterCreating(Bet::class, function (Bet $bet) {
     $bet->user->forceTransferFloat($bet->bettingRound, $bet->bet_amount, ['bettingRound' => $bet->bettingRound->id]);
 });

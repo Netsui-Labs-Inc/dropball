@@ -37,7 +37,8 @@ class Bet extends Model
 
     public function betLabel()
     {
-        return "<span class=\"badge\" style=\"background-color: {$this->option->color}; color: #fff \">".strtoupper($this->option->name)."</span>";
+        $color = $this->option->color == '#FFFFFF' ? '#8898aa' : '#FFFFFF';
+        return "<span class=\"badge\" style=\"background-color: {$this->option->color}; color: {$color} \">".strtoupper($this->option->name)."</span>";
     }
 
     public function statusLabel()

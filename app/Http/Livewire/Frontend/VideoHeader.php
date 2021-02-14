@@ -50,6 +50,9 @@ class VideoHeader extends Component
 
     public function updateStatus($data)
     {
+        if(!isset($data['bettingRound']['id'])) {
+            return;
+        }
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
@@ -95,7 +98,9 @@ class VideoHeader extends Component
 
     public function setPayouts()
     {
+        $totalBet = $this->bettingRound->userBets(auth()->user())->where('bet', $this->bettingRound->result)->sum('bet_amount');
 
+        $this->payout = getPayout($totalBet);
     }
 
     public function lastCall()

@@ -69,9 +69,11 @@ class EventBettingRound extends Component
             $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
         } elseif ($this->hasWinningBet($userBets)) {
+            $this->setPayouts();
             $icon = 'success';
             $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
-            $result = "YOU'VE WON <strong class='text-success'>".number_format(getPayout($winningBet->bet_amount)). "</strong>";
+            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
+
         } else {
             $icon = 'error';
             $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
@@ -135,7 +137,9 @@ class EventBettingRound extends Component
 
     public function setPayouts()
     {
-        $userBet = $this->bettingRound->userBet(auth()->user()->id);
+        $totalBet = $this->bettingRound->userBets(auth()->user()->id)->where('bet', $this->bettingRound->result)->sum('bet_amount');
+
+        $this->payout = getPayout($totalBet);
     }
 
     public function render()

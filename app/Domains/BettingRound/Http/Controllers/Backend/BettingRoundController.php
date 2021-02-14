@@ -118,7 +118,8 @@ class BettingRoundController extends Controller
         $bettingRound->status = 'ended';
         $bettingRound->save();
 
-        event(new BettingRoundResultUpdated($bettingRound->fresh()));
+        BettingRoundResultUpdated::dispatch($bettingRound->fresh());
+
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));

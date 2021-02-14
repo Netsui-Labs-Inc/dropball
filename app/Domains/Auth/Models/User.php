@@ -61,7 +61,9 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'type',
         'name',
         'email',
+        'mobile',
         'email_verified_at',
+        'mobile_verified_at',
         'password',
         'password_changed_at',
         'active',
@@ -91,6 +93,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     protected $dates = [
         'last_login_at',
         'email_verified_at',
+        'mobile_verified_at',
         'password_changed_at',
     ];
 
@@ -103,6 +106,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'active' => 'boolean',
         'last_login_at' => 'datetime',
         'email_verified_at' => 'datetime',
+        'mobile_verified_at' => 'datetime',
         'to_be_logged_out' => 'boolean',
     ];
 

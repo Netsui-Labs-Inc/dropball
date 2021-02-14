@@ -25,14 +25,16 @@ $factory->state(BettingRound::class, 'today', function (Faker $faker) {
     ];
 });
 
-$factory->state(BettingRound::class, 'ongoing-with-bets', function (Faker $faker) {
+$factory->state(BettingRound::class, 'open-with-bets', function (Faker $faker) {
     return [
-        'status' => 'ongoing',
+        'status' => 'placing_bets',
+        'queue' => 1,
+        'is_betting_open' => 1,
    ];
 });
 
-$factory->afterCreatingState(BettingRound::class, 'ongoing-with-bets', function (BettingRound $bettingRound, Faker $faker) {
-    factory(Bet::class, 1000)->state('ongoing')->create(['betting_round_id' => $bettingRound->id]);
+$factory->afterCreatingState(BettingRound::class, 'open-with-bets', function (BettingRound $bettingRound, Faker $faker) {
+    factory(Bet::class, 600)->state('ongoing')->create(['betting_round_id' => $bettingRound->id]);
 
     return [];
 });

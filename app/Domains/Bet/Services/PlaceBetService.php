@@ -79,6 +79,7 @@ class PlaceBetService
         ]);
 
         event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor));
+
         logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
 
         return $this->bettingRound;

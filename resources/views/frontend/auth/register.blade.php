@@ -51,6 +51,14 @@
                             <div class="form-group">
                                 <div class="input-group input-group-merge input-group-alternative mb-3">
                                     <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="ni ni-mobile-button"></i></span>
+                                    </div>
+                                    <input name="mobile" class="form-control" placeholder="Mobile" type="text"  value="{{ old('mobile') }}">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group input-group-merge input-group-alternative mb-3">
+                                    <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
                                     </div>
                                     <input name="referral_id" class="form-control" placeholder="Referral ID" type="text">

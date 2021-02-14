@@ -49,7 +49,7 @@ class MasterAgentController extends Controller
                 } else {
                     $hubWallet = $hub->getWallet('income-wallet');
                 }
-                $hubWallet->depositFloat($request->get('amount') * .02);
+                $hubWallet->depositFloat($request->get('amount') * .01);
             }
             if ($user->hasRole('Administrator')) {
                 $masterAgent->depositFloat($request->get('amount'));

@@ -18,7 +18,7 @@
                 </x-frontend.card>
             </div>
             <div class="col-lg-12 col-xl-4 col-xx1-4 col-md-12 col-sm-12">
-                <x-frontend.card headerClass="bg-gradient-default">
+                <x-frontend.card headerClass="bg-gradient-default" bodyClass="bg-yellow-50">
                     <x-slot name="header">
                         <livewire:frontend.event-betting-round :bettingEventId="$bettingEvent->id"></livewire:frontend.event-betting-round>
                     </x-slot>

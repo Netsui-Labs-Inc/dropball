@@ -55,7 +55,7 @@
                 <x-utils.form-button
                     :action="route('admin.betting-rounds.results', $bettingRound)"
                     method="post"
-                    button-class="btn btn-lg btn-block"
+                    button-class="btn btn-lg btn-block border-gray-50"
                     name="open-betting"
                     :bgColor="$option->color"
                     :attr="
