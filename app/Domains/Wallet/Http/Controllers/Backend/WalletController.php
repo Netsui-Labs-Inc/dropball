@@ -37,6 +37,7 @@ class WalletController extends \App\Http\Controllers\Controller
 
     public function confirm(Transaction $transaction)
     {
+        /** @var User $user */
         $user = auth()->user();
         $payable = $transaction->payable;
         if ($transaction->payable_type == User::class) {
@@ -45,14 +46,17 @@ class WalletController extends \App\Http\Controllers\Controller
             } else {
                 $payable->getWallet('income-wallet')->confirm($transaction);
             }
-
-            return redirect()->back()->withFlashSuccess("Request confirmed");
         }
 
         if ($transaction->payable_type == Hub::class) {
             $payable->getWallet('income-wallet')->confirm($transaction);
-        } else {
-            $payable->getWallet('income-wallet')->confirm($transaction);
+        }
+
+        if ($user->hasRole('Master Agent')) {
+            $user->withdrawFloat($transaction->amountFloat * -1, ['withdrawal' => true, 'from_transaction' => $transaction->uuid]);
+        } elseif ($user->hasRole('Virtual Hub')) {
+            $hub = Hub::where('admin_id', $user->id)->first();
+            $hub->withdrawFloat($transaction->amountFloat * -1, ['withdrawal' => true, 'from_transaction' => $transaction->uuid]);
         }
 
         return redirect()->back()->withFlashSuccess("Request confirmed");
