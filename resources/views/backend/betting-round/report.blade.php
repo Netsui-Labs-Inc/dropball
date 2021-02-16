@@ -3,36 +3,75 @@
 @section('title', __('Betting Round Management'))
 
 @section('content')
-    <x-backend.card headerClass="bg-info">
+<div class="row">
+    <div class="col">
+        <x-backend.card headerClass="bg-danger">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="h3 text-white mb-0">
+                            @lang('Pool Money')
+                        </h3>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <h2 class="text-muted">{{ number_format($bettingRound->bets()->sum('bet_amount') ?? 0, 2)}}</h2>
+            </x-slot>
+        </x-backend.card>
+    </div>
+    <div class="col">
+        <x-backend.card headerClass="bg-info">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="h3 text-white mb-0">
+                            @lang('Result')
+                        </h3>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <h2 class="text-muted">{{ $bettingRound->betOption->name ?? 'N/A' }}</h2>
+            </x-slot>
+        </x-backend.card>
+    </div>
+    <div class="col">
+        <x-backend.card headerClass="bg-warning">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="h3 text-white mb-0">
+                            @lang('Payout')
+                        </h3>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <h2 class="text-muted">{{ number_format($payout, 2) }}</h2>
+            </x-slot>
+        </x-backend.card>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+    <x-backend.card headerClass="bg-primary">
         <x-slot name="header">
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="h3 text-white mb-0">
-                        @lang('Pool Money')
+                        @lang('Bet Commissions')
                     </h3>
                 </div>
             </div>
         </x-slot>
         <x-slot name="body">
-            <h2>{{ number_format($bettingRound->bets()->sum('bet_amount') ?? 0)}}</h2>
+            <livewire:bet-commissions-table :bettingRound="$bettingRound"/>
         </x-slot>
     </x-backend.card>
-
-    <x-backend.card headerClass="bg-info">
-        <x-slot name="header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h3 class="h3 text-white mb-0">
-                        @lang('Result')
-                    </h3>
-                </div>
-            </div>
-        </x-slot>
-        <x-slot name="body">
-            <h2>{{ $bettingRound->betOption->name ?? 'N/A' }}</h2>
-        </x-slot>
-    </x-backend.card>
-
+    </div>
+</div>
 @endsection
 @section('page-action')
     @if($nextBettingRound)

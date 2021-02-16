@@ -79,7 +79,7 @@ Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/reports'
     ->name('betting-events.betting-rounds.report')
     ->breadcrumbs(function (Trail $trail, $bettingEvent, $bettingRound) {
         $trail->parent('admin.betting-events.show', $bettingEvent);
-        $trail->push("BettingRound #".$bettingRound->id, route('admin.betting-events.betting-rounds.report', [$bettingEvent, $bettingRound]));
+        $trail->push("BettingRound #".$bettingRound->id. " Report", route('admin.betting-events.betting-rounds.report', [$bettingEvent, $bettingRound]));
     });
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/edit', [BettingEventBettingRoundController::class, 'edit'])
