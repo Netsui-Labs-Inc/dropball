@@ -8,6 +8,7 @@
     @lang('View Betting Round')
 </x-utils.form-button>
 @if($bettingRound->status == 'ended')
+@can('admin.access.betting-rounds.report')
 <x-utils.form-button
     :action="route('admin.betting-events.betting-rounds.report', [$bettingRound->bettingEvent, $bettingRound])"
     method="get"
@@ -17,4 +18,5 @@
 >
     @lang('View report')
 </x-utils.form-button>
+@endcan
 @endif

@@ -280,7 +280,7 @@ class PermissionRoleSeeder extends Seeder
             new Permission([
                 'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.betting-rounds.report',
-                'description' => 'Betting Rounds Detaild Report',
+                'description' => 'Betting Rounds Detailed Report',
                 'sort' => 25,
             ]),
         ]);
@@ -316,6 +316,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.hubs.create',
             'admin.access.hubs.delete',
             'admin.access.hubs.wallet',
+            'admin.access.betting-rounds.report'
         ]);
     }
 
