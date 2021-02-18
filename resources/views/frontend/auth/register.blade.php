@@ -61,7 +61,7 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
                                     </div>
-                                    <input name="referral_id" class="form-control" placeholder="Referral ID" type="text">
+                                    <input name="referral_id" class="form-control" placeholder="Referral ID" type="text" value="{{request()->get('referral', null)}}">
                                 </div>
                             </div>
                             <div class="form-group">
