@@ -9,7 +9,7 @@
     </div>
     @else
         <div class="col">
-            <h3 class="text-white text-uppercase mb-0">@lang("No BettingRound Available")</h3>
+            <h3 class="text-white text-uppercase mb-0">@lang("No Betting Round Available")</h3>
         </div>
     @endif
 </div>

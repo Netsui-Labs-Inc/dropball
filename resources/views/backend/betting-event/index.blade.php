@@ -22,7 +22,7 @@
                             @lang('Moderate Betting Round')
                         </x-utils.form-button>
                     @else
-                        <span class="lead text-lg-center"> No BettingRound Available</span>
+                        <span class="lead text-lg-center"> No Betting Round Available</span>
                     @endif
                 @else
                     <span class="lead text-lg-center"> No Event for Today</span>

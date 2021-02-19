@@ -3,7 +3,7 @@
 namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
-use App\Domains\BettingEvent\Http\Requests\StorebettingEventRequest;
+use App\Domains\BettingEvent\Http\Requests\StoreBettingEventRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingEvent\Services\BettingEventService;
 use App\Http\Controllers\Controller;
@@ -47,7 +47,7 @@ class BettingEventController extends Controller
             ->with('admins', $admins);
     }
 
-    public function store(StorebettingEventRequest $request)
+    public function store(StoreBettingEventRequest $request)
     {
         $bettingEvent = $this->bettingEventService->store($request->validated());
 

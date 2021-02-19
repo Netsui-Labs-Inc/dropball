@@ -4,7 +4,7 @@ namespace App\Domains\BettingEvent\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorebettingEventRequest extends FormRequest
+class StoreBettingEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,7 +27,7 @@ class StorebettingEventRequest extends FormRequest
             'name' => 'required',
             'description' => 'required',
             'bet_admin_id' => 'required|exists:users,id',
-            'schedule' => 'required',
+            'schedule' => 'required|unique:schedule',
         ];
     }
 

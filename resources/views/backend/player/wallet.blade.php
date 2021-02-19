@@ -1,8 +1,7 @@
 @extends('backend.layouts.app')
-
-@section('title', __('View User'))
-
+@section('title', __('User Wallet'))
 @section('content')
+    <h2 class="mb-4">{{$user->name}} Wallet</h2>
     <div class="row justify-content-center py-2">
         <div class="col-md-12">
             <x-frontend.card headerClass="bg-primary">
