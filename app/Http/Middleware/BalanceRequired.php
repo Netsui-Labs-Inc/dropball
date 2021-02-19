@@ -15,7 +15,7 @@ class BalanceRequired
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $amount = 200)
+    public function handle($request, Closure $next, $amount = 100)
     {
         $user = auth()->user();
 
