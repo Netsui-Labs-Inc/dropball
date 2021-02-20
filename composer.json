@@ -12,6 +12,7 @@
         "php": "^7.4",
         "albertcht/invisible-recaptcha": "^1.9",
         "arcanedev/log-viewer": "7.x",
+        "aws/aws-sdk-php": "^3.173",
         "bavix/laravel-wallet": "^5.5",
         "beyondcode/laravel-websockets": "^1.8",
         "darkghosthunter/laraguard": "^2.0",
