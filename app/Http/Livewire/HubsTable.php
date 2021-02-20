@@ -58,7 +58,7 @@ class HubsTable extends TableComponent
                 }),
             Column::make(__('Income Balance'), 'name')
                 ->format(function (Hub $model) {
-                    return $this->html(number_format($model->getWallet('income-wallet')->balanceFloat));
+                    return $this->html(number_format($model->getWallet('income-wallet')->balanceFloat ?? 0));
                 }),
         ];
     }
