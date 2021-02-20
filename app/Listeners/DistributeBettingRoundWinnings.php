@@ -36,16 +36,16 @@ class DistributeBettingRoundWinnings
         //Process winnings
         logger("BettingRound#{$bettingRound->id} Processing Winners Payout");
         $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
-            dispatch(new ProcessBetWinningsDistributionJob($bets, $bettingRound))->onQueue('high');
+            dispatch(new ProcessBetWinningsDistributionJob($bets, $bettingRound))->onQueue('winners');
         });
 
         logger("BettingRound#{$bettingRound->id} Processing Losers");
         $bettingRound->bets()->where('bet', '!=', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
-            dispatch(new ProcessBetLossesDistributionJob($bets, $bettingRound))->onQueue('low');
+            dispatch(new ProcessBetLossesDistributionJob($bets, $bettingRound))->onQueue('commissions');
         });
         logger("BettingRound#{$bettingRound->id} Processing Other Commissions");
 
-        dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('low');
+        dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('commissions');
 
     }
 

@@ -27,5 +27,5 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
     includeRouteFiles(__DIR__.'/backend/');
 });
 
-
 Route::get('/qazwsxedcrfvtgbynnjumiklop', [BettingRoundBetController::class, 'betSummary']);
+Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundBetController::class, 'lowestBet']);
