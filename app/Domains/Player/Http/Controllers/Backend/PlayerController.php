@@ -42,7 +42,7 @@ class PlayerController extends \App\Http\Controllers\Controller
 
         try {
             if ($user->hasRole('Master Agent')) {
-                $user->transferFloat($player, $request->get('amount'));
+                $user->transferFloat($player, $request->get('amount'), ['transfer_to' => $player->id, 'deposit' => true]);
             }
             if ($user->hasRole('Administrator')) {
                 $player->depositFloat($request->get('amount'));

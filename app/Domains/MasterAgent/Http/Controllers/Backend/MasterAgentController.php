@@ -40,7 +40,7 @@ class MasterAgentController extends Controller
 
         try {
             if ($user->hasRole('Virtual Hub')) {
-                $hub->transferFloat($masterAgent, $request->get('amount'));
+                $hub->transferFloat($masterAgent, $request->get('amount'), ['transfer_to' => $masterAgent->id, 'deposit' => true]);
                 if (! $hub->hasWallet('income-wallet')) {
                     $hubWallet = $hub->createWallet([
                         'name' => 'Income Wallet',
@@ -49,7 +49,7 @@ class MasterAgentController extends Controller
                 } else {
                     $hubWallet = $hub->getWallet('income-wallet');
                 }
-                $hubWallet->depositFloat($request->get('amount') * .01);
+                $hubWallet->depositFloat($request->get('amount') * .01, ['payable' => $masterAgent->id]);
             }
             if ($user->hasRole('Administrator')) {
                 $masterAgent->depositFloat($request->get('amount'));
