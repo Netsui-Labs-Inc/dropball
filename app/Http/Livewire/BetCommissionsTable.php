@@ -70,6 +70,12 @@ class BetCommissionsTable extends TableComponent
                 ->format(function (BetCommission $model) {
                     return $this->html($model->commission->name);
                 }),
+            Column::make(__('Player'), 'id')
+                ->searchable()
+                ->sortable()
+                ->format(function (BetCommission $model) {
+                    return $this->html($model->bet->user->name ?? 'N/A');
+                }),
             Column::make(__('Rate'), 'rate')
                 ->searchable()
                 ->sortable()

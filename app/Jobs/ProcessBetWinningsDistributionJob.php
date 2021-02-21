@@ -149,7 +149,6 @@ class ProcessBetWinningsDistributionJob implements ShouldQueue
             $transaction = $bettingRound->forceTransferFloat($operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
             logger("BettingRound#{$bettingRound->id} Operator new balance is {$operator->balanceFloat}");
         }
-        $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
 
         return $operator;
     }

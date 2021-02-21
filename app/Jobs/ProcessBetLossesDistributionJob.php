@@ -98,7 +98,7 @@ class ProcessBetLossesDistributionJob implements ShouldQueue
         logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgent->id} {$masterAgent->name}  new balance {$masterAgentWallet->balanceFloat}");
 
         $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
-
+        $this->processDevelopersCommission($bet);
         $this->processMasterAgentReferredCommission($bettingRound, $masterAgent, $bet);
     }
 
