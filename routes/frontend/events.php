@@ -2,7 +2,7 @@
 use App\Domains\BettingEvent\Http\Controllers\Frontend\BettingEventController;
 use Tabuna\Breadcrumbs\Trail;
 
-Route::group(['middleware' => ['auth',config('boilerplate.access.middleware.verified'),'balance.required']], function () {
+Route::group(['middleware' => ['auth', 'is_user', config('boilerplate.access.middleware.verified'),'balance.required']], function () {
     Route::get('/', [BettingEventController::class, 'eventToday'])->name('index');
 
     Route::get('betting-events/{bettingEvent}', [BettingEventController::class, 'show'])
