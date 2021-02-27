@@ -5,6 +5,7 @@ namespace App\Domains\Auth\Models\Traits\Relationship;
 use App\Domains\Auth\Models\PasswordHistory;
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\Hub\Models\Hub;
 
 /**
  * Class UserRelationship.

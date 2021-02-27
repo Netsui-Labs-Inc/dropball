@@ -3,7 +3,12 @@
 
 namespace App\Domains\MasterAgent\Http\Controllers\Backend;
 
+use App\Domains\Auth\Http\Requests\Backend\User\StoreMasterAgentRequest;
+use App\Domains\Auth\Models\Role;
 use App\Domains\Auth\Models\User;
+use App\Domains\Auth\Services\PermissionService;
+use App\Domains\Auth\Services\RoleService;
+use App\Domains\Auth\Services\UserService;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
@@ -13,6 +18,34 @@ use Illuminate\Support\Facades\Hash;
 
 class MasterAgentController extends Controller
 {
+    /**
+     * @var UserService
+     */
+    protected $userService;
+
+    /**
+     * @var RoleService
+     */
+    protected $roleService;
+
+    /**
+     * @var PermissionService
+     */
+    protected $permissionService;
+
+    /**
+     * UserController constructor.
+     *
+     * @param  UserService  $userService
+     * @param  RoleService  $roleService
+     * @param  PermissionService  $permissionService
+     */
+    public function __construct(UserService $userService, RoleService $roleService, PermissionService $permissionService)
+    {
+        $this->userService = $userService;
+        $this->roleService = $roleService;
+        $this->permissionService = $permissionService;
+    }
     public function index()
     {
         return view('backend.master-agent.index');
@@ -26,6 +59,30 @@ class MasterAgentController extends Controller
     public function cashBalance(User $masterAgent)
     {
         return view('backend.master-agent.wallet')->with('user', $masterAgent);
+    }
+
+    public function create()
+    {
+        $hubs = Hub::all()->pluck('name', 'id');
+
+        return view('backend.master-agent.create')->with('hubs', $hubs);
+    }
+
+    public function store(StoreMasterAgentRequest $request)
+    {
+        $user = $request->user();
+        $input = $request->validated();
+        $input['email_verified'] = "1";
+        $input['active'] = "1";
+        $input['type'] = 'admin';
+        $input['roles'] = ['Master Agent'];
+        $input['timezone'] = ['Asia/Manila'];
+        if ($user->hasRole('Virtual Hub')) {
+            $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
+        }
+        $user = $this->userService->store($input);
+
+        return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");
     }
 
     public function deposit(User $masterAgent, DepositRequest $request)

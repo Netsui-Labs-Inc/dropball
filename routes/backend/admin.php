@@ -183,6 +183,15 @@ Route::get('master-agents', [MasterAgentController::class, 'index'])->name('mast
         $trail->push("Master Agents", route('admin.master-agents.index'));
     });
 
+Route::get('master-agents/create', [MasterAgentController::class, 'create'])->name('master-agents.create')
+    ->middleware('can:admin.access.master-agents.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.master-agents.index');
+        $trail->push("Create Master Agent", route('admin.master-agents.create'));
+    });
+Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
+
+
 Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])
     ->name('master-agents.info')
     ->middleware('can:admin.access.master-agents.info')

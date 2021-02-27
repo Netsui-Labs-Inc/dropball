@@ -52,6 +52,12 @@ class HubsTable extends TableComponent
                 ->format(function (Hub $model) {
                     return $this->html($model->name);
                 }),
+            Column::make(__('Admin'), 'admin')
+                ->searchable()
+                ->sortable()
+                ->format(function (Hub $model) {
+                    return $this->html($model->admin->name ?? 'N/A');
+                }),
             Column::make(__('Credit Balance'), 'name')
                 ->format(function (Hub $model) {
                     return $this->html(number_format($model->balanceFloat));
