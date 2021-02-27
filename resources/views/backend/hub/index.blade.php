@@ -1,7 +1,9 @@
 @extends('backend.layouts.app')
 
 @section('title', __('Hubs'))
-
+@section('page-action')
+    <a href="{{route('admin.hubs.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Hub</a>
+@endsection
 @section('content')
     <x-backend.card>
         <x-slot name="header">

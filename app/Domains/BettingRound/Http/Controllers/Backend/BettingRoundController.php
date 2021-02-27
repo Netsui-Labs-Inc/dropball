@@ -105,7 +105,7 @@ class BettingRoundController extends Controller
             throw new GeneralException("Cannot Open BettingRound at the moment");
         }
         $bettingRound->status = 'cancelled';
-        $bettingRound->result = 'cancelled';
+        $bettingRound->result = null;
 
         $bettingRound->save();
         event(new BettingRoundStatusUpdated($bettingRound->fresh()));

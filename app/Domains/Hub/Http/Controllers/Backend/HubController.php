@@ -4,6 +4,8 @@
 namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Actions\CreateHubAction;
+use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
@@ -21,6 +23,22 @@ class HubController extends Controller
     public function show(User $hub)
     {
         return view('backend.hub.show')->with('user', $hub);
+    }
+
+    public function create()
+    {
+        return view('backend.hub.create');
+    }
+
+    public function store(StoreHubRequest $request)
+    {
+        try {
+            $data = $request->validated();
+            (new CreateHubAction)($data);
+            return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub Created Successfully");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors($e->getMessage());
+        }
     }
 
     public function cashBalance(User $hub)

@@ -6,7 +6,6 @@ use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\ProcessBetLossesDistributionJob;
 use App\Jobs\ProcessBetWinningsDistributionJob;
 use App\Jobs\ProcessOtherCommissionsJob;
-use App\Models\Company;
 use Str;
 
 class DistributeBettingRoundWinnings
@@ -21,12 +20,15 @@ class DistributeBettingRoundWinnings
     {
         /** @var BettingRound $bettingRound */
         $bettingRound = $event->bettingRound;
-        logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
-        logger("BettingRound#{$bettingRound->id} total pool money {$bettingRound->balanceFloat}");
 
-        if (in_array($bettingRound->result, ['draw','cancelled']) && $bettingRound->bets()->exists()) {
+        if ($bettingRound->status == 'cancelled') {
+            logger("BettingRound#{$bettingRound->id} was Cancelled");
+
             return $this->refund($bettingRound);
         }
+
+        logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
+        logger("BettingRound#{$bettingRound->id} total pool money {$bettingRound->balanceFloat}");
 
         $totalPayouts = getPayout($bettingRound->totalBetType($bettingRound->result));
         logger("BettingRound#{$bettingRound->id} Total Payout $totalPayouts");
@@ -46,7 +48,6 @@ class DistributeBettingRoundWinnings
         logger("BettingRound#{$bettingRound->id} Processing Other Commissions");
 
         dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('commissions');
-
     }
 
     public function transferTheRemainingToOperator(BettingRound $bettingRound)
@@ -62,7 +63,10 @@ class DistributeBettingRoundWinnings
 
     public function refund($bettingRound)
     {
-        logger("BettingRound#{$bettingRound->id} result is {$bettingRound->result} All bets will be refunded");
+        if (! $bettingRound->bets()->exists()) {
+            return;
+        }
+        logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
         foreach ($bettingRound->bets as $bet) {
             $bettingRound->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);

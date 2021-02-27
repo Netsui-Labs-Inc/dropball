@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\TableComponent;
@@ -65,6 +66,10 @@ class HubsTable extends TableComponent
             Column::make(__('Income Balance'), 'name')
                 ->format(function (Hub $model) {
                     return $this->html(number_format($model->getWallet('income-wallet')->balanceFloat ?? 0));
+                }),
+            Column::make(__('Actions'))
+                ->format(function (Hub $model) {
+                    return view("backend.hub.action", ['hub' => $model]);
                 }),
         ];
     }

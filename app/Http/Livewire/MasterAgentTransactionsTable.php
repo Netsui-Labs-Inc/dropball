@@ -86,7 +86,7 @@ class MasterAgentTransactionsTable extends TableComponent
     public function columns(): array
     {
         $authUser = auth()->user();
-        if ($authUser->hasRole('Admins')) {
+        if ($authUser->hasRole('Administrator')) {
             $columns = $this->defaultColumns();
         }
 

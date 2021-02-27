@@ -34,14 +34,14 @@
         </x-utils.form-button>
         @endif
         <x-utils.form-button
-            :action="route('admin.betting-rounds.results', $bettingRound)"
+            :action="route('admin.betting-rounds.cancel', $bettingRound)"
             method="post"
             button-class="btn btn-warning"
             icon="fa fa-exclamation"
-            name="open-betting"
+            name="cancel-betting"
             :attr="$bettingRound->status == 'ended' || $bettingRound->status == 'ongoing' ? 'disabled' : ''"
         >
-            <input type="hidden" name="result" value="cancelled">
+            <input type="hidden" name="status" value="cancelled">
 
             @lang('CANCEL')
         </x-utils.form-button>

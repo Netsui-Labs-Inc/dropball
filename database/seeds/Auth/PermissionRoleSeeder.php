@@ -316,7 +316,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.hubs.create',
             'admin.access.hubs.delete',
             'admin.access.hubs.wallet',
-            'admin.access.betting-rounds.report'
+            'admin.access.betting-rounds.report',
         ]);
     }
 
@@ -335,7 +335,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.master-agents.wallet',
             'admin.access.master-agents.create',
             'admin.access.master-agents.transactions',
-            'admin.access.my-wallet'
+            'admin.access.my-wallet',
         ]);
     }
 
@@ -352,7 +352,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.betting-rounds.list',
             'admin.access.betting-rounds.edit',
             'admin.access.betting-rounds.moderate',
-            'admin.access.betting-rounds.bets'
+            'admin.access.betting-rounds.bets',
         ]);
     }
 

@@ -189,6 +189,7 @@ Route::get('master-agents/create', [MasterAgentController::class, 'create'])->na
         $trail->parent('admin.master-agents.index');
         $trail->push("Create Master Agent", route('admin.master-agents.create'));
     });
+
 Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
 
 
@@ -228,6 +229,14 @@ Route::get('hubs', [HubController::class, 'index'])->name('hubs.index')
         $trail->push("Hubs", route('admin.hubs.index'));
     });
 
+Route::get('hubs/create', [HubController::class, 'create'])
+    ->name('hubs.create')
+    ->middleware('can:admin.access.hubs.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.hubs.index');
+        $trail->push("Create Hub", route('admin.hubs.create'));
+    });
+
 Route::get('hubs/{hub}', [HubController::class, 'show'])
     ->name('hubs.info')
     ->middleware('can:admin.access.hubs.info')
@@ -245,6 +254,7 @@ Route::get('hubs/{hub}/wallet', [HubController::class, 'cashBalance'])
     });
 
 Route::post('hubs/{hub}/wallet', [HubController::class, 'deposit'])->name('hubs.wallet.deposit');
+Route::post('hubs', [HubController::class, 'store'])->name('hubs.store');
 
 
 Route::get('hubs-transactions', [HubController::class, 'transactions'])->name('hubs.transactions')
