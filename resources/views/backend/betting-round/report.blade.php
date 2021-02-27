@@ -21,7 +21,7 @@
         </x-backend.card>
     </div>
     <div class="col">
-        <x-backend.card headerClass="bg-info]">
+        <x-backend.card headerClass="bg-info">
             <x-slot name="header">
                 <div class="row align-items-center">
                     <div class="col">

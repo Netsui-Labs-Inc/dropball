@@ -55,7 +55,6 @@ class BettingEventBettingRoundController extends Controller
 
         $totalWinningBets = $bettingRound->bets()->where('bet', $bettingRound->result)->sum('bet_amount');
         $payout = getPayout($totalWinningBets);
-
         return view('backend.betting-round.report')
             ->with('bettingEvent', $bettingEvent)
             ->with('bettingRound', $bettingRound)

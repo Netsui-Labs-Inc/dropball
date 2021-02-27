@@ -34,6 +34,10 @@ class BettingRound extends Model implements Wallet, WalletFloat
         'note',
     ];
 
+    protected $casts = [
+        'meta' => 'array'
+    ];
+
     public function bettingEvent()
     {
         return $this->belongsTo(BettingEvent::class, 'betting_event_id');
