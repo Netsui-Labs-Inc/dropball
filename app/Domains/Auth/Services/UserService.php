@@ -123,6 +123,7 @@ class UserService extends BaseService
                 'type' => $data['type'],
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'mobile' => $data['mobile'],
                 'hub_id' => $data['hub_id'],
                 'referral_id' => $data['referral_id'],
                 'password' => $data['password'],

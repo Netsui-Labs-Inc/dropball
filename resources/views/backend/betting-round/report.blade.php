@@ -9,25 +9,9 @@
             <x-slot name="header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="h3 text-white mb-0">
-                            @lang('Pool Money')
-                        </h3>
-                    </div>
-                </div>
-            </x-slot>
-            <x-slot name="body">
-                <h2 class="text-muted">{{ number_format($bettingRound->bets()->sum('bet_amount') ?? 0, 2)}}</h2>
-            </x-slot>
-        </x-backend.card>
-    </div>
-    <div class="col">
-        <x-backend.card headerClass="bg-info">
-            <x-slot name="header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="h3 text-white mb-0">
+                        <h4 class="h4 text-white mb-0">
                             @lang('Result')
-                        </h3>
+                        </h4>
                     </div>
                 </div>
             </x-slot>
@@ -37,18 +21,51 @@
         </x-backend.card>
     </div>
     <div class="col">
+        <x-backend.card headerClass="bg-info]">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h4 class="h4 text-white mb-0">
+                            @lang('Pool Money')
+                        </h4>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <h2 class="text-muted">{{ number_format($bettingRound->bets()->sum('bet_amount') ?? 0, 2)}}</h2>
+            </x-slot>
+        </x-backend.card>
+    </div>
+
+    <div class="col">
         <x-backend.card headerClass="bg-warning">
             <x-slot name="header">
                 <div class="row align-items-center">
                     <div class="col">
-                        <h3 class="h3 text-white mb-0">
+                        <h4 class="h4 text-white mb-0">
                             @lang('Payout')
-                        </h3>
+                        </h4>
                     </div>
                 </div>
             </x-slot>
             <x-slot name="body">
                 <h2 class="text-muted">{{ number_format($payout, 2) }}</h2>
+            </x-slot>
+        </x-backend.card>
+    </div>
+    <div class="col">
+        <x-backend.card headerClass="bg-primary">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h4 class="h4 text-white mb-0">
+                            @lang('Operator Commission')
+                        </h4>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <h2 class="text-muted">{{ number_format($bettingRound->meta['operator_commission'] ?? 0, 2) }}</h2>
             </x-slot>
         </x-backend.card>
     </div>
@@ -60,9 +77,9 @@
         <x-slot name="header">
             <div class="row align-items-center">
                 <div class="col">
-                    <h3 class="h3 text-white mb-0">
+                    <h4 class="h4 text-white mb-0">
                         @lang('Bet Commissions')
-                    </h3>
+                    </h4>
                 </div>
             </div>
         </x-slot>

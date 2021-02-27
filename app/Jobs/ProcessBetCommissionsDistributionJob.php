@@ -43,14 +43,14 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
     {
         //update bets status
         $bettingRound = $this->bettingRound;
-
+        $this->processLosers($bettingRound);
         foreach ($this->bets as $bet) {
             DB::beginTransaction();
 
             try {
                 logger("\n------------------ START USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------");
                 logger("BettingRound#{$bettingRound->id} Current Pool Money {$bettingRound->balanceFloat}");
-                $this->processWinners($bet);
+                $this->processCommissions($bet);
                 logger("------------------ END USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------\n");
                 DB::commit();
             } catch (\Exception $e) {
@@ -60,10 +60,11 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         }
     }
 
-    public function processWinners($bet)
+    public function processCommissions($bet)
     {
         $bettingRound = $this->bettingRound;
         $operator = $this->processOperatorCommission($bet);
+
         logger("BettingRound#{$bettingRound->id} New Pool Money Balance {$bettingRound->balanceFloat}");
         $this->processMasterAgentCommission($bet, $operator);
         $this->processDevelopersCommission($bet);
@@ -128,4 +129,11 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         return $operator;
     }
 
+    public function processLosers(BettingRound $bettingRound)
+    {
+        $bettingRound->bets()->where('bet', '!=', $bettingRound->result)->update([
+            'status' => 'lose',
+            'gain_loss' => DB::raw('-1 * bets.bet_amount'),
+        ]);
+    }
 }

@@ -31,6 +31,13 @@
                         <input type="email" name="email" class="form-control" placeholder="{{ __('E-mail Address') }}" value="{{ old('email') }}" maxlength="255" required />
                     </div>
                 </div><!--form-group-->
+                <div class="form-group row">
+                    <label for="mobile" class="col-md-2 col-form-label">@lang('E-mail Address')</label>
+
+                    <div class="col-md-10">
+                        <input type="text" name="mobile" class="form-control" placeholder="{{ __('Mobile number') }}" value="{{ old('email') }}" maxlength="255" required />
+                    </div>
+                </div><!--form-group-->
 
                 <div class="form-group row">
                     <label for="referral_id" class="col-md-2 col-form-label">@lang('Referral ID')</label>

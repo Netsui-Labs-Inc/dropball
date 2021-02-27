@@ -3,7 +3,7 @@
 
 namespace App\Domains\MasterAgent\Http\Controllers\Backend;
 
-use App\Domains\Auth\Http\Requests\Backend\User\StoreHubRequest;
+use App\Domains\Auth\Http\Requests\Backend\User\StoreMasterAgentRequest;
 use App\Domains\Auth\Models\Role;
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
@@ -68,7 +68,7 @@ class MasterAgentController extends Controller
         return view('backend.master-agent.create')->with('hubs', $hubs);
     }
 
-    public function store(StoreHubRequest $request)
+    public function store(StoreMasterAgentRequest $request)
     {
         $user = $request->user();
         $input = $request->validated();
