@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\ProcessBetLossesDistributionJob;
+use App\Jobs\ProcessBetCommissionsDistributionJob;
 use App\Jobs\ProcessBetWinningsDistributionJob;
 use App\Jobs\ProcessOtherCommissionsJob;
 use Str;
@@ -33,21 +34,23 @@ class DistributeBettingRoundWinnings
         $totalPayouts = getPayout($bettingRound->totalBetType($bettingRound->result));
         logger("BettingRound#{$bettingRound->id} Total Payout $totalPayouts");
 
-        // Chunk to improve performance
 
         //Process winnings
         logger("BettingRound#{$bettingRound->id} Processing Winners Payout");
+
         $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
             dispatch(new ProcessBetWinningsDistributionJob($bets, $bettingRound))->onQueue('winners');
         });
 
-        logger("BettingRound#{$bettingRound->id} Processing Losers");
-        $bettingRound->bets()->where('bet', '!=', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
-            dispatch(new ProcessBetLossesDistributionJob($bets, $bettingRound))->onQueue('commissions');
+        logger("BettingRound#{$bettingRound->id} Processing Commissions");
+
+        $bettingRound->bets()->chunk(400, function ($bets) use ($bettingRound) {
+            dispatch(new ProcessBetCommissionsDistributionJob($bets, $bettingRound))->onQueue('commissions');
         });
+
         logger("BettingRound#{$bettingRound->id} Processing Other Commissions");
 
-        dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('commissions');
+        dispatch(new ProcessOtherCommissionsJob($bettingRound))->onQueue('other-commissions');
     }
 
     public function transferTheRemainingToOperator(BettingRound $bettingRound)

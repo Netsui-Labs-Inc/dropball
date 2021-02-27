@@ -17,7 +17,7 @@ class CreateCommissionsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('bet_id');
             $table->morphs('commission');
-            $table->enum('type', ['operator', 'master_agent', 'developer', 'hub']);
+            $table->enum('type', ['operator', 'master_agent', 'system', 'hub']);
             $table->float('rate');
             $table->unsignedInteger('amount');
             $table->json('meta')->nullable();

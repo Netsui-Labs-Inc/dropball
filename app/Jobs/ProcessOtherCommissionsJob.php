@@ -49,8 +49,8 @@ class ProcessOtherCommissionsJob implements ShouldQueue
 
         $bettingRound->update([
             'meta' => [
-                'operator' => $operator->balanceFloat,
-                'balanceFromRemaining' => $remainingMoney,
+                'operator_commission' => $remainingMoney,
+                'operator_balance' => $operator->balanceFloat,
             ],
         ]);
     }

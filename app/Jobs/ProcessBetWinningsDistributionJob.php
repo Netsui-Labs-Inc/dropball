@@ -87,70 +87,11 @@ class ProcessBetWinningsDistributionJob implements ShouldQueue
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} won and will receive {$payout}");
         $bettingRound->forceTransferFloat($bet->user, $payout, ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
-        // Process Commissions
-        $operator = $this->processOperatorCommission($bet);
-        logger("BettingRound#{$bettingRound->id} New Pool Money Balance {$bettingRound->balanceFloat}");
-        $this->processMasterAgentCommission($bet, $operator);
-        $this->processDevelopersCommission($bet);
     }
 
     public function payout(Bet $bet)
     {
         return getPayout($bet->bet_amount);
-    }
-
-    public function processMasterAgentCommission(Bet $bet, Company $operator)
-    {
-        $player = $bet->user;
-        $masterAgent = $player->masterAgent;
-        if (! $masterAgent) {
-            return;
-        }
-        $rate = .02;
-        $bettingRound = $bet->bettingRound;
-        $commission = $bet->bet_amount * $rate;
-
-        logger("BettingRound#{$bettingRound->id} Master agent  #{$masterAgent->id} {$masterAgent->name} will receive 2%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
-        $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-        $transaction = $operator->forceTransferFloat($masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
-        logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgent->id} {$masterAgent->name}  new balance {$masterAgentWallet->balanceFloat}");
-
-        $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
-
-        $this->processMasterAgentReferredCommission($bet, $masterAgent);
-    }
-
-    public function processMasterAgentReferredCommission(Bet $bet, User $masterAgent)
-    {
-        if ($masterAgent->hasRole('Player') && $masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent) {
-            $operator = $this->getOperator();
-            $masterAgentReferred = $masterAgent->masterAgent;
-            $bettingRound = $bet->bettingRound;
-            $rate = 0.01;
-            $commission = $bet->bet_amount * $rate;
-            logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} referral will receive $commission from Operator");
-            $masterAgentReferredWallet = $this->getWallet($masterAgentReferred, 'Income Wallet');
-            logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} current balance {$masterAgentReferredWallet->balanceFloat}");
-            $transaction = $operator->forceTransfer($masterAgentReferredWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
-            logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} new balance {$masterAgentReferredWallet->balanceFloat}");
-            $this->createCommission($bet, $masterAgentReferred, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid , 'sponsor_master_agent' => $masterAgent->id]);
-        }
-    }
-
-    public function processOperatorCommission(Bet $bet)
-    {
-        $operator = $this->getOperator();
-        $rate = .10;
-        $bettingRound = $bet->bettingRound;
-        $commission = $bet->bet_amount * $rate;
-        if ($commission > 0) {
-            logger("BettingRound#{$bettingRound->id} Operator Current balance is {$operator->balanceFloat}");
-            logger("BettingRound#{$bettingRound->id} Transferring amount of $commission to Operator");
-            $transaction = $bettingRound->forceTransferFloat($operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
-            logger("BettingRound#{$bettingRound->id} Operator new balance is {$operator->balanceFloat}");
-        }
-
-        return $operator;
     }
 
 }

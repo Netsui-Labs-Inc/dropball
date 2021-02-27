@@ -15,7 +15,7 @@ trait WalletAndCommission
 
     public function getDevelopers()
     {
-        return Company::firstOrCreate(['name' => 'Developers']);
+        return Company::firstOrCreate(['name' => 'System']);
     }
 
     public function getWallet($walletHolder, $walletName)
