@@ -35,7 +35,7 @@ class StoreMasterAgentRequest extends FormRequest
             'mobile' => ['required', 'max:100', Rule::unique('users')],
             'hub_id' => ['exists:hubs,id'],
             'referral_id' => ['required', 'max:100', Rule::unique('users')],
-            'password' => ['max:100', PasswordRules::register($this->email)],
+            'password' => ['max:100'],
         ];
     }
 

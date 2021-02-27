@@ -41,12 +41,12 @@ class HubController extends Controller
         }
     }
 
-    public function cashBalance(User $hub)
+    public function cashBalance(Hub $hub)
     {
-        return view('backend.hub.wallet')->with('user', $hub);
+        return view('backend.hub.wallet')->with('hub', $hub);
     }
 
-    public function deposit(User $hub, DepositRequest $request)
+    public function deposit(Hub $hub, DepositRequest $request)
     {
         $user = $request->user();
         if (! Hash::check($request->get('password'), $user->password)) {

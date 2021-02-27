@@ -32,10 +32,10 @@
                     </div>
                 </div><!--form-group-->
                 <div class="form-group row">
-                    <label for="mobile" class="col-md-2 col-form-label">@lang('E-mail Address')</label>
+                    <label for="mobile" class="col-md-2 col-form-label">@lang('Mobile Number')</label>
 
                     <div class="col-md-10">
-                        <input type="text" name="mobile" class="form-control" placeholder="{{ __('Mobile number') }}" value="{{ old('email') }}" maxlength="255" required />
+                        <input type="text" name="mobile" class="form-control" placeholder="{{ __('Mobile Number') }}" value="{{ old('email') }}" maxlength="255" required />
                     </div>
                 </div><!--form-group-->
 
