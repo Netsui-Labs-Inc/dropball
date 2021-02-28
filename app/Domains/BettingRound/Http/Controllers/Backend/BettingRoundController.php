@@ -101,9 +101,10 @@ class BettingRoundController extends Controller
 
     public function cancelBettingRound(BettingRound $bettingRound)
     {
-        if (! in_array($bettingRound->status, ['upcoming', 'ongoing'])) {
-            throw new GeneralException("Cannot Open BettingRound at the moment");
+        if (! in_array($bettingRound->status, ['upcoming','placing_bets', 'ongoing'])) {
+            throw new GeneralException("Cannot Cancel Betting Round at the moment");
         }
+
         $bettingRound->status = 'cancelled';
         $bettingRound->result = null;
 
