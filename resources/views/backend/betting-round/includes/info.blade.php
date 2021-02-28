@@ -1,8 +1,13 @@
 <table class="table table-hover">
     <tr>
-        <th>@lang('ID')</th>
+        <th>@lang('Betting Round ID')</th>
         <td>#{{$bettingRound->id}}</td>
-    </tr>  <tr>
+    </tr>
+    <tr>
+        <th>@lang('Betting Round Queue')</th>
+        <td>#{{$bettingRound->queue}}</td>
+    </tr>
+    <tr>
         <th>@lang('UUID')</th>
         <td>{{$bettingRound->uuid}}</td>
     </tr>
