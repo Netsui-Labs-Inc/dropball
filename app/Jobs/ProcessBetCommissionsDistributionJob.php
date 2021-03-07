@@ -6,7 +6,6 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
-use App\Models\Company;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -44,6 +43,7 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         //update bets status
         $bettingRound = $this->bettingRound;
         $this->processLosers($bettingRound);
+
         foreach ($this->bets as $bet) {
             DB::beginTransaction();
 
@@ -63,11 +63,12 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
     public function processCommissions($bet)
     {
         $bettingRound = $this->bettingRound;
-        $operator = $this->processOperatorCommission($bet);
 
         logger("BettingRound#{$bettingRound->id} New Pool Money Balance {$bettingRound->balanceFloat}");
-        $this->processMasterAgentCommission($bet, $operator);
+        $hasReferredAgent = $this->processMasterAgentCommission($bet);
         $this->processDevelopersCommission($bet);
+
+        $this->processOperatorCommission($bet, $hasReferredAgent);
     }
 
     public function payout(Bet $bet)
@@ -75,31 +76,30 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         return getPayout($bet->bet_amount);
     }
 
-    public function processMasterAgentCommission(Bet $bet, Company $operator)
+    public function processMasterAgentCommission(Bet $bet)
     {
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
         if (! $masterAgent) {
             return;
         }
-        $rate = .02;
+        $rate = .01;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
 
-        logger("BettingRound#{$bettingRound->id} Master agent  #{$masterAgent->id} {$masterAgent->name} will receive 2%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
+        logger("BettingRound#{$bettingRound->id} Master agent  #{$masterAgent->id} {$masterAgent->name} will receive 1%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
         $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-        $transaction = $operator->forceTransferFloat($masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
+        $transaction = $bettingRound->forceTransferFloat($masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgent->id} {$masterAgent->name}  new balance {$masterAgentWallet->balanceFloat}");
 
         $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
 
-        $this->processMasterAgentReferredCommission($bet, $masterAgent);
+        return $this->processMasterAgentReferredCommission($bet, $masterAgent);
     }
 
     public function processMasterAgentReferredCommission(Bet $bet, User $masterAgent)
     {
         if ($masterAgent->hasRole('Player') && $masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent) {
-            $operator = $this->getOperator();
             $masterAgentReferred = $masterAgent->masterAgent;
             $bettingRound = $bet->bettingRound;
             $rate = 0.01;
@@ -107,16 +107,20 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} referral will receive $commission from Operator");
             $masterAgentReferredWallet = $this->getWallet($masterAgentReferred, 'Income Wallet');
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} current balance {$masterAgentReferredWallet->balanceFloat}");
-            $transaction = $operator->forceTransfer($masterAgentReferredWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
+            $transaction = $bettingRound->forceTransfer($masterAgentReferredWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} new balance {$masterAgentReferredWallet->balanceFloat}");
             $this->createCommission($bet, $masterAgentReferred, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid , 'sponsor_master_agent' => $masterAgent->id]);
+
+            return true;
         }
+
+        return false;
     }
 
-    public function processOperatorCommission(Bet $bet)
+    public function processOperatorCommission(Bet $bet, $hasReferredAgent = false)
     {
         $operator = $this->getOperator();
-        $rate = .10;
+        $rate = $hasReferredAgent ? .06 : .07;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
         if ($commission > 0) {
@@ -125,6 +129,8 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
             $transaction = $bettingRound->forceTransferFloat($operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
             logger("BettingRound#{$bettingRound->id} Operator new balance is {$operator->balanceFloat}");
         }
+
+        $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
 
         return $operator;
     }
