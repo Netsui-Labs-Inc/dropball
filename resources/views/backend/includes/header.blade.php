@@ -48,6 +48,15 @@
 
                 <x-utils.link
                     class="dropdown-item"
+                    icon="c-icon mr-2 cil-user"
+                    :href="route('admin.auth.my-account')"
+                ><x-slot name="text">
+                        @lang('My Account')
+                    </x-slot>
+                </x-utils.link>
+
+                <x-utils.link
+                    class="dropdown-item"
                     icon="c-icon mr-2 cil-account-logout"
                     onclick="event.preventDefault();document.getElementById('logout-form').submit();">
                     <x-slot name="text">

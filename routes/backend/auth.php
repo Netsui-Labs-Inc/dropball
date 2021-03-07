@@ -3,6 +3,7 @@
 use App\Domains\Auth\Http\Controllers\Backend\Role\RoleController;
 use App\Domains\Auth\Http\Controllers\Backend\User\DeactivatedUserController;
 use App\Domains\Auth\Http\Controllers\Backend\User\DeletedUserController;
+use App\Domains\Auth\Http\Controllers\Backend\User\MyAccountController;
 use App\Domains\Auth\Http\Controllers\Backend\User\UserController;
 use App\Domains\Auth\Http\Controllers\Backend\User\UserPasswordController;
 use App\Domains\Auth\Http\Controllers\Backend\User\UserSessionController;
@@ -142,4 +143,16 @@ Route::group([
             Route::delete('/', [RoleController::class, 'destroy'])->name('destroy');
         });
     });
+});
+
+Route::group(['as' => 'auth.', 'middleware' => 'auth'], function () {
+    Route::get('my-account', [MyAccountController::class, 'index'])
+        ->name('my-account')
+        ->breadcrumbs(function (Trail $trail) {
+            $trail->parent('admin.dashboard')
+                ->push(__('My Account'), route('admin.auth.my-account'));
+        });
+
+    Route::patch('my-account', [MyAccountController::class, 'update'])->name('my-account.update');
+    Route::post('my-account/password', [MyAccountController::class, 'changePassword'])->name('my-account.password.change');
 });
