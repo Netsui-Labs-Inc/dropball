@@ -51,7 +51,7 @@ class CommissionsTable extends TableComponent
     {
         $query = Transaction::query();
 
-        if (auth()->user()->hasRole('Master Agent')) {
+        if (auth()->user()->hasRole('Master Agent') && $this->model) {
             return $this->model->transactions()->whereHas('wallet', fn ($query) => $query->where('slug', 'income-wallet'))->getQuery();
         }
 

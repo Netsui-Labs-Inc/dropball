@@ -57,16 +57,13 @@ class EventBettingRound extends Component
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
-        $winningBet = $this->hasWinningBet($userBets) ? $userBets->firstwhere('bet', $this->bettingRound->result) : null;
-
-        $result = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
 
         if ($userBets->isEmpty()) {
             $icon = 'info';
             $title = 'Betting Round #'.$this->bettingRound->queue;
         } elseif (in_array($this->bettingRound->result,  ['draw','cancelled'])) {
             $icon = 'info';
-            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
+            $title = "<h1 class='text-danger'> Cancelled </h1>";
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
         } elseif ($this->hasWinningBet($userBets)) {
             $this->setPayouts();
