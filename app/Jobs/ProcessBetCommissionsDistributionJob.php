@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Domains\Hub\Models\Hub;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
 use Illuminate\Bus\Queueable;
@@ -66,9 +67,11 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
 
         logger("BettingRound#{$bettingRound->id} New Pool Money Balance {$bettingRound->balanceFloat}");
         $hasReferredAgent = $this->processMasterAgentCommission($bet);
+
         $this->processDevelopersCommission($bet);
 
         $this->processOperatorCommission($bet, $hasReferredAgent);
+
     }
 
     public function payout(Bet $bet)
@@ -94,7 +97,10 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
 
         $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
 
+        $this->processHubCommission($bet, $masterAgent->hub);
+
         return $this->processMasterAgentReferredCommission($bet, $masterAgent);
+
     }
 
     public function processMasterAgentReferredCommission(Bet $bet, User $masterAgent)
@@ -141,5 +147,20 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
             'status' => 'lose',
             'gain_loss' => DB::raw('-1 * bets.bet_amount'),
         ]);
+    }
+
+    public function processHubCommission(Bet $bet, Hub $hub)
+    {
+        $rate = .01;
+        $player = $bet->user;
+        $bettingRound = $bet->bettingRound;
+        $commission = $bet->bet_amount * $rate;
+
+        logger("BettingRound#{$bettingRound->id} Hub  #{$hub->id} {$hub->name} will receive 1%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}");
+        $hubWallet = $this->getWallet($hub, 'Income Wallet');
+        $transaction = $bettingRound->forceTransferFloat($hubWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
+        logger("BettingRound#{$bettingRound->id} Hub #{$hub->id} {$hub->name}  new balance {$hubWallet->balanceFloat}");
+
+        $this->createCommission($bet, $hub, 'hub', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
     }
 }

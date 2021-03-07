@@ -34,4 +34,9 @@ trait UserRelationship
     {
         return $this->belongsTo(User::class, 'referred_by');
     }
+
+    public function hub()
+    {
+        return $this->belongsTo(Hub::class, 'hub_id');
+    }
 }
