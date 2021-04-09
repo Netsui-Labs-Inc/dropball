@@ -19,6 +19,7 @@
     @include('includes.partials.ga')
 </head>
 <body >
+    @stack('fb')
     @include('includes.partials.read-only')
     @include('includes.partials.logged-in-as')
     @include('includes.partials.announcements')

@@ -6,14 +6,18 @@
     <div class="container-fluid py-4">
         <div class="row justify-content-center">
             <div class="col-lg-12 col-xl-8 col-xx1-8 col-md-12 col-sm-12">
-                <x-frontend.card bodyClass="bg-gradient-gray-dark"  headerClass="bg-gradient-primary">
+                <x-frontend.card bodyClass="bg-gradient-gray-dark p-0"  headerClass="bg-gradient-primary">
                     <x-slot name="header">
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        <div class="row justify-content-center text-center  jumbotron-fluid" style="min-height: 200px">
-                            <h1 class="text-white" style="padding: 9em"><i class="fa fa-video"></i> Loading Video...</h1>
-                        </div>
+                            <div class="fb-video"
+                                 data-href="https://www.facebook.com/eden.cruz.39948/videos/278115187212218/"
+                                 data-autoplay="true"
+                                 data-allowfullscreen="true"
+                                 data-lazy="true"
+                                 data-show-text="false">
+                            </div>
                     </x-slot>
                 </x-frontend.card>
             </div>
@@ -30,3 +34,8 @@
         </div><!--row-->
     </div><!--container-->
 @endsection
+
+@push('fb')
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=936172183880068" nonce="e3WMiCOm"></script>
+@endpush
