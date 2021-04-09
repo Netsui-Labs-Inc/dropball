@@ -46,6 +46,11 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+        'god' => [
+            'driver' => 'session',
+            'provider' => 'god',
+            'hash' => true,
+        ],
     ],
 
     /*
@@ -71,10 +76,10 @@ return [
             'model' => App\Domains\Auth\Models\User::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+         'god' => [
+             'driver' => 'eloquent',
+             'model' => App\GodUser::class,
+         ],
     ],
 
     /*
