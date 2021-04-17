@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBetPlaced;
+use Faker\Factory;
 
 class PlaceBetService
 {
@@ -78,10 +79,34 @@ class PlaceBetService
             'bet' => $this->bet->id,
         ]);
 
-        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor));
+        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
 
         logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
 
+        $this->setPoolMoney($bet);
+
         return $this->bettingRound;
+    }
+
+    private function setPoolMoney($userBet)
+    {
+        $faker = Factory::create();
+
+        $bet = $faker->randomElement(['pula', 'puti']);
+
+        $meta = $this->bettingRound->meta;
+
+        $multiplier = $faker->randomNumber(1);
+        $choice = $faker->randomElement([ 50, 100, 300, 500, 1000, 5000, 10000]);
+
+        $betAmount = $choice * $multiplier;
+        $userBetColor = strtolower($userBet->option->name);
+
+        if (($meta[$bet] + $betAmount) <= $meta['win-pool'] && $faker->boolean && $userBetColor != $bet) {
+            $meta[$bet] = $meta[$bet] + $betAmount;
+            $this->bettingRound->update(['meta' => $meta]);
+            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $bet));
+        }
+
     }
 }

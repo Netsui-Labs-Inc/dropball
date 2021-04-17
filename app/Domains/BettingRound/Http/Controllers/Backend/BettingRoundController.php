@@ -2,8 +2,6 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
-use App\Domains\Bet\Models\BetOption;
-use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -11,6 +9,7 @@ use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
+use Faker\Factory;
 use Illuminate\Http\Request;
 
 class BettingRoundController extends Controller
@@ -46,6 +45,8 @@ class BettingRoundController extends Controller
         ]);
 
         event(new BettingRoundBettingWindowUpdated($bettingRound->fresh()));
+
+        $this->setMixer($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Betting window was opened'));
     }
@@ -126,5 +127,24 @@ class BettingRoundController extends Controller
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
+    }
+
+    public function setMixer(BettingRound $bettingRound)
+    {
+        $faker = Factory::create();
+        $max = 999999;
+        $diff = $faker->numberBetween(5, 35);
+        $winPool = $faker->numberBetween(400000, $max);
+        $winner = $faker->randomElement(['pula', 'puti']);
+
+        $meta = [
+            'winner' => $winner,
+            'win-pool' => $winPool,
+            'lose-pool' => $winPool - ($diff / 100 * $winPool),
+            'pula' => 0 , 'puti' => 0,
+        ];
+
+        $bettingRound->meta = $meta;
+        $bettingRound->save();
     }
 }

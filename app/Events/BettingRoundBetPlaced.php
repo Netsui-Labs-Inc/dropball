@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use Illuminate\Broadcasting\Channel;
@@ -21,16 +22,18 @@ class BettingRoundBetPlaced implements ShouldBroadcast, ShouldQueue
 
     public BettingRound $bettingRound;
     public BettingEvent $bettingEvent;
+    public string $bet;
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
      * @return void
      */
-    public function __construct(BettingRound $bettingRound, User $user)
+    public function __construct(BettingRound $bettingRound, User $user, $bet)
     {
         $this->bettingRound = $bettingRound;
         $this->user = $user;
         $this->bettingEvent = $bettingRound->bettingEvent;
+        $this->bet = $bet;
     }
 
     /**

@@ -61,8 +61,8 @@ class EventBettingRound extends Component
         if ($userBets->isEmpty()) {
             $icon = 'info';
             $title = 'Betting Round #'.$this->bettingRound->queue;
-            $result = $this->bettingRound->betOption->name;
-        } elseif (in_array($this->bettingRound->result,  ['draw','cancelled'])) {
+            $result = $this->bettingRound->status;
+        } elseif (in_array($this->bettingRound->status,  ['draw','cancelled'])) {
             $icon = 'info';
             $title = "<h1 class='text-danger'> Cancelled </h1>";
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";

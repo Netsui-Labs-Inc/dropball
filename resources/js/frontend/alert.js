@@ -57,4 +57,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.livewire.on('swal:alert', data => {
         SwalAlert(data.icon, data.title, data.timeout)
     })
+
+    window.livewire.on('place-bets-puti', data => {
+        const element = document.querySelector('.puti-pool');
+        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-2');
+    })
+
+    window.livewire.on('place-bets-pula', data => {
+        const element = document.querySelector('.pula-pool');
+        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-2');
+    })
 })

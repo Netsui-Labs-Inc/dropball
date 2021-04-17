@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col @error('amount') has-danger @enderror">
+        <div class="form-group col mb-0 @error('amount') has-danger @enderror">
             <div class="input-group input-group-merge">
                 <input class="form-control form-control-lg  @error('amount') is-invalid @enderror" placeholder="Enter Bet Amount" type="number" min="100" wire:model="amount" {{$userCanBet ? '': 'disabled'}}>
                 <div class="input-group-append">
@@ -30,15 +30,25 @@
             @endif
         </div>
     </div>
+    <div class="card-profile-stats d-flex justify-content-center">
+        <div>
+            <span class="heading pula-pool">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</span>
+            <span class="description">PULA</span>
+        </div>
+        <div>
+            <span class="heading puti-pool">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</span>
+            <span class="description">PUTI</span>
+        </div>
+    </div>
     <span class="h4 surtitle text-muted">Choose a color to bet</span>
     <div class="row justify-content-center mt-3">
         @foreach($betOptions as $option)
-            <div class="col-12 pb-2 justify-content-center">
+            <div class="col-6 pb-2 justify-content-center">
                 @if($bettingRound)
                     <div class="text-muted surtitle">
                         @php $userBetTotal = $bettingRound->totalBetTypeByUser($option->id, auth()->user()->id) @endphp
-                        <span class="h5 text-muted ">PHP {{number_format($userBetTotal)}} </span>
-                        @if($userBetTotal) | <span class="h5 text-success">+ PHP {{number_format(getPayout($userBetTotal))}}</span>@endif
+                        <span class="h5 text-muted ">{{number_format($userBetTotal)}} </span>
+                        @if($userBetTotal) | <span class="h5 text-success">+{{number_format(getPayout($userBetTotal))}}</span>@endif
                     </div>
                 @endif
                 <button  class="btn btn-lg btn-block mb-1" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};"  wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}> {{strtoupper($option->name)}}</button>

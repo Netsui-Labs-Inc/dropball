@@ -10890,7 +10890,7 @@ $(function () {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /usr/local/var/www/htdocs/spider-bet/resources/js/backend/app.js */"./resources/js/backend/app.js");
+module.exports = __webpack_require__(/*! /usr/local/var/www/htdocs/dropball/resources/js/backend/app.js */"./resources/js/backend/app.js");
 
 
 /***/ })
