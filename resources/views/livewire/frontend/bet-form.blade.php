@@ -30,7 +30,7 @@
             @endif
         </div>
     </div>
-    <div class="card-profile-stats d-flex justify-content-center">
+    <div class="card-profile-stats d-flex justify-content-center pb-0">
         <div>
             <span class="heading pula-pool">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</span>
             <span class="description">PULA</span>
@@ -40,8 +40,7 @@
             <span class="description">PUTI</span>
         </div>
     </div>
-    <span class="h4 surtitle text-muted">Choose a color to bet</span>
-    <div class="row justify-content-center mt-3">
+    <div class="row justify-content-center">
         @foreach($betOptions as $option)
             <div class="col-6 pb-2 justify-content-center">
                 @if($bettingRound)

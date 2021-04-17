@@ -32,6 +32,13 @@
                 </x-frontend.card>
             </div><!--col-md-10-->
         </div><!--row-->
+        <div class="justify-content-center ">
+            <x-frontend.card class="bg-gradient-default" bodyClass="p-2">
+                <x-slot name="body">
+                    <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
+                </x-slot>
+            </x-frontend.card>
+        </div>
     </div><!--container-->
 @endsection
 
