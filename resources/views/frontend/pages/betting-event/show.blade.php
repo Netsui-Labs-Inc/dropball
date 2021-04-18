@@ -37,9 +37,6 @@
                 </x-frontend.card>
             </div><!--col-md-10-->
         </div><!--row-->
-        <div class="justify-content-center ">
-
-        </div>
     </div><!--container-->
 @endsection
 

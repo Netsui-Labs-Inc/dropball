@@ -60,11 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.livewire.on('place-bets-puti', data => {
         const element = document.querySelector('.puti-pool');
-        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-5');
+        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-3');
     })
 
     window.livewire.on('place-bets-pula', data => {
         const element = document.querySelector('.pula-pool');
-        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-5');
+        element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-3');
     })
 })

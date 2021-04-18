@@ -1,5 +1,5 @@
 <div>
-    <div class="row justify-content-center pb-2">
+    <div class="row justify-content-center">
         <div class="col">
             <span class="h6 surtitle text-white">Balance</span>
             <div class="h2 text-success">{{number_format($balance)}}</div>
@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="form-group col mb-0 @error('amount') has-danger @enderror">
+        <div class="form-group col @error('amount') has-danger @enderror">
             <div class="input-group input-group-merge">
                 <input class="form-control form-control-lg  @error('amount') is-invalid @enderror" placeholder="Enter Bet Amount" type="number" min="100" wire:model="amount" {{$userCanBet ? '': 'disabled'}}>
                 <div class="input-group-append">
@@ -36,13 +36,13 @@
                 <div class="p-3 mb-2 bg-danger border-default" style="border-radius: 6px 0 0 6px">
                     <div class="text-white h4 mb-0">PULA</div>
                 </div>
-                <span class="pula-pool text-warning h1">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</span>
+                <div class="pula-pool text-warning h1">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</div>
             </div>
             <div class="col justify-content-center text-center p-0">
                 <div class="p-3 mb-2 bg-white border-default" style="border-radius: 0 6px 6px 0">
                     <div class="text-muted h4 mb-0">PUTI</div>
                 </div>
-                <span class="puti-pool h1 text-warning">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</span>
+                <div class="puti-pool h1 text-warning">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</div>
             </div>
         </div>
     </div>
