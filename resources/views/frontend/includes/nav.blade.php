@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <x-utils.link
             :href="route('frontend.index')"
-            :text="appName()"
+            text="PULA PUTI"
             icon="fa fa-circle-notch"
             class="navbar-brand" />
 
