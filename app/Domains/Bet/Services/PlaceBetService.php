@@ -3,6 +3,7 @@
 namespace App\Domains\Bet\Services;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBetPlaced;
@@ -88,7 +89,7 @@ class PlaceBetService
         return $this->bettingRound;
     }
 
-    private function setPoolMoney($userBet)
+    private function setPoolMoney(Bet $userBet)
     {
         $faker = Factory::create();
 
@@ -104,9 +105,12 @@ class PlaceBetService
 
         if (($meta[$bet] + $betAmount) <= $meta['win-pool'] && $faker->boolean && $userBetColor != $bet) {
             $meta[$bet] = $meta[$bet] + $betAmount;
-            $this->bettingRound->update(['meta' => $meta]);
+
             event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $bet));
         }
+        $meta[$userBetColor] = $meta[$userBetColor] + $userBet->bet_amount;
+        $this->bettingRound->update(['meta' => $meta]);
 
+        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $userBetColor));
     }
 }

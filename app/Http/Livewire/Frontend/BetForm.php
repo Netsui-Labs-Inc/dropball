@@ -180,6 +180,7 @@ class BetForm extends Component
             $this->addToPoolMoney();
             $this->alert($bet);
         } catch (\Exception $e) {
+            logger($e->getTraceAsString());
             $this->addError('amount', $e->getMessage());
         }
     }

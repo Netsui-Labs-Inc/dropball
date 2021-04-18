@@ -1,11 +1,11 @@
 <div>
     <div class="row justify-content-center pb-2">
         <div class="col">
-            <span class="h6 surtitle text-muted">Balance</span>
-            <div class="h2">{{number_format($balance)}}</div>
+            <span class="h6 surtitle text-white">Balance</span>
+            <div class="h2 text-success">{{number_format($balance)}}</div>
         </div>
         <div class="col">
-            <span class="h6 surtitle text-muted">Total Bet Amount</span>
+            <span class="h6 surtitle text-white">Total Bet Amount</span>
             <div class="h2 text-success">{{number_format($totalBetAmount)}}</div>
         </div>
     </div>
@@ -20,7 +20,7 @@
             </div>
             <div class="mt-2">
                 @foreach($betChoices as $choice)
-                    <button class="btn btn-sm {{$amount == $choice ? 'btn-danger' : 'btn-outline-danger' }}" wire:click="$emit('amountUpdated', {{$choice}})" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                    <button class="btn btn-sm {{$amount == $choice ? 'btn-danger' : 'btn-white' }}" wire:click="$emit('amountUpdated', {{$choice}})" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
                 @endforeach
             </div>
             @if (session()->has('error'))
@@ -30,28 +30,44 @@
             @endif
         </div>
     </div>
-    <div class="card-profile-stats d-flex justify-content-center pb-0">
-        <div>
-            <span class="heading pula-pool">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</span>
-            <span class="description">PULA</span>
-        </div>
-        <div>
-            <span class="heading puti-pool">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</span>
-            <span class="description">PUTI</span>
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <div class="col justify-content-center text-center p-0">
+                <div class="p-3 mb-2 bg-danger border-default" style="border-radius: 6px 0 0 6px">
+                    <div class="text-white h4 mb-0">PULA</div>
+                </div>
+                <span class="pula-pool text-warning h1">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</span>
+            </div>
+            <div class="col justify-content-center text-center p-0">
+                <div class="p-3 mb-2 bg-white border-default" style="border-radius: 0 6px 6px 0">
+                    <div class="text-muted h4 mb-0">PUTI</div>
+                </div>
+                <span class="puti-pool h1 text-warning">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</span>
+            </div>
         </div>
     </div>
-    <div class="row justify-content-center">
-        @foreach($betOptions as $option)
-            <div class="col-6 pb-2 justify-content-center">
-                @if($bettingRound)
-                    <div class="text-muted surtitle">
-                        @php $userBetTotal = $bettingRound->totalBetTypeByUser($option->id, auth()->user()->id) @endphp
-                        <span class="h5 text-muted ">{{number_format($userBetTotal)}} </span>
-                        @if($userBetTotal) | <span class="h5 text-success">+{{number_format(getPayout($userBetTotal))}}</span>@endif
-                    </div>
-                @endif
-                <button  class="btn btn-lg btn-block mb-1" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};"  wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}> {{strtoupper($option->name)}}</button>
+    <div class="container">
+        <div class="row justify-content-center">
+            @foreach($betOptions as $option)
+                <div class="col-6 pb-2">
+                    @if($bettingRound)
+                        <div class="text-muted surtitle text-center">
+                            @php $userBetTotal = $bettingRound->totalBetTypeByUser($option->id, auth()->user()->id) @endphp
+                            <span class="h2 text-white ">{{number_format($userBetTotal)}} </span>
+                            @if($userBetTotal) | <span class="h2 text-success">+{{number_format(getPayout($userBetTotal))}}</span>@endif
+                        </div>
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </div>
+    <div class="container">
+        <div class="row ">
+            <div class="btn-group col justify-content-center text-center p-0" role="group">
+                @foreach($betOptions as $option)
+                    <button class="btn btn-lg btn-block m-0" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};" wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}><i class="fas fa-plus-circle"></i> {{"BET ".strtoupper($option->name)}}</button>
+                @endforeach
             </div>
-        @endforeach
+        </div>
     </div>
 <div>

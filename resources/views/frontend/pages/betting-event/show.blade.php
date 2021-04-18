@@ -5,7 +5,7 @@
 @section('content')
     <div class="container-fluid py-4 " >
         <div class="row justify-content-center">
-            <div class="col-lg-12 col-xl-8 col-xx1-8 col-md-12 col-sm-12">
+            <div class="col-lg-12 col-xl-7 col-xx1-7 col-md-12 col-sm-12">
                 <x-frontend.card bodyClass="bg-gradient-gray-dark p-0"  headerClass="bg-gradient-gray-dark">
                     <x-slot name="header">
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
@@ -18,11 +18,16 @@
                                  data-lazy="true"
                                  data-show-text="false">
                             </div>
+                        <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
+                            <x-slot name="body">
+                                <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
+                            </x-slot>
+                        </x-frontend.card>
                     </x-slot>
                 </x-frontend.card>
             </div>
-            <div class="col-lg-12 col-xl-4 col-xx1-4 col-md-12 col-sm-12">
-                <x-frontend.card headerClass="bg-gradient-default" bodyClass="bg-yellow-50">
+            <div class="col-lg-12 col-xl-5 col-xx1-5 col-md-12 col-sm-12">
+                <x-frontend.card headerClass="bg-gradient-gray-dark" bodyClass="bg-gradient-default">
                     <x-slot name="header">
                         <livewire:frontend.event-betting-round :bettingEventId="$bettingEvent->id"></livewire:frontend.event-betting-round>
                     </x-slot>
@@ -33,11 +38,7 @@
             </div><!--col-md-10-->
         </div><!--row-->
         <div class="justify-content-center ">
-            <x-frontend.card class="bg-gradient-default" bodyClass="p-2">
-                <x-slot name="body">
-                    <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
-                </x-slot>
-            </x-frontend.card>
+
         </div>
     </div><!--container-->
 @endsection
