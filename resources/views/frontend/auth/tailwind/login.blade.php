@@ -104,7 +104,7 @@
                 <x-forms.post :action="route('frontend.auth.login')" class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 mb-32 sm:mb-0 my-40 sm:my-12 px-2 sm:px-0">
 
                 <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">
-                    <h2 class="text-4xl text-gray-100 leading-tight pt-8">Kingpin Gaming</h2>
+                    <h2 class="text-4xl text-gray-100 leading-tight pt-8"><span class="text-red-600">Kingpin</span> Gaming</h2>
                 </div>
                 <div class="pt-16 px-2 flex flex-col items-center justify-center">
                     <h3 class="text-2xl sm:text-3xl xl:text-2xl font-bold text-gray-100 leading-tight">Sign-in to your account</h3>
