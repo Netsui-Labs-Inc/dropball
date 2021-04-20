@@ -1,107 +1,281 @@
-@extends('frontend.layouts.full')
+@extends('frontend.layouts.tailwind.full')
 
 @section('title', __('Register'))
 
 @section('content')
-    <div class="header bg-gradient-danger py-4 py-lg-5 pt-lg-5">
-        <div class="container">
-            <div class="header-body text-center mb-7">
-                <div class="row justify-content-center">
-                    <div class="col-xl-5 col-lg-6 col-md-8 px-5">
-                        <h1 class="text-white text-uppercase"> Create an Account</h1>
-                    </div>
-                </div>
+    <section class="bg-gray-900 h-screen">
+        <div class="mx-auto flex justify-center md:items-center relative md:h-full">
+            <div class="absolute top-0 right-0 pt-2 mr-4">
+                <svg width="200" height="144" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="#DC2626" fill-rule="evenodd">
+                        <rect width="4" height="4" rx="2" />
+                        <rect x="23" width="4" height="4" rx="2" />
+                        <rect x="45" width="4" height="4" rx="2" />
+                        <rect x="68" width="4" height="4" rx="2" />
+                        <rect x="90" width="4" height="4" rx="2" />
+                        <rect x="113" width="4" height="4" rx="2" />
+                        <rect x="135" width="4" height="4" rx="2" />
+                        <rect x="158" width="4" height="4" rx="2" />
+                        <rect x="181" width="4" height="4" rx="2" />
+                        <rect x="203" width="4" height="4" rx="2" />
+                        <rect y="18" width="4" height="4" rx="2" />
+                        <rect x="23" y="18" width="4" height="4" rx="2" />
+                        <rect x="45" y="18" width="4" height="4" rx="2" />
+                        <rect x="68" y="18" width="4" height="4" rx="2" />
+                        <rect x="90" y="18" width="4" height="4" rx="2" />
+                        <rect x="113" y="18" width="4" height="4" rx="2" />
+                        <rect x="135" y="18" width="4" height="4" rx="2" />
+                        <rect x="158" y="18" width="4" height="4" rx="2" />
+                        <rect x="181" y="18" width="4" height="4" rx="2" />
+                        <rect x="203" y="18" width="4" height="4" rx="2" />
+                        <rect y="35" width="4" height="4" rx="2" />
+                        <rect x="23" y="35" width="4" height="4" rx="2" />
+                        <rect x="45" y="35" width="4" height="4" rx="2" />
+                        <rect x="68" y="35" width="4" height="4" rx="2" />
+                        <rect x="90" y="35" width="4" height="4" rx="2" />
+                        <rect x="113" y="35" width="4" height="4" rx="2" />
+                        <rect x="135" y="35" width="4" height="4" rx="2" />
+                        <rect x="158" y="35" width="4" height="4" rx="2" />
+                        <rect x="181" y="35" width="4" height="4" rx="2" />
+                        <rect x="203" y="35" width="4" height="4" rx="2" />
+                        <rect y="53" width="4" height="4" rx="2" />
+                        <rect x="23" y="53" width="4" height="4" rx="2" />
+                        <rect x="45" y="53" width="4" height="4" rx="2" />
+                        <rect x="68" y="53" width="4" height="4" rx="2" />
+                        <rect x="90" y="53" width="4" height="4" rx="2" />
+                        <rect x="113" y="53" width="4" height="4" rx="2" />
+                        <rect x="135" y="53" width="4" height="4" rx="2" />
+                        <rect x="158" y="53" width="4" height="4" rx="2" />
+                        <rect x="181" y="53" width="4" height="4" rx="2" />
+                        <rect x="203" y="53" width="4" height="4" rx="2" />
+                        <rect y="70" width="4" height="4" rx="2" />
+                        <rect x="23" y="70" width="4" height="4" rx="2" />
+                        <rect x="45" y="70" width="4" height="4" rx="2" />
+                        <rect x="68" y="70" width="4" height="4" rx="2" />
+                        <rect x="90" y="70" width="4" height="4" rx="2" />
+                        <rect x="113" y="70" width="4" height="4" rx="2" />
+                        <rect x="135" y="70" width="4" height="4" rx="2" />
+                        <rect x="158" y="70" width="4" height="4" rx="2" />
+                        <rect x="181" y="70" width="4" height="4" rx="2" />
+                        <rect x="203" y="70" width="4" height="4" rx="2" />
+                        <rect y="88" width="4" height="4" rx="2" />
+                        <rect x="23" y="88" width="4" height="4" rx="2" />
+                        <rect x="45" y="88" width="4" height="4" rx="2" />
+                        <rect x="68" y="88" width="4" height="4" rx="2" />
+                        <rect x="90" y="88" width="4" height="4" rx="2" />
+                        <rect x="113" y="88" width="4" height="4" rx="2" />
+                        <rect x="135" y="88" width="4" height="4" rx="2" />
+                        <rect x="158" y="88" width="4" height="4" rx="2" />
+                        <rect x="181" y="88" width="4" height="4" rx="2" />
+                        <rect x="203" y="88" width="4" height="4" rx="2" />
+                        <rect y="105" width="4" height="4" rx="2" />
+                        <rect x="23" y="105" width="4" height="4" rx="2" />
+                        <rect x="45" y="105" width="4" height="4" rx="2" />
+                        <rect x="68" y="105" width="4" height="4" rx="2" />
+                        <rect x="90" y="105" width="4" height="4" rx="2" />
+                        <rect x="113" y="105" width="4" height="4" rx="2" />
+                        <rect x="135" y="105" width="4" height="4" rx="2" />
+                        <rect x="158" y="105" width="4" height="4" rx="2" />
+                        <rect x="181" y="105" width="4" height="4" rx="2" />
+                        <rect x="203" y="105" width="4" height="4" rx="2" />
+                        <rect y="123" width="4" height="4" rx="2" />
+                        <rect x="23" y="123" width="4" height="4" rx="2" />
+                        <rect x="45" y="123" width="4" height="4" rx="2" />
+                        <rect x="68" y="123" width="4" height="4" rx="2" />
+                        <rect x="90" y="123" width="4" height="4" rx="2" />
+                        <rect x="113" y="123" width="4" height="4" rx="2" />
+                        <rect x="135" y="123" width="4" height="4" rx="2" />
+                        <rect x="158" y="123" width="4" height="4" rx="2" />
+                        <rect x="181" y="123" width="4" height="4" rx="2" />
+                        <rect x="203" y="123" width="4" height="4" rx="2" />
+                        <rect y="140" width="4" height="4" rx="2" />
+                        <rect x="23" y="140" width="4" height="4" rx="2" />
+                        <rect x="45" y="140" width="4" height="4" rx="2" />
+                        <rect x="68" y="140" width="4" height="4" rx="2" />
+                        <rect x="90" y="140" width="4" height="4" rx="2" />
+                        <rect x="113" y="140" width="4" height="4" rx="2" />
+                        <rect x="135" y="140" width="4" height="4" rx="2" />
+                        <rect x="158" y="140" width="4" height="4" rx="2" />
+                        <rect x="181" y="140" width="4" height="4" rx="2" />
+                        <rect x="203" y="140" width="4" height="4" rx="2" />
+                    </g>
+                </svg>
             </div>
-        </div>
-        <div class="separator separator-bottom separator-skew zindex-100">
-            <svg x="0" y="0" viewBox="0 0 2560 100" preserveAspectRatio="none" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                <polygon class="fill-default" points="2560 0 2560 100 0 100"></polygon>
-            </svg>
-        </div>
-    </div>
-    <div class="container mt--8 pb-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6 col-md-8">
-                <div class="card bg-secondary shadow border-0 mb-2">
-                    <div class="card-header bg-default pb-2">
-                        <div class="btn-wrapper text-center">
-                            <h2 class="text-danger text-uppercase"> Register</h2>
-                        </div>
-                    </div>
-                    <div class="card-body px-lg-5 py-lg-4">
-                        @include('includes.partials.messages')
+            <x-forms.post :action="route('frontend.auth.register')" class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 mb-32 sm:mb-0 my-40 sm:my-12 px-2 sm:px-0">
 
-                        <x-forms.post :action="route('frontend.auth.register')">
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-hat-3"></i></span>
-                                    </div>
-                                    <input name="name" class="form-control" placeholder="Name" type="text"  value="{{ old('name') }}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-email-83"></i></span>
-                                    </div>
-                                    <input name="email" class="form-control" placeholder="Email" type="email"  value="{{ old('email') }}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-mobile-button"></i></span>
-                                    </div>
-                                    <input name="mobile" class="form-control" placeholder="Mobile" type="text"  value="{{ old('mobile') }}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative mb-3">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-circle-08"></i></span>
-                                    </div>
-                                    <input name="referral_id" class="form-control" placeholder="Referral ID" type="text" value="{{request()->get('referral',  old('referral') )}}">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                                    </div>
-                                    <input name="password" class="form-control" placeholder="Password" type="password">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="input-group input-group-merge input-group-alternative">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="ni ni-lock-circle-open"></i></span>
-                                    </div>
-                                    <input name="password_confirmation" class="form-control" placeholder="Password Confirmation" type="password" >
-                                </div>
-                            </div>
-                            <div class="row my-4">
-                                <div class="col-12">
-                                    <div class="custom-control custom-control-alternative custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox"  name="terms" value="1" id="terms" >
-                                        <label class="custom-control-label" for="terms">
-                                            <span class="text-muted">I agree with the <a href="{{ route('frontend.pages.terms') }}">Privacy Policy</a></span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <button type="submit" class="btn btn-default mt-2">Create account</button>
-                            </div>
-                        </x-forms.post>
+{{--                <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">--}}
+{{--                    <img src="/img/brand/kingpinlogo.png" alt="">--}}
+{{--                </div>--}}
+                <div class="pt-8 px-2 flex flex-col items-center justify-center">
+                    <h3 class="text-2xl sm:text-3xl xl:text-2xl font-bold text-gray-100 leading-tight">Create your account</h3>
+                </div>
+                <div class="mt-8 w-full px-2 sm:px-6">
+                    <div class="flex flex-col mt-5">
+                        <label for="name" class="text-lg font-semibold text-gray-100 leading-tight">Name</label>
+                        <input required name="name" id="name" class="@error('name') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border border shadow" type="text"  value="{{ old('name') }}"/>
+                        @error('name')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col mt-5">
+                        <label for="mobile" class="text-lg font-semibold text-gray-100 leading-tight">Mobile</label>
+                        <input required name="mobile" id="mobile" class="@error('mobile') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border border shadow" type="text" value="{{ old('mobile') }}" />
+                        @error('mobile')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col mt-5">
+                        <label for="email" class="text-lg font-semibold text-gray-100 leading-tight">Email</label>
+                        <input required name="email" id="email" class="@error('email') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border border shadow" type="email" value="{{ old('email') }}" />
+                        @error('email')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col mt-5">
+                        <label for="password" class="text-lg font-semibold text-gray-100 fleading-tight">Password</label>
+                        <input required name="password" id="password" class="@error('password') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="password" />
+                        @error('password')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
+                    <div class="flex flex-col mt-5">
+                        <label for="referral" class="text-lg font-semibold text-gray-100 fleading-tight">Referral</label>
+                        <input required name="referral_id" id="referral_id" class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="text" value="{{request()->get('referral',  old('referral_id') )}}" />
+                        @error('referral_id')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
                     </div>
                 </div>
-                <div class="row mt-3">
-                    <div class="col-12 text-right">
-                        <a href="{{route('frontend.auth.login')}}" class="text-light"><small>Login to existing account</small></a>
+                <div class="pt-6 w-full flex justify-between px-2 sm:px-6">
+                    <div class="flex items-center">
+                        <input id="terms" name="terms" class="w-3 h-3 mr-2 bg-gray-800" type="checkbox"  value="1"/>
+                        <label for="terms" class="text-xs text-gray-100">I agree with the <a href="{{ route('frontend.pages.terms') }}">Privacy Policy</a></label>
                     </div>
                 </div>
+                <div class="px-2 mb-16 sm:mb-56 md:mb-16 sm:px-6">
+                    <button class="focus:outline-none w-full bg-red-700 transition duration-150 ease-in-out hover:bg-red-600 rounded text-white px-8 py-3 text-sm mt-6">Sign up</button>
+                    <p class="mt-5 text-xs text-center text-gray-100"><a class="underline text-red-600" href="{{route('frontend.auth.login')}}">Login to existing account</a></p>
+                </div>
+            </x-forms.post>
+            <div class="absolute bottom-0 left-0 pb-2 md:ml-4">
+                <svg width="200" height="144" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="#DC2626" fill-rule="evenodd">
+                        <rect width="4" height="4" rx="2" />
+                        <rect x="23" width="4" height="4" rx="2" />
+                        <rect x="45" width="4" height="4" rx="2" />
+                        <rect x="68" width="4" height="4" rx="2" />
+                        <rect x="90" width="4" height="4" rx="2" />
+                        <rect x="113" width="4" height="4" rx="2" />
+                        <rect x="135" width="4" height="4" rx="2" />
+                        <rect x="158" width="4" height="4" rx="2" />
+                        <rect x="181" width="4" height="4" rx="2" />
+                        <rect x="203" width="4" height="4" rx="2" />
+                        <rect y="18" width="4" height="4" rx="2" />
+                        <rect x="23" y="18" width="4" height="4" rx="2" />
+                        <rect x="45" y="18" width="4" height="4" rx="2" />
+                        <rect x="68" y="18" width="4" height="4" rx="2" />
+                        <rect x="90" y="18" width="4" height="4" rx="2" />
+                        <rect x="113" y="18" width="4" height="4" rx="2" />
+                        <rect x="135" y="18" width="4" height="4" rx="2" />
+                        <rect x="158" y="18" width="4" height="4" rx="2" />
+                        <rect x="181" y="18" width="4" height="4" rx="2" />
+                        <rect x="203" y="18" width="4" height="4" rx="2" />
+                        <rect y="35" width="4" height="4" rx="2" />
+                        <rect x="23" y="35" width="4" height="4" rx="2" />
+                        <rect x="45" y="35" width="4" height="4" rx="2" />
+                        <rect x="68" y="35" width="4" height="4" rx="2" />
+                        <rect x="90" y="35" width="4" height="4" rx="2" />
+                        <rect x="113" y="35" width="4" height="4" rx="2" />
+                        <rect x="135" y="35" width="4" height="4" rx="2" />
+                        <rect x="158" y="35" width="4" height="4" rx="2" />
+                        <rect x="181" y="35" width="4" height="4" rx="2" />
+                        <rect x="203" y="35" width="4" height="4" rx="2" />
+                        <rect y="53" width="4" height="4" rx="2" />
+                        <rect x="23" y="53" width="4" height="4" rx="2" />
+                        <rect x="45" y="53" width="4" height="4" rx="2" />
+                        <rect x="68" y="53" width="4" height="4" rx="2" />
+                        <rect x="90" y="53" width="4" height="4" rx="2" />
+                        <rect x="113" y="53" width="4" height="4" rx="2" />
+                        <rect x="135" y="53" width="4" height="4" rx="2" />
+                        <rect x="158" y="53" width="4" height="4" rx="2" />
+                        <rect x="181" y="53" width="4" height="4" rx="2" />
+                        <rect x="203" y="53" width="4" height="4" rx="2" />
+                        <rect y="70" width="4" height="4" rx="2" />
+                        <rect x="23" y="70" width="4" height="4" rx="2" />
+                        <rect x="45" y="70" width="4" height="4" rx="2" />
+                        <rect x="68" y="70" width="4" height="4" rx="2" />
+                        <rect x="90" y="70" width="4" height="4" rx="2" />
+                        <rect x="113" y="70" width="4" height="4" rx="2" />
+                        <rect x="135" y="70" width="4" height="4" rx="2" />
+                        <rect x="158" y="70" width="4" height="4" rx="2" />
+                        <rect x="181" y="70" width="4" height="4" rx="2" />
+                        <rect x="203" y="70" width="4" height="4" rx="2" />
+                        <rect y="88" width="4" height="4" rx="2" />
+                        <rect x="23" y="88" width="4" height="4" rx="2" />
+                        <rect x="45" y="88" width="4" height="4" rx="2" />
+                        <rect x="68" y="88" width="4" height="4" rx="2" />
+                        <rect x="90" y="88" width="4" height="4" rx="2" />
+                        <rect x="113" y="88" width="4" height="4" rx="2" />
+                        <rect x="135" y="88" width="4" height="4" rx="2" />
+                        <rect x="158" y="88" width="4" height="4" rx="2" />
+                        <rect x="181" y="88" width="4" height="4" rx="2" />
+                        <rect x="203" y="88" width="4" height="4" rx="2" />
+                        <rect y="105" width="4" height="4" rx="2" />
+                        <rect x="23" y="105" width="4" height="4" rx="2" />
+                        <rect x="45" y="105" width="4" height="4" rx="2" />
+                        <rect x="68" y="105" width="4" height="4" rx="2" />
+                        <rect x="90" y="105" width="4" height="4" rx="2" />
+                        <rect x="113" y="105" width="4" height="4" rx="2" />
+                        <rect x="135" y="105" width="4" height="4" rx="2" />
+                        <rect x="158" y="105" width="4" height="4" rx="2" />
+                        <rect x="181" y="105" width="4" height="4" rx="2" />
+                        <rect x="203" y="105" width="4" height="4" rx="2" />
+                        <rect y="123" width="4" height="4" rx="2" />
+                        <rect x="23" y="123" width="4" height="4" rx="2" />
+                        <rect x="45" y="123" width="4" height="4" rx="2" />
+                        <rect x="68" y="123" width="4" height="4" rx="2" />
+                        <rect x="90" y="123" width="4" height="4" rx="2" />
+                        <rect x="113" y="123" width="4" height="4" rx="2" />
+                        <rect x="135" y="123" width="4" height="4" rx="2" />
+                        <rect x="158" y="123" width="4" height="4" rx="2" />
+                        <rect x="181" y="123" width="4" height="4" rx="2" />
+                        <rect x="203" y="123" width="4" height="4" rx="2" />
+                        <rect y="140" width="4" height="4" rx="2" />
+                        <rect x="23" y="140" width="4" height="4" rx="2" />
+                        <rect x="45" y="140" width="4" height="4" rx="2" />
+                        <rect x="68" y="140" width="4" height="4" rx="2" />
+                        <rect x="90" y="140" width="4" height="4" rx="2" />
+                        <rect x="113" y="140" width="4" height="4" rx="2" />
+                        <rect x="135" y="140" width="4" height="4" rx="2" />
+                        <rect x="158" y="140" width="4" height="4" rx="2" />
+                        <rect x="181" y="140" width="4" height="4" rx="2" />
+                        <rect x="203" y="140" width="4" height="4" rx="2" />
+                    </g>
+                </svg>
             </div>
         </div>
-    </div>
+    </section>
 @endsection
+@push('after-scripts')
+    <script>
+        var Alert = document.getElementById("alert");
+        var close = document.getElementById("close-modal");
+        Alert.style.transform = "translateY(-200%)";
+        setTimeout(function () {
+            Alert.style.transform = "translateY(0%)";
+        }, 1000);
+        function closeAlert() {
+            Alert.style.transform = "translateY(-200%)";
+        }
+    </script>
+@endpush
