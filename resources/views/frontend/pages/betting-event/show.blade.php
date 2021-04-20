@@ -11,13 +11,7 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                            <div class="fb-video"
-                                 data-href="https://www.facebook.com/eden.cruz.39948/videos/278115187212218/"
-                                 data-autoplay="true"
-                                 data-allowfullscreen="true"
-                                 data-lazy="true"
-                                 data-show-text="false">
-                            </div>
+                        <iframe src="https://player.twitch.tv/?channel=drofball&parent={{parse_url(url('/'),PHP_URL_HOST)}}" frameborder="0" allowfullscreen="true" scrolling="no" onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"></iframe>
                         <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
                             <x-slot name="body">
                                 <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
@@ -39,8 +33,3 @@
         </div><!--row-->
     </div><!--container-->
 @endsection
-
-@push('fb')
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v10.0&appId=936172183880068" nonce="e3WMiCOm"></script>
-@endpush
