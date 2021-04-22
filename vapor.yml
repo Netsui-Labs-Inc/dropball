@@ -7,6 +7,10 @@ environments:
         domain: gosurge.ph
         runtime: 'php-8.0:al2'
         database: dropball-db
+        queues:
+          - winners
+          - commissions
+          - other-commissions
         build:
             - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
             - 'php artisan event:cache'
