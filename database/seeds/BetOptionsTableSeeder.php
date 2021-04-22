@@ -14,7 +14,6 @@ class BetOptionsTableSeeder extends Seeder
         \App\Domains\Bet\Models\BetOption::insert([
             ['name' => 'PULA', 'color' => '#DB2B39'],
             ['name' => 'PUTI', 'color' => '#FFFFFF'],
-            ['name' => 'TABLA', 'color' => '#99C24D'],
         ]);
     }
 }
