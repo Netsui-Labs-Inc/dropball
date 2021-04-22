@@ -5,7 +5,7 @@ environments:
         memory: 1024
         cli-memory: 512
         domain: gosurge.ph
-        runtime: 'php-8.0:al2'
+        runtime: 'php-7.4:al2'
         database: dropball-db
         queues:
           - winners
