@@ -11,7 +11,8 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        <iframe src="https://player.twitch.tv/?channel=drofball&parent={{parse_url(url('/'),PHP_URL_HOST)}}" frameborder="0" allowfullscreen="true" scrolling="no" onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"></iframe>
+{{--                        <iframe src="https://player.twitch.tv/?channel=drofball&parent={{parse_url(url('/'),PHP_URL_HOST)}}" frameborder="0" allowfullscreen="true" scrolling="no" onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"></iframe>--}}
+                        <iframe src="https://iframe.dacast.com/live/dd17071c-6076-3869-9491-176e165230b7/75beea42-8328-7631-8583-e77fc2cd335b" width="100%" height="100%" frameborder="0" scrolling="no" allow="autoplay" allowfullscreen webkitallowfullscreen mozallowfullscreen oallowfullscreen msallowfullscreen style="height:59vh;width:100%;border:none;overflow:hidden;" onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'></iframe>
                         <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
                             <x-slot name="body">
                                 <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
