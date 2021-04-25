@@ -84,20 +84,20 @@ class BettingRoundController extends Controller
         logger("BettingRound#{$bettingRound->id} has started : Betting window is closed");
         logger("---------- BettingRound#{$bettingRound->id} BETTING CLOSED ------------");
 
-        return redirect()->back()->withFlashSuccess(__('BettingRound started'));
+        return redirect()->back()->withFlashSuccess(__('Betting Round started'));
     }
 
     public function endBettingRound(BettingRound $bettingRound)
     {
         if ($bettingRound->status !== 'ongoing') {
-            throw new GeneralException("Cannot Open BettingRound at the moment");
+            throw new GeneralException("Cannot Open Betting Round at the moment");
         }
         $bettingRound->status = 'ended';
         $bettingRound->save();
 
         event(new BettingRoundStatusUpdated($bettingRound->fresh()));
 
-        return redirect()->back()->withFlashSuccess(__('BettingRound Ended'));
+        return redirect()->back()->withFlashSuccess(__('Betting Round Ended'));
     }
 
     public function cancelBettingRound(BettingRound $bettingRound)
@@ -113,7 +113,23 @@ class BettingRoundController extends Controller
         event(new BettingRoundStatusUpdated($bettingRound->fresh()));
         event(new BettingRoundResultUpdated($bettingRound->fresh()));
 
-        return redirect()->back()->withFlashSuccess(__('BettingRound Cancelled'));
+        return redirect()->back()->withFlashSuccess(__('Betting Round Cancelled'));
+    }
+
+    public function drawBettingRound(BettingRound $bettingRound)
+    {
+        if (! in_array($bettingRound->status, ['ongoing'])) {
+            throw new GeneralException("Cannot Cancel Betting Round at the moment");
+        }
+
+        $bettingRound->status = 'ended';
+        $bettingRound->result = null;
+
+        $bettingRound->save();
+        event(new BettingRoundStatusUpdated($bettingRound->fresh()));
+        event(new BettingRoundResultUpdated($bettingRound->fresh()));
+
+        return redirect()->back()->withFlashSuccess(__('Betting Round Bokya'));
     }
 
     public function setResult(BettingRound $bettingRound, Request $request)

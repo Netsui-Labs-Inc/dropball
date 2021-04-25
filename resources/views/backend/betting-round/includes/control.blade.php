@@ -51,7 +51,7 @@
         <h4>Set Result</h4>
         <div class="row">
             @foreach ($bettingOptions as $option)
-                <div class="col-6 p-2">
+                <div class="col-4 p-2">
                 <x-utils.form-button
                     :action="route('admin.betting-rounds.results', $bettingRound)"
                     method="post"
@@ -68,6 +68,7 @@
                 </x-utils.form-button>
                 </div>
             @endforeach
+
         </div>
     </div>
 </div>

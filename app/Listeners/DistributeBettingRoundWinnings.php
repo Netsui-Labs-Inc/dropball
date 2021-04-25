@@ -3,14 +3,16 @@
 namespace App\Listeners;
 
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Jobs\ProcessBetLossesDistributionJob;
 use App\Jobs\ProcessBetCommissionsDistributionJob;
+use App\Jobs\ProcessBetRefundJob;
 use App\Jobs\ProcessBetWinningsDistributionJob;
 use App\Jobs\ProcessOtherCommissionsJob;
+use App\Jobs\Traits\WalletAndCommission;
 use Str;
 
 class DistributeBettingRoundWinnings
 {
+    use WalletAndCommission;
     /**
      * Handle the event.
      *
@@ -34,13 +36,17 @@ class DistributeBettingRoundWinnings
         $totalPayouts = getPayout($bettingRound->totalBetType($bettingRound->result));
         logger("BettingRound#{$bettingRound->id} Total Payout $totalPayouts");
 
-
-        //Process winnings
-        logger("BettingRound#{$bettingRound->id} Processing Winners Payout");
-
-        $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
-            dispatch(new ProcessBetWinningsDistributionJob($bets, $bettingRound))->onQueue('winners');
-        });
+        if ($bettingRound->betOption->name == 'BOKYA') {
+            logger("BettingRound#{$bettingRound->id} is BOKYA");
+            logger("Transferring the money to operator {$bettingRound->balanceFloat}");
+            $bettingRound->transferFloat($this->getOperator(), $bettingRound->balanceFloat, ['result' => 'bokya']);
+        } else {
+            //Process winnings
+            logger("BettingRound#{$bettingRound->id} Processing Winners Payout");
+            $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {
+                dispatch(new ProcessBetWinningsDistributionJob($bets, $bettingRound))->onQueue('winners');
+            });
+        }
 
         logger("BettingRound#{$bettingRound->id} Processing Commissions");
 
@@ -67,13 +73,15 @@ class DistributeBettingRoundWinnings
     public function refund($bettingRound)
     {
         if (! $bettingRound->bets()->exists()) {
-            return;
+            return true;
         }
         logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
-        foreach ($bettingRound->bets as $bet) {
-            $bettingRound->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
-        }
+        $bettingRound->bets()->chunk(400, function ($bets) use ($bettingRound) {
+            dispatch(new ProcessBetRefundJob($bets, $bettingRound));
+        });
+
+        return true;
     }
 
     public function getWallet($walletHolder, $walletName)

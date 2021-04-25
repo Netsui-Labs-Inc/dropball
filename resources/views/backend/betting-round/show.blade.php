@@ -56,6 +56,6 @@
 @endsection
 @section('page-action')
     @if($nextBettingRound)
-    <a class="c-subheader-nav-link" href="{{route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $nextBettingRound])}}">Next BettingRound <i class="ml-2 fa fa-arrow-right"></i></a>
+    <a class="c-subheader-nav-link" href="{{route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $nextBettingRound])}}">Next Betting Round <i class="ml-2 fa fa-arrow-right"></i></a>
     @endif
 @endsection

@@ -12,8 +12,9 @@ class BetOptionsTableSeeder extends Seeder
     public function run()
     {
         \App\Domains\Bet\Models\BetOption::insert([
-            ['name' => 'PULA', 'color' => '#DB2B39'],
-            ['name' => 'PUTI', 'color' => '#FFFFFF'],
+            ['name' => 'PULA', 'color' => '#DB2B39', 'hidden' => false],
+            ['name' => 'PUTI', 'color' => '#FFFFFF' , 'hidden' => false],
+            ['name' => 'BOKYA', 'color' => '#636f83', 'hidden' => true],
         ]);
     }
 }

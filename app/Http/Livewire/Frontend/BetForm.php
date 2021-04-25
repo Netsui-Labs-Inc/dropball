@@ -44,7 +44,7 @@ class BetForm extends Component
 
     public function mount($bettingEventId)
     {
-        $this->betOptions = BetOption::all();
+        $this->betOptions = BetOption::where('hidden', false)->get();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
