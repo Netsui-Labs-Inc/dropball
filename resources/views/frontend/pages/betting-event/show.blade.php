@@ -11,9 +11,9 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        <video-js id=vid1 width=600 height=300 class="vjs-default-skin"  data-setup='{"fluid": true, "autoplay": true, "preload": "auto"}'>
-                            <source src="https://d1han5hspwb3pi.cloudfront.net/stream/index.m3u8" type="application/x-mpegURL">
-                        </video-js>
+                        <iframe src="https://player.twitch.tv/?channel=drofball&branding=false&parent={{parse_url(url('/'),PHP_URL_HOST)}}" frameborder="0" allowfullscreen="true" scrolling="no" height="auto"
+                                onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"
+                        ></iframe>
                         <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
                             <x-slot name="body">
                                 <livewire:frontend.event-trend :bettingEventId="$bettingEvent->id"></livewire:frontend.event-trend>
