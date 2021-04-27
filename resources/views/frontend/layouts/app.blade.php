@@ -24,7 +24,7 @@
     @include('includes.partials.logged-in-as')
     @include('includes.partials.announcements')
 
-    <div id="app">
+    <div>
         @include('frontend.includes.nav')
         @include('includes.partials.messages')
 

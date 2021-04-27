@@ -30,7 +30,7 @@ mix.setPublicPath('public')
         'axios',
         'sweetalert2',
         'lodash',
-        'animate.css'
+        'animate.css',
     ])
     .sourceMaps();
 
