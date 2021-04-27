@@ -11,7 +11,7 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        <video-js id=vid1 width=600 height=300 class="vjs-default-skin"  data-setup='{"fluid": true, "autoplay": true, "preload": "auto", "liveui": true}'>
+                        <video-js id=vid1 width=600 height=300 class="vjs-default-skin"  data-setup='{"fluid": true, "autoplay": true, "preload": "auto"}'>
                             <source src="https://d1han5hspwb3pi.cloudfront.net/stream/index.m3u8" type="application/x-mpegURL">
                         </video-js>
                         <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
