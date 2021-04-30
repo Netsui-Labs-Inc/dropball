@@ -11,7 +11,7 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        <iframe src="https://player.twitch.tv/?channel=drofball&branding=false&parent={{parse_url(url('/'),PHP_URL_HOST)}}" frameborder="0" allowfullscreen="true" scrolling="no" height="auto"
+                        <iframe src="https://stream.gosurge.ph:5443/LiveApp/play.html?name=785041316264222321196437" frameborder="0" allowfullscreen
                                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"
                         ></iframe>
                         <x-frontend.card class="bg-gradient-default mb-0" bodyClass="p-2">
