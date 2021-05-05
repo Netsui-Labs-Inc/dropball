@@ -79,7 +79,9 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $hub = Hub::where('admin_id', $user->id)->first();
-        $masterAgents = User::role('Master Agent')->onlyActive()->count();
+        $masterAgents = User::role('Master Agent')
+            ->where('hub_id', $hub->id)
+            ->onlyActive()->count();
 
         return view('backend.dashboard.virtual-hub')
             ->with('masterAgents', $masterAgents)

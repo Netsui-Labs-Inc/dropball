@@ -51,10 +51,11 @@ class MasterAgentsTable extends TableComponent
             return $query->where('name', 'Master Agent');
         });
 
-        if($user->hasRole('Virtual Hub')) {
+        if ($user->hasRole('Virtual Hub')) {
             $hub = Hub::where('admin_id', $user->id)->first();
-
-            $query->where('hub_id', $hub->id);
+            if ($hub) {
+                $query->where('hub_id', $hub->id);
+            }
         }
 
 
