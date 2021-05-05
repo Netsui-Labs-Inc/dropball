@@ -49,6 +49,7 @@
                 <select name="channel" class="form-control">
                     <option value="gcash">GCash</option>
                     <option value="gcash">Paymaya</option>
+                    <option value="gcash">Bank</option>
                 </select>
             </div>
                 <label for="amount" class="col-form-label">@lang('Details')</label>

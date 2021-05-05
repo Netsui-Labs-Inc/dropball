@@ -25,6 +25,15 @@
                         role="tab"
                         aria-controls="active"
                         aria-selected="true"/>
+                    <x-utils.link
+                        :text="__('Commissions')"
+                        class="nav-link bg-white"
+                        id="commissions-table-tab"
+                        data-toggle="pill"
+                        href="#commissions-table"
+                        role="tab"
+                        aria-controls="active"
+                        aria-selected="true"/>
                 </div>
             </nav>
 
@@ -40,6 +49,13 @@
                     <x-backend.card>
                         <x-slot name="body">
                             <livewire:master-agent-transactions-table :user="$user" :wallet="'income-wallet'" :action="true" />
+                        </x-slot>
+                    </x-backend.card>
+                </div>
+                <div class="tab-pane fade show" id="commissions-table" role="tabpanel" aria-labelledby="commissions-table-tab">
+                    <x-backend.card>
+                        <x-slot name="body">
+                            <livewire:user-commissions-table :user="$user" />
                         </x-slot>
                     </x-backend.card>
                 </div>

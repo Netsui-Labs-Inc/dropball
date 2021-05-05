@@ -27,7 +27,12 @@ class WalletController extends Controller
         try {
             /* @var Transaction $withdrawalTransaction */
             $withdrawalTransaction = $user->withdrawFloat($request->get('amount'), null, false);
-            $user->transferFloat($user->masterAgent, $request->get('amount'), ['withdrawal' => true, 'transaction' => $withdrawalTransaction->uuid]);
+            $user->masterAgent->depositFloat($request->get('amount'), [
+                'withdrawal' => true,
+                'user' => $user->name,
+                'transaction' => $withdrawalTransaction->uuid,
+            ]);
+
             return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balance));
