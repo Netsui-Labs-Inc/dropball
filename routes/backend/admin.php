@@ -190,8 +190,15 @@ Route::get('master-agents/create', [MasterAgentController::class, 'create'])->na
         $trail->parent('admin.master-agents.index');
         $trail->push("Create Master Agent", route('admin.master-agents.create'));
     });
+Route::get('master-agents/{masterAgent}/edit', [MasterAgentController::class, 'edit'])->name('master-agents.edit')
+    ->middleware('can:admin.access.master-agents.edit')
+    ->breadcrumbs(function (Trail $trail, $masterAgent) {
+        $trail->parent('admin.master-agents.index');
+        $trail->push("Edit Master Agent", route('admin.master-agents.edit', $masterAgent));
+    });
 
 Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
+Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'update'])->name('master-agents.update');
 
 
 Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])

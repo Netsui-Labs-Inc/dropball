@@ -56,6 +56,13 @@
                 @endrole
 
                 <div class="form-group row">
+                    <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
+                    <div class="col-md-10">
+                        {!! Form::select('commission_rate', [1,1.25,1.5,1.75,2] , null , ['class' => 'form-control']) !!}
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="password" class="col-md-2 col-form-label">@lang('Password')</label>
 
                     <div class="col-md-10">

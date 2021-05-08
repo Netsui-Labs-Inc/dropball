@@ -141,6 +141,12 @@ class PermissionRoleSeeder extends Seeder
             ]),
             new Permission([
                 'type' => User::TYPE_ADMIN,
+                'name' => 'admin.access.master-agents.edit',
+                'description' => 'Manage Master Agents Edit',
+                'sort' => 14,
+            ]),
+            new Permission([
+                'type' => User::TYPE_ADMIN,
                 'name' => 'admin.access.master-agents.transactions',
                 'description' => 'Manage Master Agents Transactions',
                 'sort' => 14,
@@ -370,6 +376,7 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.master-agents.wallet',
             'admin.access.master-agents.create',
             'admin.access.master-agents.transactions',
+            'admin.access.master-agents.edit',
             'admin.access.my-wallet',
         ]);
     }

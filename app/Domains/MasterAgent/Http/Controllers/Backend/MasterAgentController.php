@@ -4,6 +4,7 @@
 namespace App\Domains\MasterAgent\Http\Controllers\Backend;
 
 use App\Domains\Auth\Http\Requests\Backend\User\StoreMasterAgentRequest;
+use App\Domains\Auth\Http\Requests\Backend\User\UpdateMasterAgentRequest;
 use App\Domains\Auth\Models\Role;
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
@@ -68,6 +69,15 @@ class MasterAgentController extends Controller
         return view('backend.master-agent.create')->with('hubs', $hubs);
     }
 
+    public function edit(User $masterAgent)
+    {
+        $hubs = Hub::all()->pluck('name', 'id');
+
+        return view('backend.master-agent.edit')
+            ->with('masterAgent', $masterAgent)
+            ->with('hubs', $hubs);
+    }
+
     public function store(StoreMasterAgentRequest $request)
     {
         $user = $request->user();
@@ -83,6 +93,23 @@ class MasterAgentController extends Controller
         $user = $this->userService->store($input);
 
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");
+    }
+
+    public function update(UpdateMasterAgentRequest $request, User $masterAgent)
+    {
+        $user = $request->user();
+        $input = $request->validated();
+        $input['email_verified'] = "1";
+        $input['active'] = "1";
+        $input['type'] = 'admin';
+        $input['roles'] = ['Master Agent'];
+        $input['timezone'] = ['Asia/Manila'];
+        if ($user->hasRole('Virtual Hub')) {
+            $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
+        }
+        $user = $this->userService->update($masterAgent, $input);
+
+        return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
     }
 
     public function deposit(User $masterAgent, DepositRequest $request)

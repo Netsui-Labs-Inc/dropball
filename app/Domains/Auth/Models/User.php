@@ -78,6 +78,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'referral_id',
         'referred_by',
         'hub_id',
+        'commission_rate',
     ];
 
     /**
@@ -111,6 +112,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'email_verified_at' => 'datetime',
         'mobile_verified_at' => 'datetime',
         'to_be_logged_out' => 'boolean',
+        'commission_rate' => 'float',
     ];
 
     /**

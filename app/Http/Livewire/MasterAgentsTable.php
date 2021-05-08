@@ -89,6 +89,9 @@ class MasterAgentsTable extends TableComponent
             Column::make(__('E-mail'), 'email')
                 ->searchable()
                 ->sortable(),
+            Column::make(__('Commission rate'), 'commission_rate')
+                ->searchable()
+                ->sortable(),
             Column::make(__('Verified'))
                 ->format(function (User $model) {
                     return view('backend.auth.user.includes.verified', ['user' => $model]);

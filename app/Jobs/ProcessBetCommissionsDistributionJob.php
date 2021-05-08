@@ -71,7 +71,6 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         $this->processDevelopersCommission($bet);
 
         $this->processOperatorCommission($bet, $hasReferredAgent);
-
     }
 
     public function payout(Bet $bet)
@@ -86,7 +85,7 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         if (! $masterAgent) {
             return;
         }
-        $rate = .01;
+        $rate = ($masterAgent->commission_rate / 100) ?? .01;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
 
@@ -100,7 +99,6 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
         $this->processHubCommission($bet, $masterAgent->hub);
 
         return $this->processMasterAgentReferredCommission($bet, $masterAgent);
-
     }
 
     public function processMasterAgentReferredCommission(Bet $bet, User $masterAgent)
@@ -151,9 +149,11 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
 
     public function processHubCommission(Bet $bet, Hub $hub)
     {
-        $rate = .01;
         $player = $bet->user;
+        $masterAgent = $player->masterAgent;
+
         $bettingRound = $bet->bettingRound;
+        $rate = ((3 - $masterAgent->commission_rate) / 100) ?? 0.01;
         $commission = $bet->bet_amount * $rate;
 
         logger("BettingRound#{$bettingRound->id} Hub  #{$hub->id} {$hub->name} will receive 1%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}");

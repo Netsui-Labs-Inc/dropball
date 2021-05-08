@@ -125,6 +125,7 @@ class UserService extends BaseService
                 'email' => $data['email'],
                 'mobile' => $data['mobile'],
                 'hub_id' => $data['hub_id'],
+                'commission_rate' => $data['commission_rate'],
                 'referral_id' => $data['referral_id'],
                 'password' => $data['password'],
                 'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : null,
@@ -170,6 +171,7 @@ class UserService extends BaseService
                 'type' => $user->isMasterAdmin() ? $this->model::TYPE_ADMIN : $data['type'] ?? $user->type,
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'commission_rate' => $data['commission_rate'],
                 'timezone' => $data['timezone'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
             ]);
@@ -338,6 +340,7 @@ class UserService extends BaseService
             'email' => $data['email'] ?? null,
             'mobile' => $data['mobile'] ?? null,
             'hub_id' => $data['hub_id'] ?? null,
+            'commission_rate' => $data['commission_rate'] ?? null,
             'referral_id' => $data['referral_id'] ?? null,
             'referred_by' => $data['referred_by'] ?? null,
             'password' => $data['password'] ?? null,

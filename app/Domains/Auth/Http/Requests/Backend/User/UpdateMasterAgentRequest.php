@@ -10,7 +10,7 @@ use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
 /**
  * Class StoreUserRequest.
  */
-class StoreMasterAgentRequest extends FormRequest
+class UpdateMasterAgentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,11 +31,11 @@ class StoreMasterAgentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:100'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')],
-            'mobile' => ['required', 'max:100', Rule::unique('users')],
+            'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($this->masterAgent)],
+            'mobile' => ['required', 'max:100', Rule::unique('users')->ignore($this->masterAgent)],
             'hub_id' => ['exists:hubs,id'],
-            'commission_rate' => ['required', 'in:1,1.25,1.5,1.75,2'],
-            'referral_id' => ['required', 'max:100', Rule::unique('users')],
+            'commission_rate' => ['required', Rule::in([1,1.25,1.5,1.75,2])],
+            'referral_id' => ['required', 'max:100', Rule::unique('users')->ignore($this->masterAgent)],
             'password' => ['max:100'],
         ];
     }

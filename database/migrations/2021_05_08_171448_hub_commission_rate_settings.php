@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBetOptionsTable extends Migration
+class HubCommissionRateSettings extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreateBetOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bet_options', function (Blueprint $table) {
-            $table->integerIncrements('id');
-            $table->string('name');
-            $table->string('color');
-            $table->boolean('hidden');
+        Schema::table('users', function (Blueprint $table) {
+            $table->float('commission_rate')->after('hub_id')->nullable();
         });
     }
 
@@ -28,6 +25,8 @@ class CreateBetOptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('bet_options');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('commission_rate');
+        });
     }
 }
