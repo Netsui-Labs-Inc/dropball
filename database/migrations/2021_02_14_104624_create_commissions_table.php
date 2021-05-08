@@ -19,7 +19,7 @@ class CreateCommissionsTable extends Migration
             $table->morphs('commission');
             $table->enum('type', ['operator', 'master_agent', 'referred_master_agent','system', 'hub']);
             $table->float('rate');
-            $table->unsignedInteger('amount');
+            $table->float('amount');
             $table->json('meta')->nullable();
             $table->timestamps();
 

@@ -80,7 +80,7 @@ class BetCommissionsTable extends TableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function (BetCommission $model) {
-                    return $this->html(number_format($model->rate, 0)."%". "({$model->bet->bet_amount})");
+                    return $this->html(number_format($model->rate, 2)."%". "({$model->bet->bet_amount})");
                 }),
             Column::make(__('Commission Amount'), 'amount')
                 ->searchable()
