@@ -53,6 +53,15 @@
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Wallet Transactions')" />
             </li>
+            <li class="c-sidebar-nav-title">@lang('Commission Rewards')</li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.my.commissions.index')"
+                    :active="activeClass(Route::is('admin.my.commissions.index'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-wallet"
+                    :text="__('Commissions')" />
+            </li>
         @endif
         @endcan
         @can('admin.access.master-agents.manage')
@@ -73,7 +82,6 @@
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Master Agents Wallet')" />
             </li>
-
         @endcan
         @can('admin.access.hubs.manage')
             <li class="c-sidebar-nav-title">@lang('Hubs')</li>

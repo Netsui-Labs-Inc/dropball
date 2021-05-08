@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 
-@section('title', __('Wallet Management'))
+@section('title', __('Commissions History'))
 
 @section('content')
     <div class="row justify-content-center py-2">
@@ -8,20 +8,20 @@
             <nav>
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <x-utils.link
-                        :text="__('Credit Wallet')"
+                        :text="__('Players')"
                         class="nav-link bg-white active"
-                        id="credit-wallet-tab"
+                        id="commissions-players-tab"
                         data-toggle="pill"
-                        href="#credit-wallet"
+                        href="#commissions-players"
                         role="tab"
                         aria-controls="active"
-                        aria-selected="true" />
+                        aria-selected="true"/>
                     <x-utils.link
-                        :text="__('Income Wallet')"
+                        :text="__('Master Agents')"
                         class="nav-link bg-white"
-                        id="income-wallet-tab"
+                        id="commissions-master-agents-tab"
                         data-toggle="pill"
-                        href="#income-wallet"
+                        href="#commissions-master-agents"
                         role="tab"
                         aria-controls="active"
                         aria-selected="true"/>
@@ -29,17 +29,17 @@
             </nav>
 
             <div class="tab-content" id="tabsContent">
-                <div class="tab-pane fade show active" id="credit-wallet" role="tabpanel" aria-labelledby="credit-wallet-tab">
+                <div class="tab-pane fade show active" id="commissions-players" role="tabpanel" aria-labelledby="commissions-players-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :action="true" />
+                            <livewire:user-commissions-table :user="$user" type="player"/>
                         </x-slot>
                     </x-backend.card>
                 </div>
-                <div class="tab-pane fade show" id="income-wallet" role="tabpanel" aria-labelledby="income-wallet-tab">
+                <div class="tab-pane fade show" id="commissions-master-agents" role="tabpanel" aria-labelledby="commissions-master-agents-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :wallet="'income-wallet'"  :action="true" />
+                            <livewire:user-commissions-table :user="$user" type="master agent"/>
                         </x-slot>
                     </x-backend.card>
                 </div>

@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\BetCommission;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,13 +26,15 @@ class UserCommissionsTable extends TableComponent
     ];
 
     public $user;
+    public $type;
 
     /**
      * @param BettingRound $bettingRound
      */
-    public function mount($user)
+    public function mount($user, $type)
     {
         $this->user = $user;
+        $this->type = $type;
     }
 
     /**
@@ -41,7 +42,12 @@ class UserCommissionsTable extends TableComponent
      */
     public function query(): Builder
     {
-        return $this->user->commissions()->getQuery();
+        $query = $this->user->commissions()->getQuery();
+        if ($this->type == 'master agent') {
+            return $query->where('type', 'referred_master_agent');
+        }
+
+        return $query->where('type', 'master_agent');
     }
 
     /**
@@ -61,11 +67,17 @@ class UserCommissionsTable extends TableComponent
                 ->format(function (BetCommission $model) {
                     return $this->html($model->bet->statusLabel() ?? 'N/A');
                 }),
-            Column::make(__('Player'), 'id')
+            Column::make(__('From '.ucwords($this->type)), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function (BetCommission $model) {
-                    return $this->html($model->bet->user->name ?? 'N/A');
+                    $name = $model->bet->user->name ?? 'N/A';
+
+                    if ($this->type = 'master agent') {
+                        $name = $model->bet->user->masterAgent->name;
+                    }
+
+                    return $this->html($name);
                 }),
             Column::make(__('Rate'), 'rate')
                 ->searchable()

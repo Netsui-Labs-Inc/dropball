@@ -114,7 +114,7 @@ class ProcessBetLossesDistributionJob implements ShouldQueue
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} current balance {$masterAgentReferredWallet->balanceFloat}");
             $transaction = $operator->forceTransfer($masterAgentReferredWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $masterAgent->id, 'unilevel' => true, 'bet' => $bet->id]);
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} new balance {$masterAgentReferredWallet->balanceFloat}");
-            $this->createCommission($bet, $masterAgentReferred, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid, 'sponsor_master_agent' => $masterAgent->id]);
+            $this->createCommission($bet, $masterAgentReferred, 'referred_master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid, 'sponsor_master_agent' => $masterAgent->id]);
         }
     }
 

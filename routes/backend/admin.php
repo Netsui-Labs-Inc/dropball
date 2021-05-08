@@ -3,10 +3,10 @@
 use App\Domains\BettingEvent\Http\Controllers\Backend\BettingEventBettingRoundController;
 use App\Domains\BettingEvent\Http\Controllers\Backend\BettingEventController;
 use App\Domains\BettingRound\Http\Controllers\Backend\BettingRoundController;
-use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
-use App\Domains\Player\Http\Controllers\Backend\PlayerController;
 use App\Domains\Hub\Http\Controllers\Backend\HubController;
-
+use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
+use App\Domains\MasterAgent\Http\Controllers\Backend\MyCommissionsLogController;
+use App\Domains\Player\Http\Controllers\Backend\PlayerController;
 
 use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
 use App\Http\Controllers\Backend\DashboardController;
@@ -274,3 +274,4 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
+Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
