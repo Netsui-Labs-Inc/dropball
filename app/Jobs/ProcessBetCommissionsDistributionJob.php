@@ -103,10 +103,10 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
 
     public function processMasterAgentReferredCommission(Bet $bet, User $masterAgent)
     {
-        if ($masterAgent->hasRole('Player') && $masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent) {
+        if ($masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent) {
             $masterAgentReferred = $masterAgent->masterAgent;
             $bettingRound = $bet->bettingRound;
-            $rate = 0.01;
+            $rate = 0.025;
             $commission = $bet->bet_amount * $rate;
             logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgentReferred->id} {$masterAgentReferred->name} referral will receive $commission from Operator");
             $masterAgentReferredWallet = $this->getWallet($masterAgentReferred, 'Income Wallet');
@@ -124,7 +124,7 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
     public function processOperatorCommission(Bet $bet, $hasReferredAgent = false)
     {
         $operator = $this->getOperator();
-        $rate = $hasReferredAgent ? .06 : .07;
+        $rate = $hasReferredAgent ? .0675 : .07;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
         if ($commission > 0) {

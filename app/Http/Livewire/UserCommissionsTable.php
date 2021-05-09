@@ -71,19 +71,17 @@ class UserCommissionsTable extends TableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function (BetCommission $model) {
-                    $name = $model->bet->user->name ?? 'N/A';
-
+                    $name = $model->bet->user->masterAgent->name;
                     if ($this->type = 'master agent') {
-                        $name = $model->bet->user->masterAgent->name;
+                        $name = $model->bet->user->name ?? 'N/A';
                     }
-
                     return $this->html($name);
                 }),
             Column::make(__('Rate'), 'rate')
                 ->searchable()
                 ->sortable()
                 ->format(function (BetCommission $model) {
-                    return $this->html(number_format($model->rate, 0)."%". "({$model->bet->bet_amount})");
+                    return $this->html(number_format($model->rate, 2)."%". "({$model->bet->bet_amount})");
                 }),
             Column::make(__('Commission Amount'), 'amount')
                 ->searchable()

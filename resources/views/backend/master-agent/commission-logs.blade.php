@@ -56,7 +56,7 @@
         <div>
             <p class="pb-2 text-center">
                 Current Income Wallet Balance <br>
-                <span class="lead">{{number_format(auth()->user()->getWallet('income-wallet')->balanceFloat)}}</span>
+                <span class="lead">{{number_format(auth()->user()->getWallet('income-wallet')->balanceFloat ?? 0)}}</span>
             </p>
             <div class="row">
                 <label for="amount" class="col col-form-label">@lang('Amount')</label>

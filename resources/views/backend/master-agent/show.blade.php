@@ -94,7 +94,7 @@
                 @if($user->hasRole('Master Agent'))
                     <tr>
                         <th>@lang('Commission rate')</th>
-                        <td>%{{ $user->commission_rate ?? 2 }}</td>
+                        <td>{{ $user->commission_rate ?? 2 }}%</td>
                     </tr>
                     <tr>
                         <th>@lang('Referral ID')</th>
