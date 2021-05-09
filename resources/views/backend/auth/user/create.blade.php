@@ -43,6 +43,35 @@
                             <input type="email" name="email" class="form-control" placeholder="{{ __('E-mail Address') }}" value="{{ old('email') }}" maxlength="255" required />
                         </div>
                     </div><!--form-group-->
+                    <div class="form-group row">
+                        <label for="mobile" class="col-md-2 col-form-label">@lang('Mobile')</label>
+                        <div class="col-md-10">
+                            <input type="text" name="mobile" class="form-control" placeholder="{{ __('Mobile') }}" value="{{ old('mobile') }}" maxlength="255"  />
+                        </div>
+                    </div><!--form-group-->
+
+                    <div class="form-group row">
+                        <label for="hub_id" class="col-md-2 col-form-label">@lang('Hub')</label>
+                        <div class="col-md-10">
+                            {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control', 'placeholder' => 'Select hub']) !!}
+                        </div>
+                    </div>
+                    <!--form-group-->
+
+                    <div class="form-group row">
+                        <label for="commission_rate" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
+                        <div class="col-md-10">
+                            {!! Form::select('commission_rate', ['1' => "1%", '1.25'=> "1.25%", '1.5' => "1.5%", '1.75' => "1.75%", '2' => "2%"] , null , ['class' => 'form-control', 'placeholder' => 'Select Commission Rate']) !!}
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="referral_id" class="col-md-2 col-form-label">@lang('Referral ID')</label>
+
+                        <div class="col-md-10">
+                            <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Referral ID') }}" value="{{ old('referral_id') }}" maxlength="255" />
+                        </div>
+                    </div><!--form-group-->
 
                     <div class="form-group row">
                         <label for="password" class="col-md-2 col-form-label">@lang('Password')</label>

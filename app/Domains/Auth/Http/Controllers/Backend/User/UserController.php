@@ -10,6 +10,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
+use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 
 /**
@@ -59,8 +60,10 @@ class UserController extends Controller
      */
     public function create()
     {
+        $hubs = Hub::all()->pluck('name', 'id');
         return view('backend.auth.user.create')
             ->withRoles($this->roleService->get())
+            ->withHubs($hubs)
             ->withCategories($this->permissionService->getCategorizedPermissions())
             ->withGeneral($this->permissionService->getUncategorizedPermissions());
     }
@@ -98,8 +101,10 @@ class UserController extends Controller
      */
     public function edit(EditUserRequest $request, User $user)
     {
+        $hubs = Hub::all()->pluck('name', 'id');
         return view('backend.auth.user.edit')
             ->withUser($user)
+            ->withHubs($hubs)
             ->withRoles($this->roleService->get())
             ->withCategories($this->permissionService->getCategorizedPermissions())
             ->withGeneral($this->permissionService->getUncategorizedPermissions())
