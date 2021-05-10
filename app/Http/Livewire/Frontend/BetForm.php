@@ -12,6 +12,7 @@ class BetForm extends Component
 {
     public $bettingEvent;
 
+    /** @var BettingRound */
     public $bettingRound;
 
     public $amount = 0;
@@ -104,6 +105,7 @@ class BetForm extends Component
     {
         if (! $data['bettingRound']) {
             $this->bettingRound = null;
+
             return;
         }
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
@@ -160,6 +162,10 @@ class BetForm extends Component
             return false;
         }
 
+        if ($this->bettingRound->userBet(auth()->user()->id)) {
+            return false;
+        }
+
         return true;
     }
 
@@ -178,6 +184,7 @@ class BetForm extends Component
                 ->place();
 
             $this->addToPoolMoney();
+            $this->userCanBet = $this->canBetToBettingRound();
             $this->alert($bet);
         } catch (\Exception $e) {
             logger($e->getTraceAsString());
