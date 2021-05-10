@@ -4,8 +4,8 @@
 
 @section('content')
     <div class="container-fluid py-4">
-        <div class="row justify-content-center mx-6">
-            <div class="col-6">
+        <div class="row justify-content-center mx-12 mx-md-6">
+            <div class="col-12 col-md-6">
                 <x-frontend.card headerClass="bg-gradient-primary" class="text-center">
                     <x-slot name="header">
                         <h2 class="h2 text-white mb-0"><i class="fa fa-calendar"></i> {{\Carbon\Carbon::now(auth()->user()->timezone)->format('Y-m-d')}}</h2>
@@ -27,7 +27,7 @@
                     </x-slot>
                 </x-frontend.card>
             </div>
-            <div class="col-6">
+            <div class="col-12 col-md-6">
                 <x-frontend.card headerClass="bg-warning" class="text-center">
                     <x-slot name="header">
                         <h2 class="h2 text-white mb-0"><i class="fa fa-dollar-sign"></i> @lang("Your Account Balance")</h2>
