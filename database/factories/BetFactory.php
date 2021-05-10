@@ -17,7 +17,7 @@ $factory->define(Bet::class, function (Faker $faker) {
                 'referred_by' => User::role('Master Agent')->inRandomOrder()->first()->id,
             ])->id;
         },
-        'bet' => $faker->randomElement(\App\Domains\Bet\Models\BetOption::all()->pluck("id")->toArray()),
+        'bet' => $faker->randomElement([1,2]),
         'bet_amount' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),
         'status' => $faker->randomElement(['win','lose']),
         'gain_loss' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),

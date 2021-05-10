@@ -2,11 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Domains\Auth\Models\User;
-use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
-use App\Models\Company;
 use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -43,29 +40,28 @@ class ProcessBetRefundJob implements ShouldQueue
     {
         //update bets status
         $bettingRound = $this->bettingRound;
+        logger("\n------------------ START Refund BettingRound#{$bettingRound->id} -------------");
+        logger("BettingRound#{$bettingRound->id} result was Cancelled/Draw. All bets will be refunded");
 
         foreach ($this->bets as $bet) {
             DB::beginTransaction();
 
             try {
-                logger("\n------------------ START Refund USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------");
-                $this->processRefund($bet);
-                logger("------------------ END USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------\n");
+                logger("BettingRound#{$bettingRound->id} Pot Money : {$bettingRound->balanceFloat}");
+                $this->processRefund($bet, $bettingRound);
                 DB::commit();
             } catch (\Exception $e) {
                 logger("ProcessBetRefundJob.error = ".$e->getMessage());
                 DB::rollBack();
             }
         }
+        logger("------------------ END Refund BettingRound#{$bettingRound->id} -------------\n");
     }
 
-    public function processRefund($bettingRound)
+    public function processRefund($bet, $bettingRound)
     {
-        logger("BettingRound#{$bettingRound->id} result is {$bettingRound->result} All bets will be refunded");
-
-        foreach ($this->bets as $bet) {
-            $bettingRound->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
-        }
+        logger("BettingRound#{$bettingRound->id} Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
+        $bettingRound->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
+        logger("BettingRound#{$bettingRound->id} Updated Pot Money : {$bettingRound->balanceFloat} Player New Balance : {$bet->user->balanceFloat}");
     }
-
 }
