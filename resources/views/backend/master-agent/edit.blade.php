@@ -50,7 +50,7 @@
                 <div class="form-group row">
                     <label for="hub_i" class="col-md-2 col-form-label">@lang('Select Hub')</label>
                     <div class="col-md-10">
-                    {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control']) !!}
+                    {!! Form::select('hub_id', $hubs , $masterAgent->hub_id , ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 @endrole

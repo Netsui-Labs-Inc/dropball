@@ -86,7 +86,7 @@ class MasterAgentController extends Controller
         $input['active'] = "1";
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
-        $input['timezone'] = ['Asia/Manila'];
+        $input['timezone'] = 'Asia/Manila';
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         }
@@ -103,7 +103,7 @@ class MasterAgentController extends Controller
         $input['active'] = "1";
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
-        $input['timezone'] = ['Asia/Manila'];
+        $input['timezone'] = 'Asia/Manila';
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         }

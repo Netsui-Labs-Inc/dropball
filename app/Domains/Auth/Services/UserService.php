@@ -172,6 +172,7 @@ class UserService extends BaseService
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'commission_rate' => $data['commission_rate'],
+                'hub_id' => $data['hub_id'],
                 'timezone' => $data['timezone'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
             ]);
