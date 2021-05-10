@@ -36,11 +36,7 @@ class DistributeBettingRoundWinnings
         $totalPayouts = getPayout($bettingRound->totalBetType($bettingRound->result));
         logger("BettingRound#{$bettingRound->id} Total Payout $totalPayouts");
 
-        if ($bettingRound->betOption->name == 'BOKYA') {
-            logger("BettingRound#{$bettingRound->id} is BOKYA");
-            logger("Transferring the money to operator {$bettingRound->balanceFloat}");
-            $bettingRound->transferFloat($this->getOperator(), $bettingRound->balanceFloat, ['result' => 'bokya']);
-        } else {
+        if ($bettingRound->betOption->name != 'BOKYA') {
             //Process winnings
             logger("BettingRound#{$bettingRound->id} Processing Winners Payout");
             $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(400, function ($bets) use ($bettingRound) {

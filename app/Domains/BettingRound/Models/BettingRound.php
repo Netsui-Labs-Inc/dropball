@@ -35,7 +35,7 @@ class BettingRound extends Model implements Wallet, WalletFloat
     ];
 
     protected $casts = [
-        'meta' => 'array'
+        'meta' => 'array',
     ];
 
     public function bettingEvent()

@@ -33,7 +33,6 @@ class ProcessOtherCommissionsJob implements ShouldQueue
      */
     public function handle()
     {
-        // Developer
         $bettingRound = $this->bettingRound;
 
         // Operator
@@ -47,9 +46,10 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $bettingRound->forceTransferFloat($operator, $remainingMoney,  ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} Operator new balance is : {$operator->balanceFloat}");
 
+        $currentOperatorCommission = $bettingRound->meta['operator_commission'] ?? 0;
         $bettingRound->update([
             'meta' => [
-                'operator_commission' => $remainingMoney,
+                'operator_commission' => $remainingMoney + $currentOperatorCommission,
                 'operator_balance' => $operator->balanceFloat,
             ],
         ]);

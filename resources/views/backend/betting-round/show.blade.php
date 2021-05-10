@@ -33,7 +33,23 @@
                 </x-slot>
                 <x-slot name="body">
                     @include('backend.betting-round.includes.control')
+
                 </x-slot>
+                @can('admin.access.betting-rounds.report')
+                    @if ($bettingRound->status == 'ended')
+                        <x-slot name="footer">
+                            <x-utils.form-button
+                                :action="route('admin.betting-events.betting-rounds.report', [$bettingRound->bettingEvent, $bettingRound])"
+                                method="get"
+                                button-class="btn btn-info btn-lg btn-block text-white"
+                                icon="fas fa-chart-bar"
+                                name="view-reports"
+                            >
+                                @lang('View report')
+                            </x-utils.form-button>
+                        </x-slot>
+                    @endif
+                @endcan
             </x-backend.card>
         </div>
     </div>

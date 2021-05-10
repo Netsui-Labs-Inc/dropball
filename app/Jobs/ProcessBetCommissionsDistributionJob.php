@@ -136,6 +136,12 @@ class ProcessBetCommissionsDistributionJob implements ShouldQueue
 
         $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
 
+        $currentOperatorCommission = $bettingRound->meta['operator_commission'] ?? 0;
+        $bettingRound->update(['meta' => [
+            'operator_commission' => $commission + $currentOperatorCommission,
+            'operator_balance' => $operator->balanceFloat,
+        ]]);
+
         return $operator;
     }
 
