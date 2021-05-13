@@ -245,6 +245,14 @@ Route::get('hubs/create', [HubController::class, 'create'])
         $trail->push("Create Hub", route('admin.hubs.create'));
     });
 
+Route::get('hubs/{hub}/edit', [HubController::class, 'edit'])
+    ->name('hubs.edit')
+    ->middleware('can:admin.access.hubs.edit')
+    ->breadcrumbs(function (Trail $trail, $hub) {
+        $trail->parent('admin.hubs.index');
+        $trail->push("Edit Hub", route('admin.hubs.edit', $hub));
+    });
+
 Route::get('hubs/{hub}', [HubController::class, 'show'])
     ->name('hubs.info')
     ->middleware('can:admin.access.hubs.info')
@@ -263,6 +271,7 @@ Route::get('hubs/{hub}/wallet', [HubController::class, 'cashBalance'])
 
 Route::post('hubs/{hub}/wallet', [HubController::class, 'deposit'])->name('hubs.wallet.deposit');
 Route::post('hubs', [HubController::class, 'store'])->name('hubs.store');
+Route::put('hubs/{hub}', [HubController::class, 'update'])->name('hubs.update');
 
 
 Route::get('hubs-transactions', [HubController::class, 'transactions'])->name('hubs.transactions')

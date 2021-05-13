@@ -5,16 +5,15 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use App\Exceptions\GeneralException;
 
-class CreateHubAction
+class UpdateHubAction
 {
-    public function __invoke($data) : Hub
+    public function __invoke(Hub $hub, $data) : Hub
     {
-        if(Hub::where('admin_id', $data['admin_id'])->exists()) {
-            throw new GeneralException("Admin cannot be assigned to another Hub");
-        }
-        return Hub::create([
+        $hub->update([
            'name' => $data['name'],
            'admin_id' => $data['admin_id'],
         ]);
+
+        return $hub->fresh();
     }
 }

@@ -9,6 +9,7 @@
         </x-slot>
 
         <x-slot name="headerActions">
+            <x-utils.link class="card-header-action" :href="route('admin.hubs.edit', $hub)" :text="__('Edit Hub')" />
         </x-slot>
 
         <x-slot name="body">

@@ -171,10 +171,11 @@ class UserService extends BaseService
                 'type' => $user->isMasterAdmin() ? $this->model::TYPE_ADMIN : $data['type'] ?? $user->type,
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'commission_rate' => $data['commission_rate'],
-                'hub_id' => $data['hub_id'],
+                'commission_rate' => $data['commission_rate'] ?? null,
+                'hub_id' => $data['hub_id'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
+                'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : null,
             ]);
 
             if (! $user->isMasterAdmin()) {
@@ -187,7 +188,6 @@ class UserService extends BaseService
             }
         } catch (Exception $e) {
             DB::rollBack();
-
             throw new GeneralException(__('There was a problem updating this user. Please try again.'));
         }
 

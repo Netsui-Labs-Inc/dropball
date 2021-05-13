@@ -39,4 +39,9 @@ trait UserRelationship
     {
         return $this->belongsTo(Hub::class, 'hub_id');
     }
+
+    public function hubAdmin()
+    {
+        return $this->hasOne(Hub::class, 'admin_id');
+    }
 }

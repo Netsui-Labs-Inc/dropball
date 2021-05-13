@@ -5,6 +5,7 @@ namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Actions\CreateHubAction;
+use App\Domains\Hub\Actions\UpdateHubAction;
 use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
@@ -27,8 +28,26 @@ class HubController extends Controller
 
     public function create()
     {
+        $hubAdmins = User::role('Virtual Hub')
+            ->doesntHave('hubAdmin')
+            ->get()->pluck('name', 'id');
         return view('backend.hub.create')->with([
-            'hubAdmins' => User::role('Virtual Hub')->get()->pluck('name', 'id'),
+            'hubAdmins' => $hubAdmins,
+        ]);
+    }
+
+    public function edit(Hub $hub)
+    {
+        $hubAdmins = User::role('Virtual Hub')
+            ->where(function($query) use ($hub) {
+                $query->doesntHave('hubAdmin')
+                    ->orWhere('id', $hub->admin_id);
+            })
+            ->get()->pluck('name', 'id');
+
+        return view('backend.hub.edit')->with([
+            'hubAdmins' => $hubAdmins,
+            'hub' => $hub
         ]);
     }
 
@@ -38,6 +57,17 @@ class HubController extends Controller
             $data = $request->validated();
             (new CreateHubAction)($data);
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub Created Successfully");
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors($e->getMessage());
+        }
+    }
+
+    public function update(StoreHubRequest $request, Hub $hub)
+    {
+        try {
+            $data = $request->validated();
+            (new UpdateHubAction)($hub, $data);
+            return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub updated Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
         }
