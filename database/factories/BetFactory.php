@@ -8,6 +8,7 @@ use App\Domains\BettingRound\Models\BettingRound;
 use Faker\Generator as Faker;
 
 $factory->define(Bet::class, function (Faker $faker) {
+    $betAmount = $faker->randomElement([50, 100, 300, 500, 1000, 500]);
     return [
         'betting_round_id' => function () {
             return factory(BettingRound::class)->create()->id;
@@ -18,9 +19,10 @@ $factory->define(Bet::class, function (Faker $faker) {
             ])->id;
         },
         'bet' => $faker->randomElement([1,2]),
-        'bet_amount' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),
+        'bet_amount' => $betAmount,
         'status' => $faker->randomElement(['win','lose']),
         'gain_loss' => $faker->randomElement([50, 100, 300, 500, 1000, 500]),
+        'payout' => getPayout($betAmount),
         'note' => $faker->text,
     ];
 });
@@ -34,5 +36,6 @@ $factory->state(Bet::class, 'ongoing', function (Faker $faker) {
 
 $factory->afterCreating(Bet::class, function (Bet $bet) {
     $bet->bettingRound->increment('pool_money', $bet->bet_amount);
-    $bet->user->forceTransferFloat($bet->bettingRound, $bet->bet_amount, ['bettingRound' => $bet->bettingRound->id]);
+    $bet->user->forceTransferFloat($bet, $bet->bet_amount, ['bettingRound' => $bet->bettingRound->id]);
+    $bet->update(['agent_id' => $bet->user->referred_by]);
 });

@@ -202,7 +202,7 @@ class BetForm extends Component
 
     public function addToPoolMoney()
     {
-        $this->user->forceTransferFloat($this->bettingRound, $this->amount, ['bettingRound' => $this->bettingRound->id]);
+        //$this->user->forceTransferFloat($this->bettingRound, $this->amount, ['bettingRound' => $this->bettingRound->id]);
 
         $this->poolMoney = $this->bettingRound->balanceFloat;
 

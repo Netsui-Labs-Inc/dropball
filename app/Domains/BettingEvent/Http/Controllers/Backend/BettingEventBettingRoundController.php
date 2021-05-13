@@ -6,6 +6,7 @@ use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Http\Requests\StorebettingEventBettingRoundRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 
 class BettingEventBettingRoundController extends Controller
@@ -13,6 +14,12 @@ class BettingEventBettingRoundController extends Controller
     public function show(BettingEvent $bettingEvent, BettingRound $bettingRound)
     {
         $nextBettingRound = $bettingEvent->bettingRounds()->where('queue', $bettingRound->queue + 1)->first();
+
+        $activeBettingRoundId = $bettingRound->bettingEvent->activeBettingRound()->first()->id ?? 1;
+        if ($bettingRound->id > $activeBettingRoundId) {
+            $activeBettingRoundLink = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $activeBettingRoundId]);
+            throw new GeneralException("Cannot Open Betting Round Yet. <a href='$activeBettingRoundLink'>Betting Round #$activeBettingRoundId</a> is still ongoing");
+        }
 
         return view('backend.betting-round.show')
             ->with('bettingEvent', $bettingEvent)
@@ -36,8 +43,8 @@ class BettingEventBettingRoundController extends Controller
 
     public function store(BettingEvent $bettingEvent, StorebettingEventBettingRoundRequest $request)
     {
-        $lastBettingRound = $bettingEvent->bettingRounds()->latest()->first();
-        $queue = $lastBettingRound ? $lastBettingRound->queue : 1;
+        $lastBettingRound = $bettingEvent->bettingRounds()->orderBy('queue', 'desc')->first();
+        $queue = $lastBettingRound ? $lastBettingRound->queue : 0;
 
         foreach (range(1, $request->get('quantity')) as $index) {
             $bettingEvent->bettingRounds()->create([
@@ -55,6 +62,7 @@ class BettingEventBettingRoundController extends Controller
 
         $totalWinningBets = $bettingRound->bets()->where('bet', $bettingRound->result)->sum('bet_amount');
         $payout = getPayout($totalWinningBets);
+
         return view('backend.betting-round.report')
             ->with('bettingEvent', $bettingEvent)
             ->with('bettingRound', $bettingRound)

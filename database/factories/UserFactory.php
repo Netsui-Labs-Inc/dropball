@@ -67,6 +67,7 @@ $factory->state(User::class, 'master_agent', function () {
     return [
         'type' => User::TYPE_ADMIN,
         'active' => true,
+        'commission_rate' => 2,
         'hub_id' => \App\Domains\Hub\Models\Hub::first()->id
     ];
 });

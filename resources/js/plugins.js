@@ -99,6 +99,27 @@ $(function () {
         }).then((result) => {
             result.value && window.location.assign($(this).attr('href'));
         });
+    })
+        .on('submit', 'form[data-confirm]', function (e) {
+        /**
+         * Add an 'are you sure' pop-up to any button/link
+         */
+        e.preventDefault();
+        let config =  $(this).data('confirm');
+        let swalConfig = {
+            title: config.title || 'Are you sure you want to do this?',
+            showCancelButton: config.showCancelButton || true,
+            confirmButtonText: config.confirmButtonText || 'Continue',
+            cancelButtonText: config.cancelButtonText || 'Cancel',
+            icon: config.icon || 'info',
+        };
+        Swal.fire(swalConfig).then((result) => {
+            if (result.value) {
+                this.submit()
+            } else {
+                enableSubmitButtons($(this));
+            }
+        });
     });
 
     // Remember tab on page load

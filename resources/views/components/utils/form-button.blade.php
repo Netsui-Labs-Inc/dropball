@@ -8,6 +8,7 @@
     'permission' => false,
     'attr' => '',
     'bgColor' => '',
+    'confirm' => null,
 ])
 
 @if ($permission)
@@ -22,7 +23,11 @@
         </form>
     @endif
 @else
-    <form method="POST" action="{{ $action }}" name="{{ $name }}" class="{{ $formClass }}">
+    <form method="POST" action="{{ $action }}" name="{{ $name }}" class="{{ $formClass }}"
+        @if($confirm)
+            data-confirm="{{json_encode($confirm)}}"
+        @endif
+    >
         @csrf
         @method($method)
 

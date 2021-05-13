@@ -27,6 +27,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User.
+ * @property User $masterAgent
  */
 class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable, Wallet, WalletFloat, Confirmable
 {

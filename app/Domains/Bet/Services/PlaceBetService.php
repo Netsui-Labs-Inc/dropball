@@ -78,7 +78,11 @@ class PlaceBetService
             'user_id' => $this->bettor->id,
             'bet_amount' => $this->amount,
             'bet' => $this->bet->id,
+            'agent_id' => $this->bettor->masterAgent->id,
+            'payout' => getPayout($this->amount),
         ]);
+
+        $this->bettor->forceTransferFloat($bet, $this->amount);
 
         event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
 

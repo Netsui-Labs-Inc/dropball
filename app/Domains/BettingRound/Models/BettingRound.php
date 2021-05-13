@@ -6,19 +6,13 @@ use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Models\Traits\Uuid;
-use Bavix\Wallet\Interfaces\Wallet;
-use Bavix\Wallet\Interfaces\WalletFloat;
-use Bavix\Wallet\Traits\HasWalletFloat;
-use Bavix\Wallet\Traits\HasWallets;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class BettingRound extends Model implements Wallet, WalletFloat
+class BettingRound extends Model
 {
     use SoftDeletes,
-        Uuid,
-        HasWalletFloat,
-        HasWallets;
+        Uuid;
 
     protected $table = 'betting_rounds';
 
@@ -81,29 +75,13 @@ class BettingRound extends Model implements Wallet, WalletFloat
 
     public function resultLabel($additionalClass = null)
     {
-        if (! $this->result) {
+        if (! $this->betOption) {
             return 'N/A';
         }
-        switch ($this->result) {
-            case 'meron':
-                $class = 'badge-info';
 
-                break;
-            case 'wala':
-                $class = 'badge-danger';
+        $color = $this->betOption->color == '#FFFFFF' ? '#8898aa' : '#FFFFFF';
 
-                break;
-            case 'draw':
-                $class = 'badge-dark';
-
-                break;
-            default:
-                $class = 'badge-warning';
-
-                break;
-        }
-
-        return "<span class=\"badge $class $additionalClass\">".strtoupper($this->betOption->name)."</span>";
+        return "<span class=\"badge\" style=\"background-color: {$this->betOption->color}; color: {$color} \">".strtoupper($this->betOption->name)."</span>";
     }
 
     public function bettingOpenLabel()

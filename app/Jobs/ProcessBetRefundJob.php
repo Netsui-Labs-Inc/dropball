@@ -48,20 +48,22 @@ class ProcessBetRefundJob implements ShouldQueue
 
             try {
                 logger("BettingRound#{$bettingRound->id} Pot Money : {$bettingRound->balanceFloat}");
-                $this->processRefund($bet, $bettingRound);
+                $this->processRefund($bet);
                 DB::commit();
             } catch (\Exception $e) {
-                logger("ProcessBetRefundJob.error = ".$e->getMessage());
+                logger("ProcessBetRefundJob.error = ".$e->getMessage(), [$e->getTraceAsString()]);
+
                 DB::rollBack();
             }
         }
         logger("------------------ END Refund BettingRound#{$bettingRound->id} -------------\n");
     }
 
-    public function processRefund($bet, $bettingRound)
+    public function processRefund($bet)
     {
+        $bettingRound = $bet->bettingRound;
         logger("BettingRound#{$bettingRound->id} Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
-        $bettingRound->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
-        logger("BettingRound#{$bettingRound->id} Updated Pot Money : {$bettingRound->balanceFloat} Player New Balance : {$bet->user->balanceFloat}");
+        $bet->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
+        //logger("BettingRound#{$bettingRound->id} Updated Pot Money : {$bettingRound->balanceFloat} Player New Balance : {$bet->user->balanceFloat}");
     }
 }

@@ -5,12 +5,24 @@ namespace App\Domains\Bet\Models;
 use App\Domains\Auth\Models\User;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Models\Traits\Uuid;
+use Bavix\Wallet\Interfaces\Wallet;
+use Bavix\Wallet\Interfaces\WalletFloat;
+use Bavix\Wallet\Traits\HasWalletFloat;
+use Bavix\Wallet\Traits\HasWallets;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Bet extends Model
+/**
+ * Class Bet
+ * @package App\Domains\Bet\Models
+ * @property BettingRound $bettingRound
+ */
+class Bet extends Model implements Wallet, WalletFloat
 {
-    use SoftDeletes, Uuid;
+    use SoftDeletes,
+        Uuid,
+        HasWalletFloat,
+        HasWallets;
 
     protected $table = 'bets';
 
@@ -22,8 +34,20 @@ class Bet extends Model
         'bet_amount',
         'status',
         'gain_loss',
+        'payout',
+        'commission_processed',
+        'other_commissions',
+        'agent_id',
         'note',
     ];
+
+    protected $casts = [
+        'commission_processed' => 'boolean',
+    ];
+
+    const PULA = 1;
+    const PUTI = 2;
+    const BOKYA = 3;
 
     public function play()
     {
@@ -33,6 +57,11 @@ class Bet extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function agent()
+    {
+        return $this->belongsTo(User::class, 'agent_id');
     }
 
     public function betLabel()

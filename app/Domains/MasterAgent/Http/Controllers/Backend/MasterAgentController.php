@@ -92,6 +92,11 @@ class MasterAgentController extends Controller
         }
         $user = $this->userService->store($input);
 
+        $user->createWallet([
+            'name' => 'Income Wallet',
+            'slug' => 'income-wallet',
+        ]);
+
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");
     }
 

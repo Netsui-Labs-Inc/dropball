@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Domains\Auth\Listeners\RoleEventListener;
 use App\Domains\Auth\Listeners\UserEventListener;
 use App\Events\BettingRoundResultUpdated;
-use App\Listeners\DistributeBettingRoundWinnings;
+use App\Listeners\BettingRoundResultListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,7 +25,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         BettingRoundResultUpdated::class => [
-            DistributeBettingRoundWinnings::class,
+            BettingRoundResultListener::class,
         ],
     ];
 

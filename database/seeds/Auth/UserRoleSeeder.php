@@ -34,5 +34,14 @@ class UserRoleSeeder extends Seeder
         $operator = factory(User::class)->state('operator')->create(['email' => 'operator@admin.com']);
         $player->depositFloat(10000);
         $this->enableForeignKeys();
+
+        $masterAgent->createWallet([
+            'name' => 'Income Wallet',
+            'slug' => 'income-wallet',
+        ]);
+        $masterAgent2->createWallet([
+            'name' => 'Income Wallet',
+            'slug' => 'income-wallet',
+        ]);
     }
 }

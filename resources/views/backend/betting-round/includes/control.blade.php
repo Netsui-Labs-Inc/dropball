@@ -1,75 +1,90 @@
+<div class="row">
+    @if($bettingRound->status === 'upcoming')
+       <div class="col-12 col-md-6 p-2">
+           <x-utils.form-button
+                :action="route('admin.betting-rounds.betting.open', $bettingRound)"
+                method="post"
+                button-class="btn btn-success btn-block btn-lg"
+                icon="fa fa-door-open"
+                name="open-betting"
+            >
+                @lang("Open Betting")
+            </x-utils.form-button>
+       </div>
+       <div class="col-12 col-md-6 p-2">
+           <x-utils.form-button
+               :action="route('admin.betting-rounds.cancel', $bettingRound)"
+               method="post"
+               button-class="btn btn-danger btn-block btn-lg"
+               icon="fa fa-exclamation"
+               name="cancel-betting"
+               :attr="$bettingRound->status == 'ended' || $bettingRound->status == 'ongoing' ? 'disabled' : ''"
+               :confirm='["title" => "Are you sure you want cancel this round?", "icon" => "warning"]'
 
-<div class="row text-center">
-    <div class="col-12">
-        <h4>Betting Round Control</h4>
-        @if($bettingRound->status === 'upcoming')
-        <x-utils.form-button
-            :action="route('admin.betting-rounds.betting.open', $bettingRound)"
-            method="post"
-            button-class="btn btn-success"
-            icon="fa fa-door-open"
-            name="open-betting"
-        >
-            @lang("Open Betting")
-        </x-utils.form-button>
-        @endif
-        @if($bettingRound->status == 'placing_bets')
-        <x-utils.form-button
-            :action="route('admin.betting-rounds.betting.last-call', $bettingRound)"
-            method="post"
-            icon="fa fa-exclamation"
-            button-class="btn btn-warning"
-            name="open-betting"
-        >
-            @lang("Last Call Broadcast")
-        </x-utils.form-button>
+           >
+               <input type="hidden" name="status" value="cancelled">
+               @lang('CANCEL')
+           </x-utils.form-button>
+       </div>
+    @endif
+    @if($bettingRound->status == 'placing_bets')
+        <div class="col-12 col-md-4 p-2">
             <x-utils.form-button
-            :action="route('admin.betting-rounds.start', $bettingRound)"
-            method="post"
-            icon="fa fa-fire"
-            button-class="btn btn-success"
-            name="open-betting"
-        >
-            @lang("Start Drop Ball")
-        </x-utils.form-button>
-        @endif
-        <x-utils.form-button
-            :action="route('admin.betting-rounds.cancel', $bettingRound)"
-            method="post"
-            button-class="btn btn-warning"
-            icon="fa fa-exclamation"
-            name="cancel-betting"
-            :attr="$bettingRound->status == 'ended' || $bettingRound->status == 'ongoing' ? 'disabled' : ''"
-        >
-            <input type="hidden" name="status" value="cancelled">
-
-            @lang('CANCEL')
-        </x-utils.form-button>
-    </div>
-    <div class="col">
-        <hr>
-        <h4>Set Result</h4>
-        <div class="row">
-            @foreach ($bettingOptions as $option)
-                <div class="col-4 p-2">
-                <x-utils.form-button
-                    :action="route('admin.betting-rounds.results', $bettingRound)"
-                    method="post"
-                    button-class="btn btn-lg btn-block border-gray-50"
-                    name="open-betting"
-                    :bgColor="$option->color"
-                    :attr="
-                    $bettingRound->status == 'ended' ||
-                    $bettingRound->status == 'upcoming' ||
-                    $bettingRound->status == 'placing_bets' ? 'disabled' : ''"
-                >
-                    <input type="hidden" name="result" value="{{$option->id}}">
-                    @lang($option->name)
-                </x-utils.form-button>
-                </div>
-            @endforeach
-
+                :action="route('admin.betting-rounds.betting.last-call', $bettingRound)"
+                method="post"
+                icon="fa fa-exclamation"
+                button-class="btn btn-warning btn-block btn-lg"
+                name="open-betting"
+            >
+                @lang("Last Call")
+            </x-utils.form-button>
         </div>
-    </div>
+        <div class="col-12 col-md-4 p-2">
+            <x-utils.form-button
+                :action="route('admin.betting-rounds.start', $bettingRound)"
+                method="post"
+                icon="fa fa-fire"
+                button-class="btn btn-success btn-block btn-lg"
+                name="open-betting"
+                :confirm='["title" => "Start Betting Round #{$bettingRound->id}"]'
+            >
+            @lang("Start Round")
+            </x-utils.form-button>
+        </div>
+        <div class="col-12 col-md-4 p-2">
+            <x-utils.form-button
+                :action="route('admin.betting-rounds.cancel', $bettingRound)"
+                method="post"
+                button-class="btn btn-danger btn-block btn-lg"
+                icon="fa fa-exclamation"
+                name="cancel-betting"
+                :attr="$bettingRound->status == 'ended' || $bettingRound->status == 'ongoing' ? 'disabled' : ''"
+                :confirm='["title" => "Are you sure you want cancel this round?", "icon" => "warning"]'
+            >
+                <input type="hidden" name="status" value="cancelled">
+                @lang('CANCEL')
+            </x-utils.form-button>
+        </div>
+    @endif
+    @if($bettingRound->status == 'ongoing')
+        @foreach ($bettingOptions as $option)
+            <div class="col-12 col-md-4 p-2">
+            <x-utils.form-button
+                :action="route('admin.betting-rounds.results', $bettingRound)"
+                method="post"
+                button-class="btn btn-lg btn-block border-gray-50"
+                name="open-betting"
+                :bgColor="$option->color"
+                :attr="
+                $bettingRound->status == 'ended' ||
+                $bettingRound->status == 'upcoming' ||
+                $bettingRound->status == 'placing_bets' ? 'disabled' : ''"
+                :confirm='["title" => "Are you sure you want to set the result to {$option->name}?"]'
+            >
+                <input type="hidden" name="result" value="{{$option->id}}">
+                @lang($option->name)
+            </x-utils.form-button>
+            </div>
+        @endforeach
+    @endif
 </div>
-
