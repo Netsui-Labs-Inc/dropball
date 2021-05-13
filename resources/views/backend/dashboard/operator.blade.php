@@ -5,7 +5,7 @@
 @section('content')
     <h2 class="mb-4">Welcome Operator Admin - {{$logged_in_user->name}}</h2>
     <div class="row">
-        <div class="col-3">
+        <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($operator->balanceFloat ?? 0)}}</div>

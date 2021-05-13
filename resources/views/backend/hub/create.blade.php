@@ -27,7 +27,7 @@
                 <div class="form-group row">
                     <label for="admin" class="col-md-2 col-form-label">@lang('Admin')</label>
                     <div class="col-md-10">
-                        <input type="email" name="admin" class="form-control" placeholder="{{ __('Admin email') }}" value="{{ old('admin') }}" maxlength="255" required />
+                        {{Form::select('admin_id', $hubAdmins, old('admin_id'), ['class' => 'form-control', 'placeholder' =>'Select Admin', 'required'])}}
                     </div>
                 </div>
             </x-slot>

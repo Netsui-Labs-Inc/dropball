@@ -22,6 +22,6 @@ class UserCheck
             return $next($request);
         }
 
-        return redirect()->route('admin.dashboard')->withFlashDanger(__('You do not have access to do that.'));
+        return redirect()->route('admin.dashboard');
     }
 }

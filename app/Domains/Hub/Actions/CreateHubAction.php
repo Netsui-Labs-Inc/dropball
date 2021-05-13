@@ -8,11 +8,9 @@ class CreateHubAction
 {
     public function __invoke($data) : Hub
     {
-        $user = User::where('email', $data['admin'])->where('type', 'admin')->first();
-
         return Hub::create([
            'name' => $data['name'],
-           'admin_id' => $user->id,
+           'admin_id' => $data['admin_id'],
         ]);
     }
 }

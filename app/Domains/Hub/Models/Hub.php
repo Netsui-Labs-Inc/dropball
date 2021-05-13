@@ -19,7 +19,7 @@ class Hub extends Model implements WalletFloat, Wallet
     use HasBetCommission;
 
     protected $fillable = [
-        'name', 'admin_id'
+        'name', 'admin_id',
     ];
 
     public function admin()

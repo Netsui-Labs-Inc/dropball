@@ -22,6 +22,6 @@ class AdminCheck
             return $next($request);
         }
 
-        return redirect()->route('frontend.user.dashboard')->withFlashDanger(__('You do not have access to do that.'));
+        return redirect()->route('frontend.user.dashboard');
     }
 }

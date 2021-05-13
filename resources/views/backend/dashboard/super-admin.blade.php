@@ -5,7 +5,7 @@
 @section('content')
     <h2 class="mb-4">Welcome Admin {{$logged_in_user->name}}</h2>
     <div class="row">
-        <div class="col-3">
+        <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($company->balanceFloat ?? 0)}}</div>
@@ -13,7 +13,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-3">
+        <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-info">{{number_format($events ?? 0)}}</div>
@@ -21,7 +21,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-3">
+        <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-danger">{{number_format($players ?? 0)}}</div>
@@ -29,7 +29,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-3">
+        <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-warning">{{number_format($bettingRound ?? 0)}}</div>

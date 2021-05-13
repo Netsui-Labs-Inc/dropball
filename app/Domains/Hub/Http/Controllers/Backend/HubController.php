@@ -20,14 +20,16 @@ class HubController extends Controller
         return view('backend.hub.index');
     }
 
-    public function show(User $hub)
+    public function show(Hub $hub)
     {
-        return view('backend.hub.show')->with('user', $hub);
+        return view('backend.hub.show')->with('hub', $hub);
     }
 
     public function create()
     {
-        return view('backend.hub.create');
+        return view('backend.hub.create')->with([
+            'hubAdmins' => User::role('Virtual Hub')->get()->pluck('name', 'id'),
+        ]);
     }
 
     public function store(StoreHubRequest $request)

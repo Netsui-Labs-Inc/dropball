@@ -28,7 +28,7 @@ class StoreHubRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:100'],
-            'admin' => ['email','exists:users,email'],
+            'admin_id' => ['required','exists:users,id'],
         ];
     }
 

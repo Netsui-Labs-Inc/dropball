@@ -5,7 +5,7 @@
 @section('content')
     <h2 class="mb-4">Welcome Master Agent {{$logged_in_user->name}}</h2>
     <div class="row">
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($user->balanceFloat ?? 0)}}</div>
@@ -13,7 +13,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($user->getWallet('income-wallet')->balanceFloat ?? 0)}}</div>
@@ -21,7 +21,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-info">{{number_format($user->referrals()->count())}}</div>
@@ -29,7 +29,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
                     <small class="text-muted text-uppercase font-weight-bold">Invite players and earn commissions</small>

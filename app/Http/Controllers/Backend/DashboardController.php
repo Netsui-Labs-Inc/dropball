@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\Hub\Models\Hub;
+use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
 
@@ -79,6 +80,10 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $hub = Hub::where('admin_id', $user->id)->first();
+        if (! $hub) {
+            auth()->logout();
+            throw new GeneralException("Something is wrong with your account");
+        }
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
             ->onlyActive()->count();
