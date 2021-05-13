@@ -73,7 +73,8 @@ class BetForm extends Component
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'startNewRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'updateBalance',
             "amountUpdated" => 'setAmount',
-            "betPlaced" => 'placeBet',
+            "placeBet" => 'placeBet',
+            "confirmBet" => 'confirmBet',
         ];
     }
 
@@ -172,7 +173,7 @@ class BetForm extends Component
     public function placeBet(PlaceBetService $placeBetService, $bet)
     {
         $this->validate($this->rules);
-        $bet = BetOption::find($bet);
+        $bet = BetOption::find($bet['id']);
 
         try {
             $this->validateBalance();
@@ -218,6 +219,20 @@ class BetForm extends Component
         ]);
     }
 
+    public function confirmBet($betOption)
+    {
+        $this->validate($this->rules);
+        $color = $betOption['color'] == '#FFFFFF' ? "#8898aa" : $betOption['color'];
+        $this->emit('swal:confirm', [
+            'icon' => 'info',
+            'title' => "Bet Confirmation",
+            'text' => "<h1>Total Bet Amount <strong class='text-success'>PHP ".number_format($this->amount). "</strong></h1><h1><strong style='color:{$color}'>".strtoupper($betOption['name']). "</strong> </h1>",
+            'confirmText' => 'CONFIRM BET ON '.strtoupper($betOption['name']),
+            'showCancelButton' => true,
+            'method' => 'placeBet',
+            'params' => $betOption,
+        ]);
+    }
 
     public function setPayouts($amountPreview = 0)
     {

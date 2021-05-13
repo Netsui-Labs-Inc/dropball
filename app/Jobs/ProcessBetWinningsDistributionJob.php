@@ -29,7 +29,6 @@ class ProcessBetWinningsDistributionJob implements ShouldQueue
      */
     public function __construct($bets)
     {
-        $this->onQueue('winners');
         $this->bets = $bets;
     }
 

@@ -118,7 +118,7 @@ class EventBettingRound extends Component
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->emit('swal:alert', [
             'icon' => 'info',
-            'title' => "<span>Upcoming BettingRound #{$this->bettingRound->queue}</span>",
+            'title' => "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>",
         ]);
     }
 

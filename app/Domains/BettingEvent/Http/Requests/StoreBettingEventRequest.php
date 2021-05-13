@@ -28,6 +28,7 @@ class StoreBettingEventRequest extends FormRequest
             'description' => 'required',
             'bet_admin_id' => 'required|exists:users,id',
             'schedule' => 'required|unique:betting_events,schedule',
+            'stream_url' => 'sometimes',
         ];
     }
 

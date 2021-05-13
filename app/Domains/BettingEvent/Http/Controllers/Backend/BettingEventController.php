@@ -4,6 +4,7 @@ namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\BettingEvent\Http\Requests\StoreBettingEventRequest;
+use App\Domains\BettingEvent\Http\Requests\UpdateBettingEventRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingEvent\Services\BettingEventService;
 use App\Http\Controllers\Controller;
@@ -46,6 +47,14 @@ class BettingEventController extends Controller
         return view('backend.betting-event.create')
             ->with('admins', $admins);
     }
+    public function edit(BettingEvent $bettingEvent)
+    {
+        $admins = User::onlyActive()->admins()->role('Bet Admin')->pluck('name', 'id');
+
+        return view('backend.betting-event.edit')
+            ->with('bettingEvent', $bettingEvent)
+            ->with('admins', $admins);
+    }
 
     public function store(StoreBettingEventRequest $request)
     {
@@ -53,10 +62,12 @@ class BettingEventController extends Controller
 
         return redirect()->route('admin.betting-events.show', $bettingEvent)->withFlashSuccess(__('The stag event was successfully created.'));
     }
-    public function update()
+
+    public function update(UpdateBettingEventRequest $request, BettingEvent $bettingEvent)
     {
+        $bettingEvent = $this->bettingEventService->update($bettingEvent, $request->validated());
+
+        return redirect()->route('admin.betting-events.show', $bettingEvent)->withFlashSuccess(__('The stag event was successfully updated.'));
     }
-    public function destroy()
-    {
-    }
+
 }

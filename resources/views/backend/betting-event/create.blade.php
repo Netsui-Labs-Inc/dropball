@@ -35,6 +35,12 @@
                         <textarea name="description" class="form-control" cols="30" rows="5"></textarea>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="name" class="col-md-2 col-form-label">@lang('Stream URL')</label>
+                    <div class="col-md-10">
+                        <input type="url" class="form-control" name="stream_url" placeholder="Stream URL">
+                    </div>
+                </div>
                 <div x-data="{betAdmin : ''}">
                     <div class="form-group row">
                         <label for="name" class="col-md-2 col-form-label">@lang('Bet Admin')</label>

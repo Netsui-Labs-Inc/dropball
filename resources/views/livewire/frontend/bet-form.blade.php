@@ -65,7 +65,7 @@
         <div class="row ">
             <div class="btn-group col justify-content-center text-center p-0" role="group">
                 @foreach($betOptions as $option)
-                    <button class="btn btn-lg btn-block m-0" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};" wire:click="$emit('betPlaced', {{$option->id}})" {{$userCanBet ? '': 'disabled'}}><i class="fas fa-plus-circle"></i> {{"BET ".strtoupper($option->name)}}</button>
+                    <button class="btn btn-lg btn-block m-0" style="border:1px solid #8898aa;background-color: {{$option->color}}; color: {{$option->color == '#FFFFFF' ? "#8898aa" : "#FFFFFF"}};" wire:click="$emit('confirmBet', {{$option}})" {{$userCanBet ? '': 'disabled'}}><i class="fas fa-plus-circle"></i> {{"BET ".strtoupper($option->name)}}</button>
                 @endforeach
             </div>
         </div>

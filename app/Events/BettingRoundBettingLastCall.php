@@ -2,12 +2,9 @@
 
 namespace App\Events;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;

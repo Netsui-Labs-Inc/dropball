@@ -15,6 +15,10 @@
         <td>{{$bettingEvent->description}}</td>
     </tr>
     <tr>
+        <th>@lang('Stream URL')</th>
+        <td>{{$bettingEvent->stream_url}}</td>
+    </tr>
+    <tr>
         <th>@lang('Schedule')</th>
         <td>{{$bettingEvent->schedule}}</td>
     </tr>

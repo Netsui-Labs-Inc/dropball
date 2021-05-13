@@ -43,6 +43,14 @@ Route::get('betting-events/create', [BettingEventController::class, 'create'])
         $trail->push(__('Create Betting Event'), route('admin.betting-events.create'));
     });
 
+Route::get('betting-events/{bettingEvent}/edit', [BettingEventController::class, 'edit'])
+    ->name('betting-events.edit')
+    ->middleware('can:admin.access.betting-events.edit')
+    ->breadcrumbs(function (Trail $trail, $bettingEvent) {
+        $trail->parent('admin.dashboard');
+        $trail->push(__('Edit Betting Event'), route('admin.betting-events.edit', $bettingEvent));
+    });
+
 Route::get('betting-events/{bettingEvent}', [BettingEventController::class, 'show'])
     ->name('betting-events.show')
     ->middleware('can:admin.access.betting-events.show')

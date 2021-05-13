@@ -19,7 +19,7 @@ class BettingEventService extends BaseService
         DB::beginTransaction();
 
         try {
-            $bettingEvent = $this->createbettingEvent($data);
+            $bettingEvent = $this->createBettingEvent($data);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -31,12 +31,36 @@ class BettingEventService extends BaseService
         return $bettingEvent;
     }
 
-    public function createbettingEvent(array $data = []) : BettingEvent
+    public function update(BettingEvent $bettingEvent, array $data = [])
+    {
+        DB::beginTransaction();
+
+        try {
+            $bettingEvent = $bettingEvent->update([
+                'name' => $data['name'],
+                'description' => $data['description'],
+                'bet_admin_id' => $data['bet_admin_id'],
+                'stream_url' => $data['stream_url'] ?? null,
+                'schedule' => $data['schedule'],
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+//            throw new GeneralException(__('There was a problem updating this event. Please try again.'));
+        }
+
+        DB::commit();
+
+        return $bettingEvent;
+    }
+
+    public function createBettingEvent(array $data = []) : BettingEvent
     {
         return $this->model->create([
             'name' => $data['name'],
             'description' => $data['description'],
             'bet_admin_id' => $data['bet_admin_id'],
+            'stream_url' => $data['stream_url'] ?? null,
             'schedule' => $data['schedule'],
         ]);
     }
