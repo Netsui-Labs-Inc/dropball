@@ -71,12 +71,6 @@ class BetsTable extends TableComponent
                 ->format(function (Bet $model) {
                     return $this->html('#'.$model->id);
                 }),
-            Column::make(__('Amount'), 'bet_amount')
-                ->searchable()
-                ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html('PHP '.number_format($model->bet_amount, 0));
-                }),
             Column::make(__('Player'), 'user_id')
                 ->searchable()
                 ->sortable()
@@ -90,6 +84,12 @@ class BetsTable extends TableComponent
                 ->format(function (Bet $model) {
                     return $this->html($model->betLabel());
                 }),
+            Column::make(__('Amount'), 'bet_amount')
+                ->searchable()
+                ->sortable()
+                ->format(function (Bet $model) {
+                    return $this->html(number_format($model->bet_amount, 0));
+                }),
             Column::make(__('Status'), 'status')
                 ->searchable()
                 ->sortable()
@@ -101,6 +101,12 @@ class BetsTable extends TableComponent
                 ->sortable()
                 ->format(function (Bet $model) {
                     return $this->html($model->gainLossLabel());
+                }),
+            Column::make(__('Datetime'), 'created_at')
+                ->searchable()
+                ->sortable()
+                ->format(function (Bet $model) {
+                    return $this->html($model->created_at->setTimezone($model->user->timezone)->toDateTimeString());
                 }),
 
         ];

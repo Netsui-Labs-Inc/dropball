@@ -33,7 +33,7 @@
                         <h2 class="h2 text-white mb-0"><i class="fa fa-dollar-sign"></i> @lang("Your Account Balance")</h2>
                     </x-slot>
                     <x-slot name="body">
-                        <span class="lead text-lg-center"> PHP {{number_format(auth()->user()->balanceFloat)}}</span>
+                        <span class="lead text-lg-center"> {{number_format(auth()->user()->balanceFloat)}}</span>
                     </x-slot>
                 </x-frontend.card>
             </div>
@@ -54,21 +54,21 @@
                             @if(count($bets))
                             <thead class="thead-light">
                                 <tr>
-                                    <th>BettingRound #</th>
-                                    <th>Bet </th>
-                                    <th>Bet Amount</th>
+                                    <th>#ID</th>
+                                    <th>Bet</th>
                                     <th>Status</th>
                                     <th>Gain/Loss</th>
+                                    <th>Datetime</th>
                                 </tr>
                             </thead>
                             @endif
                             @forelse($bets as $bet)
                                 <tr>
                                     <td>#{{$bet->betting_round_id}}</td>
-                                    <td><span class="badge" style="background-color: {{$bet->option->color}}; color: {{$bet->option->color == "#FFFFFF" ?  "#525f7f" : "#FFFFFF" }}">{{strtoupper($bet->option->name)}}</span></td>
-                                    <td>PHP {{number_format($bet->bet_amount)}}</td>
+                                    <td><span class="badge" style="background-color: {{$bet->option->color}}; color: {{$bet->option->color == "#FFFFFF" ?  "#525f7f" : "#FFFFFF" }}">{{strtoupper($bet->option->name)}}</span> / {{number_format($bet->bet_amount)}}</td>
                                     <td>{!! $bet->statusLabel() !!}</td>
                                     <td>{!! $bet->gainLossLabel() !!}</td>
+                                    <td>{{ $bet->created_at->setTimezone($bet->user->timezone)->toDateTimeString() }}</td>
                                 </tr>
                             @empty
                                 <p class="text-center lead">No Bets History Available</p>
@@ -94,7 +94,7 @@
                             @if(count($transactions))
                             <thead class="thead-light">
                             <tr>
-                                <th>ID#</th>
+                                <th>#ID</th>
                                 <th>Type</th>
                                 <th>Amount</th>
                                 <th>Confirmed</th>

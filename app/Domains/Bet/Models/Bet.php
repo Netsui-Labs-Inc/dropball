@@ -9,6 +9,7 @@ use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * Class Bet
  * @package App\Domains\Bet\Models
  * @property BettingRound $bettingRound
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  */
 class Bet extends Model implements Wallet, WalletFloat
 {
@@ -43,6 +46,11 @@ class Bet extends Model implements Wallet, WalletFloat
 
     protected $casts = [
         'commission_processed' => 'boolean',
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
     ];
 
     const PULA = 1;
