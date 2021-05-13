@@ -51,7 +51,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $commissions = $operator->commissions()->whereHas('bet', function ($query) use ($bettingRound) {
             $query->where('betting_round_id', $bettingRound->id);
         })->sum('amount');
-        
+
         $operatorCommission = $commissions + ($remainingMoney / 100);
 
         logger("BettingRound#{$bettingRound->id} Operator Commission : $operatorCommission");

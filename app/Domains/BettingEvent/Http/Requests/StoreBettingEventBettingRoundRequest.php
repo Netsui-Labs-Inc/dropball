@@ -4,7 +4,7 @@ namespace App\Domains\BettingEvent\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorebettingEventBettingRoundRequest extends FormRequest
+class StoreBettingEventBettingRoundRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
