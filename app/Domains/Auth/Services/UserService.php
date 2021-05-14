@@ -59,6 +59,8 @@ class UserService extends BaseService
             $referrer = User::whereReferralId($data['referral_id'])->first();
             $data['referred_by'] = $referrer->id;
             $data['referral_id'] = $data['email'];
+            $data['hub_id'] = $referrer->hub_id;
+            $data['timezone'] = 'Asia/Manila';
 
             $user = $this->createUser($data);
             $user->assignRole('Player');
