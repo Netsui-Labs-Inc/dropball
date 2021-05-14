@@ -63,8 +63,11 @@ class PlayersTransactionsTable extends TableComponent
             $query->whereHas('roles', function ($query) {
                 return $query->where('name', 'Player');
             });
+            if (auth()->user()->hasRole('Master Agent')) {
+                $query->where('referred_by', auth()->user()->id);
+            }
+            return $query;
         });
-
         return $query;
     }
 
