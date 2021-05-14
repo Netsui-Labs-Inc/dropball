@@ -11,7 +11,7 @@ const SwalConfirm = (icon, title, html, confirmButtonText, method, params, callb
         icon,
         title,
         html,
-        showCancelButton: false,
+        showCancelButton: true,
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
         confirmButtonText,
