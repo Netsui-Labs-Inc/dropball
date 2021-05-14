@@ -5,6 +5,7 @@ use App\Domains\BettingEvent\Http\Controllers\Backend\BettingEventController;
 use App\Domains\BettingRound\Http\Controllers\Backend\BettingRoundController;
 use App\Domains\Hub\Http\Controllers\Backend\HubController;
 use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
+use App\Domains\MasterAgent\Http\Controllers\Backend\SubAgentController;
 use App\Domains\MasterAgent\Http\Controllers\Backend\MyCommissionsLogController;
 use App\Domains\Player\Http\Controllers\Backend\PlayerController;
 
@@ -235,6 +236,21 @@ Route::get('master-agent-transactions', [MasterAgentController::class, 'transact
         $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
     });
 
+Route::get('sub-agents', [SubAgentController::class, 'index'])
+    ->name('sub-agents.index')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Sub Agents", route('admin.sub-agents.index'));
+    });
+
+Route::get('sub-agents/create', [SubAgentController::class, 'create'])
+    ->name('sub-agents.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.sub-agents.index');
+        $trail->push("Create Sub Agents", route('admin.sub-agents.create'));
+    });
+
+Route::post('sub-agents', [SubAgentController::class, 'store'])->name('sub-agents.store');
 
 /** Hubs */
 

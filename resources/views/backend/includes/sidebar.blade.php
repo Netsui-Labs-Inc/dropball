@@ -42,6 +42,17 @@
                 :text="__('Players Wallet')" />
         </li>
         @endcan
+        @role('Master Agent')
+        <li class="c-sidebar-nav-title">@lang('Sub-agents')</li>
+        <li class="c-sidebar-nav-item">
+            <x-utils.link
+                class="c-sidebar-nav-link"
+                :href="route('admin.sub-agents.index')"
+                :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
+                icon="c-sidebar-nav-icon cil-wallet"
+                :text="__('Sub-agents List')" />
+        </li>
+        @endrole
         @can('admin.access.my-wallet')
         @if(!$logged_in_user->hasRole('Administrator'))
             <li class="c-sidebar-nav-title">@lang('My Wallet')</li>
@@ -54,6 +65,7 @@
                     :text="__('Wallet Transactions')" />
             </li>
         @endif
+        @endcan
         @role('Master Agent')
         <li class="c-sidebar-nav-title">@lang('Commission Rewards')</li>
         <li class="c-sidebar-nav-item">
@@ -65,7 +77,6 @@
                 :text="__('Commissions')" />
         </li>
         @endrole
-        @endcan
         @can('admin.access.master-agents.manage')
             <li class="c-sidebar-nav-title">@lang('Master Agents')</li>
             <li class="c-sidebar-nav-item">
