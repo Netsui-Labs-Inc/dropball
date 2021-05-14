@@ -9,7 +9,7 @@ use Rappasoft\LaravelLivewireTables\TableComponent;
 use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class UserCommissionsTable extends TableComponent
+class MasterAgentsCommissionsFromSubAgentsTable extends TableComponent
 {
     use HtmlComponents;
     /**
@@ -21,20 +21,21 @@ class UserCommissionsTable extends TableComponent
 
     public $perPage = 10;
 
+    protected string $tableName = 'master-agents-commissions-from-master-agent';
+    protected string $pageName = 'master-agents-commissions-from-master-agent';
+
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
 
     public $user;
-    public $type;
 
     /**
      * @param BettingRound $bettingRound
      */
-    public function mount($user, $type)
+    public function mount($user)
     {
         $this->user = $user;
-        $this->type = $type;
     }
 
     /**
@@ -43,11 +44,8 @@ class UserCommissionsTable extends TableComponent
     public function query(): Builder
     {
         $query = $this->user->commissions()->getQuery();
-        if ($this->type == 'master agent') {
-            return $query->where('type', 'referred_master_agent');
-        }
 
-        return $query->where('type', 'master_agent');
+        return $query->where('type', 'referred_master_agent');
     }
 
     /**
@@ -67,14 +65,12 @@ class UserCommissionsTable extends TableComponent
                 ->format(function (BetCommission $model) {
                     return $this->html($model->bet->statusLabel() ?? 'N/A');
                 }),
-            Column::make(__('From '.ucwords($this->type)), 'id')
+            Column::make(__('From Sub-Agent'), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function (BetCommission $model) {
                     $name = $model->bet->user->masterAgent->name;
-                    if ($this->type = 'master agent') {
-                        $name = $model->bet->user->name ?? 'N/A';
-                    }
+
                     return $this->html($name);
                 }),
             Column::make(__('Rate'), 'rate')

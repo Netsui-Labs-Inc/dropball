@@ -32,14 +32,14 @@
                 <div class="tab-pane fade show active" id="commissions-players" role="tabpanel" aria-labelledby="commissions-players-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:user-commissions-table :user="$user" type="player"/>
+                            <livewire:master-agents-commissions-from-players-table :user="$user" />
                         </x-slot>
                     </x-backend.card>
                 </div>
                 <div class="tab-pane fade show" id="commissions-master-agents" role="tabpanel" aria-labelledby="commissions-master-agents-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:user-commissions-table :user="$user" type="master agent"/>
+                            <livewire:master-agents-commissions-from-sub-agents-table :user="$user" />
                         </x-slot>
                     </x-backend.card>
                 </div>
