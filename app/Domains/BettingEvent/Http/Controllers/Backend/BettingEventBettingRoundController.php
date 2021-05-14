@@ -3,7 +3,7 @@
 namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 
 use App\Domains\Bet\Models\BetOption;
-use App\Domains\BettingEvent\Http\Requests\StorebettingEventBettingRoundRequest;
+use App\Domains\BettingEvent\Http\Requests\StoreBettingEventBettingRoundRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Exceptions\GeneralException;
