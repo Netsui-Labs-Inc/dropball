@@ -11,8 +11,8 @@
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
                     </x-slot>
                     <x-slot name="body">
-                        @if($bettingEvent->stream)
-                        <iframe src="{{$bettingEvent->stream}}" frameborder="0" allowfullscreen
+                        @if($bettingEvent->stream_url)
+                        <iframe src="{{$bettingEvent->stream_url}}" frameborder="0" allowfullscreen
                                 onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"
                         ></iframe>
                         @else
