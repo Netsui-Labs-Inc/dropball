@@ -120,13 +120,17 @@ class BetForm extends Component
         $this->balance = $this->user->balanceFloat;
     }
 
-    public function bettingRoundPlaced($data)
+    public function updateBetsTotal()
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
         $this->setPayouts();
         $this->balance = $this->user->balanceFloat;
+    }
+
+    public function bettingRoundPlaced($data)
+    {
+
         $this->emit('place-bets-'.$data['bet']);
     }
 
@@ -187,6 +191,7 @@ class BetForm extends Component
             $this->addToPoolMoney();
             $this->userCanBet = $this->canBetToBettingRound();
             $this->alert($bet);
+            $this->updateBetsTotal();
         } catch (\Exception $e) {
             logger($e->getTraceAsString());
             $this->addError('amount', $e->getMessage());
@@ -244,7 +249,7 @@ class BetForm extends Component
 
             return;
         }
-        $this->resetBets();
+//        $this->resetBets();
     }
 
     public function resetBets()
