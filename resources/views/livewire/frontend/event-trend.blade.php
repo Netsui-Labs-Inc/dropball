@@ -20,6 +20,8 @@
                 <i class="text-xs fas fa-circle text-danger p-0 "></i>
             @elseif ($round->betOption->name == 'PUTI')
                 <i class="text-xs fas fa-circle text-white p-0 "></i>
+            @elseif ($round->betOption->name == 'BOKYA')
+                <i class="text-xs fas fa-circle text-warning p-0 "></i>
             @endif
         @endforeach
     </div>
