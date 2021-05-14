@@ -29,6 +29,7 @@ class CommissionsTable extends TableComponent
     public $confirmed;
     public $action;
     public $withUser;
+    public $model;
 
 
     protected $options = [
