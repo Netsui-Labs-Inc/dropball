@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property BettingRound $bettingRound
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property User $user
  */
 class Bet extends Model implements Wallet, WalletFloat
 {

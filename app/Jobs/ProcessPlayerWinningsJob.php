@@ -56,8 +56,8 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         $bettingRound = $bet->bettingRound;
 
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} won and will receive {$bet->payout}");
-        $bet->forceTransferFloat($bet->user, $bet->payout, ['betting_round_id' => $bettingRound->id]);
+        logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
+        $bet->user->depositFloat($bet->payout, ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
     }
 }
