@@ -170,7 +170,7 @@
     <!-- Navbar -->
     <nav>
         <div class="py-4 px-6 w-full flex xl:hidden justify-between items-center bg-gray-800 fixed top-0 z-40">
-            <div class="w-24">
+            <div>
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-circles" width="30" height="30" viewBox="0 0 24 24" stroke-width="2" stroke="#DC2626" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
                     <circle cx="12" cy="7" r="4" />
@@ -178,6 +178,7 @@
                     <circle cx="17.5" cy="17" r="4" />
                 </svg>
             </div>
+            <p class="text-base text-white font-bold tracking-normal leading-tight "><strong class="text-red-600">PULA</strong> PUTI</p>
             <div>
                 <div id="menu" class="text-white" onclick="sidebarHandler(true)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
