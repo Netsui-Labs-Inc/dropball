@@ -101,6 +101,12 @@
                         <td>{{ $user->referral_id }}</td>
                     </tr>
                 @endif
+                @if($user->masterAgent)
+                    <tr>
+                        <th>@lang('Referred by')</th>
+                        <td>{{ $user->masterAgent->name}}</td>
+                    </tr>
+                @endif
             </table>
         </x-slot>
 

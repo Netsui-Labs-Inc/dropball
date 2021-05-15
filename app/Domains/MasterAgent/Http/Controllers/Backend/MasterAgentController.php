@@ -5,7 +5,6 @@ namespace App\Domains\MasterAgent\Http\Controllers\Backend;
 
 use App\Domains\Auth\Http\Requests\Backend\User\StoreMasterAgentRequest;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateMasterAgentRequest;
-use App\Domains\Auth\Models\Role;
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
@@ -104,8 +103,9 @@ class MasterAgentController extends Controller
     {
         $user = $request->user();
         $input = $request->validated();
-        $input['email_verified'] = "1";
-        $input['active'] = "1";
+        if ($request->has('email_verified')) {
+            $input['active'] = "1";
+        }
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';

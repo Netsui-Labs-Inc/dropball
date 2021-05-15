@@ -37,6 +37,8 @@ class UpdateMasterAgentRequest extends FormRequest
             'commission_rate' => ['required', Rule::in([1,1.25,1.5,1.75,2])],
             'referral_id' => ['required', 'max:100', Rule::unique('users')->ignore($this->masterAgent)],
             'password' => ['max:100'],
+            'active' => ['sometimes', 'in:1'],
+            'email_verified' => ['sometimes', 'in:1'],
         ];
     }
 

@@ -143,6 +143,7 @@ class UserService extends BaseService
             }
         } catch (Exception $e) {
             DB::rollBack();
+
             throw $e;
             //throw new GeneralException(__('There was a problem creating this user. Please try again.'));
         }
@@ -180,6 +181,7 @@ class UserService extends BaseService
                 'timezone' => $data['timezone'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
                 'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : null,
+                'active' => isset($data['active']) && $data['active'] === '1',
             ]);
 
             if (! $user->isMasterAdmin()) {
@@ -192,6 +194,7 @@ class UserService extends BaseService
             }
         } catch (Exception $e) {
             DB::rollBack();
+
             throw new GeneralException(__('There was a problem updating this user. Please try again.'));
         }
 

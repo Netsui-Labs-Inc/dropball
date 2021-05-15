@@ -1,6 +1,6 @@
 <div class="flex flex-wrap ">
     <div class="w-full">
-        <span class="text-sm leading-normal font-semibold sm:pr-32 text-gray-50 uppercase">Game Trend</span>
+        <span class="text-sm leading-normal font-semibold sm:pr-32 text-gray-50 uppercase">Bet Trend</span>
         <div class="flex space-x-6 justify-start text-xs pt-3 leading-normal">
             <div class="text-gray-50 ">PUTI <i class="fas fa-circle text-white p-0 "></i></div>
             <div class="text-gray-50">PULA <i class="fas fa-circle text-red-500 p-0 "></i></div>

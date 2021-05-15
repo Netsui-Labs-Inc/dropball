@@ -243,6 +243,13 @@ Route::get('sub-agents', [SubAgentController::class, 'index'])
         $trail->push("Sub Agents", route('admin.sub-agents.index'));
     });
 
+Route::get('sub-agents/pending', [SubAgentController::class, 'pending'])
+    ->name('sub-agents.pending')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("Pending Suba-agents", route('admin.sub-agents.pending'));
+    });
+
 Route::get('sub-agents/create', [SubAgentController::class, 'create'])
     ->name('sub-agents.create')
     ->breadcrumbs(function (Trail $trail) {

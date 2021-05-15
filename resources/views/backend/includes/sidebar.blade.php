@@ -49,8 +49,8 @@
                 class="c-sidebar-nav-link"
                 :href="route('admin.sub-agents.index')"
                 :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
-                icon="c-sidebar-nav-icon cil-wallet"
-                :text="__('Sub-agents List')" />
+                icon="c-sidebar-nav-icon cil-user"
+                :text="__('Sub-Agents List')" />
         </li>
         @endrole
         @can('admin.access.my-wallet')
@@ -94,6 +94,14 @@
                     :active="activeClass(Request::is('admin/master-agents-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Master Agents Wallet')" />
+            </li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.sub-agents.pending')"
+                    :active="activeClass(Route::is('admin.sub-agents.pending'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-user"
+                    :text="__('Sub-agents Approval')" />
             </li>
         @endcan
         @can('admin.access.hubs.manage')

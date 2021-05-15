@@ -61,6 +61,25 @@
                         {!! Form::select('commission_rate', ['1' => "1%", '1.25'=> "1.25%", '1.5' => "1.5%", '1.75' => "1.75%", '2' => "2%"] , (float ) $masterAgent->commission_rate , ['class' => 'form-control']) !!}
                     </div>
                 </div>
+
+                @if(!$masterAgent->hasVerifiedEmail())
+                    <div class="form-group row">
+                        <label for="email_verified" class="col-md-2 col-form-label">@lang('Verified')</label>
+
+                        <div class="col-md-10">
+                            <div class="form-check">
+                                <input
+                                    type="checkbox"
+                                    name="email_verified"
+                                    id="email_verified"
+                                    value="1"
+                                    class="form-check-input"
+                                    x-on:click="emailVerified = !emailVerified"
+                                    {{ old('email_verified') ? 'checked' : '' }} />
+                            </div><!--form-check-->
+                        </div>
+                    </div><!--form-group-->
+                @endif
             </x-slot>
 
             <x-slot name="footer">

@@ -80,4 +80,9 @@ class SubAgentController extends Controller
 
         return redirect()->to(route('admin.sub-agents.index'))->withFlashSuccess("Sub Agent Created Successfully");
     }
+
+    public function pending()
+    {
+        return view('backend.master-agent.sub-agent.pending');
+    }
 }
