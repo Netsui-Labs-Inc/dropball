@@ -42,9 +42,9 @@
                         @else
                             <i class="text-xs fas fa-circle p-0 text-gray-50"></i>
                         @endif
+                    @else
+                        <i class="text-xs fas fa-dot-circle p-0 text-blue-300"></i>
                     @endif
-                @else
-                <i class="text-xs fas fa-dot-circle p-0 text-blue-300"></i>
                 @endif
             <span class="text-yellow-500 mr-4 font-semibold">{{number_format($totalBetAmount)}}</span>
             Payout: <span class="text-yellow-500 font-semibold">{{number_format(getPayout($totalBetAmount))}}</span>

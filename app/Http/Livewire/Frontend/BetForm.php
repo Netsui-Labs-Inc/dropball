@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Frontend;
 
+use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
@@ -218,12 +219,14 @@ class BetForm extends Component
         $this->balance = $this->user->balanceFloat;
     }
 
-    public function alert($bet)
+    public function alert(BetOption $bet)
     {
+        $color = $bet->id == 2 ? '#8898aa' : $bet->color;
+
         $this->emit('swal:modal', [
             'icon' => 'success',
             'title' => "Betting Round #".$this->bettingRound->queue,
-            'text' => "<h1>You've placed a bet worth of <strong class='text-success'>".number_format($this->amount). "</strong> to <strong style='color:{$bet->color}'>".strtoupper($bet->name). "</strong>  </h1><h1>Good luck!</h1>",
+            'text' => "<h1>You've placed a bet worth of <strong class='text-success'>".number_format($this->amount). "</strong> to <strong style='color:{$color}'>".strtoupper($bet->name). "</strong>  </h1><h1>Good luck!</h1>",
         ]);
     }
 
@@ -261,6 +264,7 @@ class BetForm extends Component
     {
         $this->totalBetAmount = 0;
         $this->amount = null;
+        $this->userBets = null;
     }
 
     public function render()
