@@ -2,9 +2,8 @@
 
 namespace App\Http\Livewire\Frontend;
 
-use App\Domains\Bet\Models\Bet;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Collection;
 use Livewire\Component;
 
@@ -22,8 +21,11 @@ class VideoHeader extends Component
 
     public $userBets = [];
 
-    public function mount($bettingEventId)
+    public $theme = 'default';
+
+    public function mount($bettingEventId, $theme = 'default')
     {
+        $this->theme = $theme;
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
         $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
@@ -50,7 +52,7 @@ class VideoHeader extends Component
 
     public function updateStatus($data)
     {
-        if(!isset($data['bettingRound']['id'])) {
+        if (! isset($data['bettingRound']['id'])) {
             return;
         }
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
@@ -114,7 +116,7 @@ class VideoHeader extends Component
 
     public function render()
     {
-        return view('livewire.frontend.video-header')
+        return view('livewire.'.$this->theme.'.video-header')
             ->with('bettingRound', $this->bettingRound);
     }
 }

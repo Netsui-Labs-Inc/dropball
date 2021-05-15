@@ -11,10 +11,12 @@ class EventTrend extends Component
     public $bettingEvent;
     public $rounds;
     public $bettingRound;
+    public $theme = 'default';
 
 
-    public function mount($bettingEventId)
+    public function mount($bettingEventId, $theme = 'default')
     {
+        $this->theme = $theme;
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->rounds = $this->bettingEvent->bettingRounds;
     }
@@ -49,7 +51,7 @@ class EventTrend extends Component
 
     public function render()
     {
-        return view('livewire.frontend.event-trend')
+        return view('livewire.'.$this->theme.'.event-trend')
             ->with('bettingRound', $this->bettingRound);
     }
 }

@@ -81,7 +81,7 @@
                                 :active="activeClass(Route::is('frontend.wallet.index'))"
                                 :text="__('Withdrawal/Deposit')"
                                 class="dropdown-item" />
-                                <x-utils.link
+                            <x-utils.link
                                 :href="route('frontend.bets.index')"
                                 :active="activeClass(Route::is('frontend.bets.index'))"
                                 :text="__('Bet History')"

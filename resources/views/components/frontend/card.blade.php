@@ -6,7 +6,7 @@
 
 <div class="card {{$class}}" >
     @if (isset($header))
-        <div class="card-header {{$headerClass}}">
+        <div class="card-header {{$headerClass}} border-radius-0">
             {{ $header }}
 
             @if (isset($headerActions))

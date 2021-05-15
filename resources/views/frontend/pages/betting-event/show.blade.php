@@ -3,9 +3,9 @@
 @section('title', $bettingEvent->name)
 
 @section('content')
-    <div class="container-fluid py-4 " >
+    <div class="container-fluid py-md-4 " >
         <div class="row justify-content-center">
-            <div class="col-lg-12 col-xl-7 col-xx1-7 col-md-12 col-sm-12">
+            <div class="col-lg-12 col-xl-7 col-xxl-7 col-md-12 col-sm-12 p-0 p-md-2">
                 <x-frontend.card bodyClass="bg-gradient-gray-dark p-0"  headerClass="bg-gradient-gray-dark">
                     <x-slot name="header">
                         <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
@@ -26,7 +26,7 @@
                     </x-slot>
                 </x-frontend.card>
             </div>
-            <div class="col-lg-12 col-xl-5 col-xx1-5 col-md-12 col-sm-12">
+            <div class="col-lg-12 col-xl-5 col-xx1-5 col-md-12 col-12 p-0 p-md-2">
                 <x-frontend.card headerClass="bg-gradient-gray-dark" bodyClass="bg-gradient-default">
                     <x-slot name="header">
                         <livewire:frontend.event-betting-round :bettingEventId="$bettingEvent->id"></livewire:frontend.event-betting-round>

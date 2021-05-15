@@ -64,7 +64,7 @@
                             @endif
                             @forelse($bets as $bet)
                                 <tr>
-                                    <td>#{{$bet->betting_round_id}}</td>
+                                    <td>#{{$bet->id}}</td>
                                     <td><span class="badge" style="background-color: {{$bet->option->color}}; color: {{$bet->option->color == "#FFFFFF" ?  "#525f7f" : "#FFFFFF" }}">{{strtoupper($bet->option->name)}}</span> / {{number_format($bet->bet_amount)}}</td>
                                     <td>{!! $bet->statusLabel() !!}</td>
                                     <td>{!! $bet->gainLossLabel() !!}</td>

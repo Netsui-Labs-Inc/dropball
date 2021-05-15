@@ -26,7 +26,7 @@ class BettingEventController extends Controller
         }
         $bettingRound = $bettingEvent->upcomingBettingRound()->first();
 
-        return view('frontend.pages.betting-event.show')
+        return view('frontend.pages.betting-event.play')
             ->with('bettingEvent', $bettingEvent)
             ->with('play', $bettingRound);
     }

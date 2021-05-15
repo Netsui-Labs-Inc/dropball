@@ -15,7 +15,7 @@ class BetForm extends Component
     /** @var BettingRound */
     public $bettingRound;
 
-    public $amount = 0;
+    public $amount;
 
     public $userCanBet = false;
 
@@ -35,6 +35,8 @@ class BetForm extends Component
 
     public $totalBetAmount = 0;
 
+    public $theme = 'default';
+
     protected $rules = [
         'amount' => 'required|numeric|min:50',
     ];
@@ -43,8 +45,9 @@ class BetForm extends Component
         50, 100, 300, 500, 1000, 5000, 10000,
     ];
 
-    public function mount($bettingEventId)
+    public function mount($bettingEventId, $theme = 'default')
     {
+        $this->theme = $theme;
         $this->betOptions = BetOption::where('hidden', false)->get();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
@@ -130,7 +133,6 @@ class BetForm extends Component
 
     public function bettingRoundPlaced($data)
     {
-
         $this->emit('place-bets-'.$data['bet']);
     }
 
@@ -144,6 +146,7 @@ class BetForm extends Component
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->balance = auth()->user()->balanceFloat;
+        $this->resetBets();
     }
 
     public function updateBalance($data)
@@ -174,10 +177,10 @@ class BetForm extends Component
         return true;
     }
 
-    public function placeBet(PlaceBetService $placeBetService, $bet)
+    public function placeBet(PlaceBetService $placeBetService, $betOption)
     {
         $this->validate($this->rules);
-        $bet = BetOption::find($bet['id']);
+        $bet = BetOption::find($betOption['id']);
 
         try {
             $this->validateBalance();
@@ -220,19 +223,21 @@ class BetForm extends Component
         $this->emit('swal:modal', [
             'icon' => 'success',
             'title' => "Betting Round #".$this->bettingRound->queue,
-            'text' => "<h1>You've placed a bet worth of <strong class='text-success'>PHP ".number_format($this->amount). "</strong> to <strong style='color:{$bet->color}'>".strtoupper($bet->name). "</strong>  </h1><h1>Good luck!</h1>",
+            'text' => "<h1>You've placed a bet worth of <strong class='text-success'>".number_format($this->amount). "</strong> to <strong style='color:{$bet->color}'>".strtoupper($bet->name). "</strong>  </h1><h1>Good luck!</h1>",
         ]);
     }
 
-    public function confirmBet($betOption)
+    public function confirmBet($betOptionId)
     {
+        $betOption = BetOption::find($betOptionId);
+
         $this->validate($this->rules);
-        $color = $betOption['color'] == '#FFFFFF' ? "#8898aa" : $betOption['color'];
+        $color = $betOption->color == '#FFFFFF' ? "#8898aa" : $betOption->color;
         $this->emit('swal:confirm', [
             'icon' => 'info',
             'title' => "Bet Confirmation",
-            'text' => "<h1>Total Bet Amount <strong class='text-success'>PHP ".number_format($this->amount). "</strong></h1><h1><strong style='color:{$color}'>".strtoupper($betOption['name']). "</strong> </h1>",
-            'confirmText' => 'CONFIRM BET ON '.strtoupper($betOption['name']),
+            'text' => "<h1>Total Bet Amount <strong class='text-success'>".number_format($this->amount). "</strong></h1><h1><strong style='color:{$color}'>".strtoupper($betOption->name). "</strong> </h1>",
+            'confirmText' => 'CONFIRM BET ON '.strtoupper($betOption->name),
             'showCancelButton' => true,
             'method' => 'placeBet',
             'params' => $betOption,
@@ -255,12 +260,12 @@ class BetForm extends Component
     public function resetBets()
     {
         $this->totalBetAmount = 0;
-        $this->amount = 0;
+        $this->amount = null;
     }
 
     public function render()
     {
-        return view('livewire.frontend.bet-form')
+        return view('livewire.'.$this->theme.'.bet-form')
             ->with('bettingRound', $this->bettingRound)
             ->with('user', auth()->user())
             ->with('userBets', $this->userBets);

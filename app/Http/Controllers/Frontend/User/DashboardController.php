@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $user = auth()->user();
         $bettingEvent = BettingEvent::today($user->timezone)->first();
         return view('frontend.user.dashboard')
-            ->with('bets', $user->bets()->take(5)->get())
+            ->with('bets', $user->bets()->latest()->limit(5)->get())
             ->with('transactions', $user->transactions()->latest()->whereNull('meta')->take(5)->get())
             ->with('bettingEvent', $bettingEvent);
     }

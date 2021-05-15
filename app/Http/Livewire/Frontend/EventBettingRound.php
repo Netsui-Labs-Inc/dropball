@@ -15,9 +15,11 @@ class EventBettingRound extends Component
 
     public $payout = 0;
 
+    public $theme = 'default';
 
-    public function mount($bettingEventId)
+    public function mount($bettingEventId, $theme = 'default')
     {
+        $this->theme = $theme;
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
     }
@@ -68,13 +70,16 @@ class EventBettingRound extends Component
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
         } elseif ($this->hasWinningBet($userBets)) {
             $this->setPayouts();
+            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : '#FFFFFF';
             $icon = 'success';
-            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
+            $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
 
         } else {
             $icon = 'error';
-            $title = "<h1 style='color:{$this->bettingRound->betOption->color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
+            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : '#FFFFFF';
+
+            $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE LOST <strong class='text-danger'>-".number_format($userBets->sum('bet_amount')). "</strong>";
         }
 
@@ -142,7 +147,7 @@ class EventBettingRound extends Component
 
     public function render()
     {
-        return view('livewire.frontend.event-betting-round')
+        return view('livewire.'.$this->theme.'.event-betting-round')
             ->with('bettingRound', $this->bettingRound);
     }
 }
