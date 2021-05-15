@@ -54,7 +54,7 @@
                             @if(count($bets))
                             <thead class="thead-light">
                                 <tr>
-                                    <th>#ID</th>
+                                    <th>#</th>
                                     <th>Bet</th>
                                     <th>Status</th>
                                     <th>Gain/Loss</th>
@@ -64,7 +64,7 @@
                             @endif
                             @forelse($bets as $bet)
                                 <tr>
-                                    <td>#{{$bet->id}}</td>
+                                    <td>#{{$bet->bettingRound->bettingEvent->id."/".$bet->bettingRound->queue}}</td>
                                     <td><span class="badge" style="background-color: {{$bet->option->color}}; color: {{$bet->option->color == "#FFFFFF" ?  "#525f7f" : "#FFFFFF" }}">{{strtoupper($bet->option->name)}}</span> / {{number_format($bet->bet_amount)}}</td>
                                     <td>{!! $bet->statusLabel() !!}</td>
                                     <td>{!! $bet->gainLossLabel() !!}</td>

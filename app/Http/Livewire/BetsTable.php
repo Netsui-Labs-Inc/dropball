@@ -65,11 +65,11 @@ class BetsTable extends TableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('Bet ID'), 'id')
+            Column::make(__('#Event/Round'), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function (Bet $model) {
-                    return $this->html('#'.$model->id);
+                    return $this->html('#'.$model->bettingRound->bettingEvent->id."/".$model->bettingRound->queue);
                 }),
             Column::make(__('Player'), 'user_id')
                 ->searchable()

@@ -61,23 +61,24 @@ class EventBettingRound extends Component
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
 
         if ($userBets->isEmpty()) {
+            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
             $icon = 'info';
             $title = 'Betting Round #'.$this->bettingRound->queue;
-            $result = $this->bettingRound->status;
+            $result = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
         } elseif (in_array($this->bettingRound->status,  ['draw','cancelled'])) {
             $icon = 'info';
             $title = "<h1 class='text-danger'> Cancelled </h1>";
             $result = "YOU'VE been credited <strong class='text-info'>".number_format($userBets->sum('bet_amount')). "</strong>";
         } elseif ($this->hasWinningBet($userBets)) {
             $this->setPayouts();
-            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : '#FFFFFF';
+            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
             $icon = 'success';
             $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
 
         } else {
             $icon = 'error';
-            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : '#FFFFFF';
+            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
 
             $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
             $result = "YOU'VE LOST <strong class='text-danger'>-".number_format($userBets->sum('bet_amount')). "</strong>";
