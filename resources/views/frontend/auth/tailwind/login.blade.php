@@ -5,7 +5,7 @@
 @section('content')
     <section class="bg-gray-900 h-screen">
         <div class="mx-auto flex justify-center md:items-center relative md:h-full">
-            <div class="absolute top-0 right-0 pt-2 mr-4">
+            <div class="absolute top-0 right-0 pt-2 mr-4 hidden md:block lg:block xl:block ">
                 <svg width="200" height="144" xmlns="http://www.w3.org/2000/svg">
                     <g fill="#DC2626" fill-rule="evenodd">
                         <rect width="4" height="4" rx="2" />
@@ -101,7 +101,7 @@
                     </g>
                 </svg>
             </div>
-                <x-forms.post :action="route('frontend.auth.login')" class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 mb-32 sm:mb-0 my-40 sm:my-12 px-2 sm:px-0">
+                <x-forms.post :action="route('frontend.auth.login')" class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 lg:mb-32 md:mb-32 sm:mb-0 xl:my-40 lg:my-40 md:my-40 sm:my-12 px-2 sm:px-0">
 
                 <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">
                     <img src="{{asset('/img/brand/kingpinlogo.png')}}" alt="">
@@ -138,10 +138,10 @@
                 </div>
                 <div class="px-2 mb-16 sm:mb-56 md:mb-16 sm:px-6">
                     <button class="focus:outline-none w-full bg-red-700 transition duration-150 ease-in-out hover:bg-red-600 rounded text-white px-8 py-3 text-sm mt-6">Login</button>
-                    <p class="mt-16 text-xs text-center text-gray-100">Don’t Have An Account? <a class="underline text-red-600" href="{{route('frontend.auth.register')}}">Sign Up</a></p>
+                    <p class="mt-8 text-xs text-center text-gray-100">Don’t Have An Account? <a class="underline text-red-600" href="{{route('frontend.auth.register')}}">Sign Up</a></p>
                 </div>
             </x-forms.post>
-            <div class="absolute bottom-0 left-0 pb-2 md:ml-4">
+            <div class="absolute bottom-0 left-0 pb-2 md:ml-4 hidden md:block lg:block xl:block ">
                 <svg width="200" height="144" xmlns="http://www.w3.org/2000/svg">
                     <g fill="#DC2626" fill-rule="evenodd">
                         <rect width="4" height="4" rx="2" />
