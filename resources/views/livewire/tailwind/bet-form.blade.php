@@ -14,42 +14,57 @@
     @if (session()->has('error'))
         <p class="text-red text-xs italic">{{ session('error') }}</p>
     @endif
-    <div class="flex items-center">
-        <p class="uppercase text-sm font-semibold leading-normal pr-10 sm:pr-32 text-gray-50">
-            Available Balance:  <span class="text-yellow-500">{{number_format($balance)}}</span>
-        </p>
+    <div class="flex flex-wrap content-start text-sm">
+        <div class="flex-auto w-1/2">
+            <p class="uppercase text-center font-semibold leading-normal text-gray-50">
+                Available Balance
+            </p>
+            <p class="text-center text-yellow-500">{{number_format($balance, 2)}}</p>
+        </div>
+        <div class="flex-auto w-1/2">
+            <p class="uppercase text-center font-semibold leading-normal text-gray-50">
+                Your Bet
+            </p>
+            <p class="text-center text-yellow-500 font-semibold">
+                @if($userBets)
+                    @if($userBets->isNotEmpty())
+                        @if($userBets->first()->bet == 1)
+                            <span class="text-xs p-0 text-red-500">PULA</span>
+                        @else
+                            <span class="text-xs p-0 text-gray-50">PUTI</span>
+                        @endif
+                    @endif
+                @endif
+                {{number_format($amount)}}
+            </p>
+        </div>
     </div>
     <div class="flex flex-wrap my-3">
-        <div class="flex-auto">
-            <div class="py-2 bg-red-600  text-center rounded-sm">
-                <p class="text-xl font-semibold leading-5 text-white">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</p>
+        <div class="flex-auto w-1/2">
+            <div class="py-2 bg-red-600 text-center rounded-sm">
+                <p class="text-xl font-semibold leading-5 text-white">{{ number_format($bettingRound->totalBetType(1) ?? 0) }}</p>
                 <p class=" leading-none text-xs text-white pt-1">PULA</p>
             </div>
         </div>
-        <div class="flex-auto">
+        <div class="flex-auto w-1/2">
             <div class="py-2 bg-white rounded-sm text-center">
-                <p class="text-xl font-semibold leading-5 text-gray-500">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</p>
+                <p class="text-xl font-semibold leading-5 text-gray-500">{{ number_format($bettingRound->totalBetType(2) ?? 0) }}</p>
                 <p class="leading-none text-xs text-gray-500 pt-1">PUTI</p>
             </div>
         </div>
     </div>
-    <p class="uppercase text-sm font-semibold leading-normal pr-10 sm:pr-32 text-gray-50 my-3">
-            Bet:
-                @if($userBets)
-                    @if($userBets->isNotEmpty())
-                        @if($userBets->first()->bet == 1)
-                        <i class="text-xs fas fa-circle p-0 text-red-500"></i>
-                        @else
-                            <i class="text-xs fas fa-circle p-0 text-gray-50"></i>
-                        @endif
-                    @else
-                        <i class="text-xs fas fa-dot-circle p-0 text-blue-300"></i>
-                    @endif
-                @endif
-            <span class="text-yellow-500 mr-4 font-semibold">{{number_format($totalBetAmount)}}</span>
-            Payout: <span class="text-yellow-500 font-semibold">{{number_format(getPayout($totalBetAmount))}}</span>
-    </p>
-
+    <div class="flex flex-wrap my-3 ">
+        <div class="flex-auto text-center w-1/2">
+            <p class="uppercase text-sm font-semibold leading-normal text-gray-50">
+                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['pula'], 2)}}%</span>
+            </p>
+        </div>
+        <div class="flex-auto text-center w-1/2">
+            <p class="uppercase text-center text-sm font-semibold leading-normal text-gray-50">
+                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['puti'], 2)}}%</span>
+            </p>
+        </div>
+    </div>
     <div class="flex space-x-2">
         <div class="flex-auto w-1/2">
             <button class="disabled:opacity-50 my-2 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-10 py-4 text-sm" wire:click="$emit('confirmBet', 1)" {{$userCanBet ? '': 'disabled'}}>

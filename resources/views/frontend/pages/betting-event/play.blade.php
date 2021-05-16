@@ -5,7 +5,7 @@
 @section('content')
     <div class="container pt-20 xl:pt-6 2xl:pt-6  mx-auto">
         <div class="flex flex-wrap">
-            <div class="xl:w-3/5 w-full pb-6 pb-0 xl:pb-2 relative">
+            <div class="xl:w-3/5 w-full lg:pb-2 pb-0 xl:pb-2 relative">
                 <div class="absolute top-1 z-20 w-full">
                     <livewire:frontend.video-header theme="tailwind" :bettingEventId="$bettingEvent->id" />
                 </div>

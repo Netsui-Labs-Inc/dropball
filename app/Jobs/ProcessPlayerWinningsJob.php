@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Domains\Bet\Models\Bet;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
 use Illuminate\Bus\Queueable;
@@ -46,18 +45,21 @@ class ProcessPlayerWinningsJob implements ShouldQueue
             logger("------------------ END USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------\n");
             DB::commit();
         } catch (\Exception $e) {
-            logger("ProcessBetResultDistribution.error = ".$e->getMessage());
+            logger("ProcessPlayerWinningsJob.error = ".$e->getMessage());
             DB::rollBack();
         }
     }
 
     public function processWin(Bet $bet)
     {
-        $bettingRound = $bet->bettingRound;
-
+        $bettingRound = $bet->bettingRound->fresh();
+        logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
+        $payoutPercentage = $bettingRound->payouts[Bet::RESULT[$bet->bet]];
+        $bet->payout = ($payoutPercentage / 100) * $bet->bet_amount;
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
         $bet->user->depositFloat($bet->payout, ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        $bet->save();
     }
 }

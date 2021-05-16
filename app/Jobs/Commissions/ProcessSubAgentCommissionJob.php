@@ -43,11 +43,11 @@ class ProcessSubAgentCommissionJob implements ShouldQueue
             logger("BettingRound#{$bettingRound->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
             try {
                 DB::beginTransaction();
-                $masterAgent = $this->getWallet($masterAgent, 'Income Wallet');
+                $masterAgentWallet = $masterAgent->getWallet('income-wallet');
                 logger("BettingRound#{$bettingRound->id} Master Agent #{$masterAgent->id} {$masterAgent->name} current balance {$masterAgent->balanceFloat}");
-                $transaction = $bet->forceTransfer($masterAgent, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
+                $transaction = $bet->forceTransferFloat($masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
                 logger("BettingRound#{$bettingRound->id} Master agent #{$masterAgent->id} {$masterAgent->name} new balance {$masterAgent->balanceFloat}");
-                $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid , 'sponsor_master_agent' => $masterAgent->id]);
+                $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid , 'sub_agent_id' => $subAgent->id]);
                 DB::commit();
             } catch (\Exception $e) {
                 logger("ProcessSubAgentCommissionJob.error =".$e->getMessage(), [$e->getTraceAsString()]);

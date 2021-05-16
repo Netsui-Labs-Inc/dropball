@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
+use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -136,7 +137,9 @@ class BettingRoundController extends Controller
     {
         $bettingRound->result = $request->get('result');
         $bettingRound->status = 'ended';
+        $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
         $bettingRound->save();
+        logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
 
         BettingRoundResultUpdated::dispatch($bettingRound->fresh());
 

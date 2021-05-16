@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('frontend.layouts.tailwind.full')
 
 @section('content')
 

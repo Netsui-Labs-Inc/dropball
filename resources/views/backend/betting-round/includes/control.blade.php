@@ -7,8 +7,7 @@
                 button-class="btn btn-success btn-block btn-lg"
                 icon="fa fa-door-open"
                 name="open-betting"
-            >
-                @lang("Open Betting")
+            > @lang(" Open Betting")
             </x-utils.form-button>
        </div>
        <div class="col-12 col-md-6 p-2">

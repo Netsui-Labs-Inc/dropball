@@ -26,10 +26,12 @@ class BettingRound extends Model
         'pool_money',
         'meta',
         'note',
+        'payouts',
     ];
 
     protected $casts = [
         'meta' => 'array',
+        'payouts' => 'array',
     ];
 
     public function bettingEvent()
@@ -50,7 +52,6 @@ class BettingRound extends Model
         switch ($this->status) {
             case 'upcoming':
                 $class = 'badge-info';
-
                 break;
             case 'ongoing':
                 $class = 'badge-success';

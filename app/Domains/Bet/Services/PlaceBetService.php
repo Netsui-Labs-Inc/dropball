@@ -88,7 +88,7 @@ class PlaceBetService
 
         logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
 
-        $this->setPoolMoney($bet);
+        //$this->setPoolMoney($bet);
 
         return $this->bettingRound;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Frontend;
 
-use App\Domains\Bet\Models\Bet;
+use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
@@ -45,6 +45,11 @@ class BetForm extends Component
     public $betChoices = [
         50, 100, 300, 500, 1000, 5000, 10000,
     ];
+    public $payouts = [
+        'pula' => 0,
+        'puti' => 0,
+        'betPayout' => 0,
+    ];
 
     public function mount($bettingEventId, $theme = 'default')
     {
@@ -71,7 +76,7 @@ class BetForm extends Component
         }
 
         return [
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBetPlaced" => 'bettingRoundPlaced',
+            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBetPlaced" => 'bettingRoundBetPlaced',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingWindowUpdated" => 'updateBettingRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'updateBettingRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'startNewRound',
@@ -132,8 +137,9 @@ class BetForm extends Component
         $this->balance = $this->user->balanceFloat;
     }
 
-    public function bettingRoundPlaced($data)
+    public function bettingRoundBetPlaced($data)
     {
+        $this->setPayouts();
         $this->emit('place-bets-'.$data['bet']);
     }
 
@@ -252,12 +258,8 @@ class BetForm extends Component
         if (! $this->bettingRound) {
             return;
         }
-        if ($this->userBets->isNotEmpty()) {
-            $this->totalBetAmount = $this->userBets->sum('bet_amount');
-
-            return;
-        }
-//        $this->resetBets();
+        $payouts = (new CalculateOddsAction)($this->bettingRound);
+        $this->payouts = $payouts;
     }
 
     public function resetBets()
@@ -265,6 +267,11 @@ class BetForm extends Component
         $this->totalBetAmount = 0;
         $this->amount = null;
         $this->userBets = null;
+        $this->payouts = [
+            'pula' => 0,
+            'puti' => 0,
+            'betPayout' => 0,
+        ];
     }
 
     public function render()

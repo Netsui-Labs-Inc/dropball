@@ -15,7 +15,7 @@ class AddPayoutFieldsToBetsTable extends Migration
     {
         Schema::table('bets', function (Blueprint $table) {
             $table->unsignedBigInteger('agent_id')->nullable()->after('user_id')->nullable();
-            $table->bigInteger('payout')->nullable()->after('gain_loss');
+            $table->float('payout')->nullable()->after('gain_loss');
             $table->bigInteger('other_commissions')->nullable()->after('payout');
             $table->boolean('commission_processed')->nullable()->after('payout');
             $table->foreign('agent_id')->references('id')->on('users');

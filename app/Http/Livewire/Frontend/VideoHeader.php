@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Frontend;
 
+use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Collection;
@@ -28,10 +29,6 @@ class VideoHeader extends Component
         $this->theme = $theme;
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
-        $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
-        if ($this->bettingRound) {
-            $this->setPayouts();
-        }
     }
 
     public function getListeners()
@@ -44,7 +41,6 @@ class VideoHeader extends Component
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBetPlaced" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingWindowUpdated" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'updateStatus',
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'showResult',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingLastCall" => 'lastCall',
         ];
@@ -58,7 +54,6 @@ class VideoHeader extends Component
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
-        $this->setPayouts();
     }
 
     public function showResult($data)
@@ -68,7 +63,6 @@ class VideoHeader extends Component
 
         /** @var Collection $userBets */
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
-        $this->setPayouts();
         $result = $this->bettingRound->result;
         if (empty($userBets)) {
         } elseif ($this->hasWinningBet($userBets)) {
@@ -98,12 +92,6 @@ class VideoHeader extends Component
         return $this->bettingEvent->activeBettingRound()->first();
     }
 
-    public function setPayouts()
-    {
-        $totalBet = $this->bettingRound->userBets(auth()->user())->where('bet', $this->bettingRound->result)->sum('bet_amount');
-
-        $this->payout = getPayout($totalBet);
-    }
 
     public function lastCall()
     {

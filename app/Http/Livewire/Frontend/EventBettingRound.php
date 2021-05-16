@@ -74,8 +74,7 @@ class EventBettingRound extends Component
             $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
             $icon = 'success';
             $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
-            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
-
+            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout, 2). "</strong>";
         } else {
             $icon = 'error';
             $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
@@ -141,9 +140,13 @@ class EventBettingRound extends Component
 
     public function setPayouts()
     {
-        $totalBet = $this->bettingRound->userBets(auth()->user()->id)->where('bet', $this->bettingRound->result)->sum('bet_amount');
+        $bettingRound = $this->bettingRound->fresh();
 
-        $this->payout = getPayout($totalBet);
+        $totalBet = $bettingRound->userBets(auth()->user()->id)->where('bet', $bettingRound->result)->sum('bet_amount');
+        $payoutPercentage = $bettingRound->payouts[Bet::RESULT[$bettingRound->result]] ?? 0;
+        logger("EventBettingRound.setPayouts BettingRound#{$bettingRound->id} TotalBet: $totalBet Payouts :: ", $bettingRound->payouts);
+
+        $this->payout = ($payoutPercentage / 100) * $totalBet;
     }
 
     public function render()

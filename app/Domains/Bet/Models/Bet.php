@@ -20,6 +20,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property User $user
+ * @property int $user_id,
+ * @property int $betting_round_id
+ * @property int $bet
+ * @property int $bet_amount
+ * @property string $status
+ * @property float $payout
  */
 class Bet extends Model implements Wallet, WalletFloat
 {
@@ -57,6 +63,10 @@ class Bet extends Model implements Wallet, WalletFloat
     const PULA = 1;
     const PUTI = 2;
     const BOKYA = 3;
+    const RESULT = [
+        1 => 'pula',
+        2 => 'puti',
+    ];
 
     public function play()
     {
