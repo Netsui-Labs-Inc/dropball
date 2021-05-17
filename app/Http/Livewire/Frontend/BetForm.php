@@ -57,13 +57,18 @@ class BetForm extends Component
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
+        $this->checkUserBetAndAmount();
+        $this->setPayouts();
+    }
+
+    public function checkUserBetAndAmount()
+    {
         $this->userCanBet = $this->canBetToBettingRound();
         $this->userBet = $this->bettingRound ? $this->bettingRound->userBet(auth()->user()->id) : null;
         if ($this->bettingRound) {
             $this->amount = $this->userBet->bet_amount ?? null;
         }
         $this->balance = $this->user->balanceFloat;
-        $this->setPayouts();
     }
 
     public function getListeners()
@@ -200,6 +205,8 @@ class BetForm extends Component
         } catch (\Exception $e) {
             logger($e->getTraceAsString());
             $this->addError('amount', $e->getMessage());
+            $this->checkUserBetAndAmount();
+            $this->setPayouts();
         }
     }
 
