@@ -111,6 +111,8 @@ class MasterAgentController extends Controller
         $input['timezone'] = 'Asia/Manila';
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
+        } elseif ($user->hasRole('Master Agent')) {
+            $input['hub_id'] = $user->hub_id;
         }
         $user = $this->userService->update($masterAgent, $input);
 
