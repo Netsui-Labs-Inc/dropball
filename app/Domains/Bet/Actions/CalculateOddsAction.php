@@ -30,9 +30,9 @@ class CalculateOddsAction
         }
 
         return [
-            'puti' => $putiPayout * 100,
-            'pula' => $pulaPayout * 100,
-            'betPayout' => $betPayout,
+            'puti' => floor($putiPayout * 100),
+            'pula' => floor($pulaPayout * 100),
+            'betPayout' => floor($betPayout),
         ];
     }
 }

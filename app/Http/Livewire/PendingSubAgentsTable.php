@@ -71,6 +71,10 @@ class PendingSubAgentsTable extends TableComponent
                 ->format(function (User $model) {
                     return $this->html("<a href='".route('admin.master-agents.info', $model)."'>{$model->masterAgent->name}</a>");
                 }),
+            Column::make(__('Hub'), 'hub_id')
+                ->format(function (User $model) {
+                    return $this->html($model->hub->name);
+                }),
             Column::make(__('Created at'), 'created_at')
                 ->searchable()
                 ->sortable(),

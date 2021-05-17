@@ -107,6 +107,12 @@
                         <td>{{ $user->masterAgent->name}}</td>
                     </tr>
                 @endif
+                @if($user->hub)
+                    <tr>
+                        <th>@lang('Hub')</th>
+                        <td>{{ $user->hub->name}}</td>
+                    </tr>
+                @endif
             </table>
         </x-slot>
 

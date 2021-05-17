@@ -74,7 +74,7 @@ class EventBettingRound extends Component
             $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
             $icon = 'success';
             $title = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
-            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout, 2). "</strong>";
+            $result = "YOU'VE WON <strong class='text-success'>".number_format($this->payout). "</strong>";
         } else {
             $icon = 'error';
             $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;

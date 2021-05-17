@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Frontend;
 
 use App\Domains\Bet\Actions\CalculateOddsAction;
-use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;

@@ -19,10 +19,10 @@
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
                 Available Balance
             </p>
-            <p class="text-center text-yellow-500">{{number_format($balance, 2)}}
+            <p class="text-center text-yellow-500">{{number_format($balance)}}
                 @if($userBet)
                     <span class="text-green-400 opacity-50">
-                        +{{number_format($payouts['betPayout'], 2)}}
+                        +{{number_format($payouts['betPayout'])}}
                     </span>
                 @endif
             </p>
@@ -46,13 +46,13 @@
     <div class="flex flex-wrap my-3">
         <div class="flex-auto w-1/2">
             <div class="py-2 bg-red-600 text-center rounded-sm">
-                <p class="text-xl font-semibold leading-5 text-white">{{ number_format($bettingRound->totalBetType(1) ?? 0) }}</p>
+                <p class="text-xl font-semibold leading-5 text-white">{{ number_format($bettingRound->totalBetType(1) ?? 0)}}</p>
                 <p class=" leading-none text-xs text-white pt-1">PULA</p>
             </div>
         </div>
         <div class="flex-auto w-1/2">
             <div class="py-2 bg-white rounded-sm text-center">
-                <p class="text-xl font-semibold leading-5 text-gray-500">{{ number_format($bettingRound->totalBetType(2) ?? 0) }}</p>
+                <p class="text-xl font-semibold leading-5 text-gray-500">{{ number_format($bettingRound->totalBetType(2) ?? 0)}}</p>
                 <p class="leading-none text-xs text-gray-500 pt-1">PUTI</p>
             </div>
         </div>
@@ -60,12 +60,12 @@
     <div class="flex flex-wrap my-3">
         <div class="flex-auto text-center w-1/2">
             <p class="uppercase text-sm font-semibold leading-normal text-gray-50">
-                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['pula'], 2)}}</span>
+                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['pula'])}}</span>
             </p>
         </div>
         <div class="flex-auto text-center w-1/2">
             <p class="uppercase text-center text-sm font-semibold leading-normal text-gray-50">
-                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['puti'], 2)}}</span>
+                Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['puti'])}}</span>
             </p>
         </div>
     </div>

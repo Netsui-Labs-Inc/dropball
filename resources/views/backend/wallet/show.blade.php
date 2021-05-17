@@ -35,7 +35,7 @@
 
                 <tr>
                     <th>@lang('Amount')</th>
-                    <td>{{ number_format($transaction->amountFloat, 0)}}</td>
+                    <td>{{ number_format($transaction->amountFloat)}}</td>
                 </tr>
 
                 <tr>
