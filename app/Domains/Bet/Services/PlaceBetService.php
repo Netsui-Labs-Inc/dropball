@@ -70,6 +70,10 @@ class PlaceBetService
             throw new \Exception("Betting window is not open");
         }
 
+        if ($this->bettingRound->userBet($this->bettor->id)) {
+            throw new \Exception("Cannot add multiple bets");
+        }
+
         if ($this->amount < 50) {
             throw new \Exception("Invalid bet amount");
         }

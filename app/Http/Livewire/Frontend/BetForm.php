@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Frontend;
 
 use App\Domains\Bet\Actions\CalculateOddsAction;
+use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
@@ -20,7 +21,7 @@ class BetForm extends Component
 
     public $userCanBet = false;
 
-    public $userBets;
+    public $userBet;
 
     public $user;
 
@@ -29,8 +30,6 @@ class BetForm extends Component
     public $poolMoney = 0;
 
     public $betOptions = [];
-
-    public $betColor;
 
     public $payout = 0;
 
@@ -59,11 +58,9 @@ class BetForm extends Component
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
         $this->userCanBet = $this->canBetToBettingRound();
-        $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
+        $this->userBet = $this->bettingRound ? $this->bettingRound->userBet(auth()->user()->id) : null;
         if ($this->bettingRound) {
-            if ($this->userBets->isNotEmpty()) {
-                $this->amount = $this->userBets->sum('bet_amount');
-            }
+            $this->amount = $this->userBet->bet_amount ?? null;
         }
         $this->balance = $this->user->balanceFloat;
         $this->setPayouts();
@@ -120,10 +117,8 @@ class BetForm extends Component
         }
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
-        $this->userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
-        if ($this->userBets->isEmpty()) {
-            $this->amount = null;
-        }
+        $this->userBet = $this->bettingRound->userBet(auth()->user()->id);
+        $this->amount = $this->userBet->bet_amount ?? null;
         $this->userCanBet = $this->canBetToBettingRound();
         $this->setPayouts();
         $this->balance = $this->user->balanceFloat;
@@ -132,7 +127,7 @@ class BetForm extends Component
     public function updateBetsTotal()
     {
         $this->bettingEvent = $this->bettingRound->bettingEvent;
-        $this->userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
+        $this->userBet = $this->bettingRound->userBet(auth()->user()->id);
         $this->setPayouts();
         $this->balance = $this->user->balanceFloat;
     }
@@ -258,7 +253,7 @@ class BetForm extends Component
         if (! $this->bettingRound) {
             return;
         }
-        $payouts = (new CalculateOddsAction)($this->bettingRound);
+        $payouts = (new CalculateOddsAction)($this->bettingRound, $this->userBet);
         $this->payouts = $payouts;
     }
 
@@ -266,7 +261,7 @@ class BetForm extends Component
     {
         $this->totalBetAmount = 0;
         $this->amount = null;
-        $this->userBets = null;
+        $this->userBet = null;
         $this->payouts = [
             'pula' => 0,
             'puti' => 0,
@@ -279,6 +274,6 @@ class BetForm extends Component
         return view('livewire.'.$this->theme.'.bet-form')
             ->with('bettingRound', $this->bettingRound)
             ->with('user', auth()->user())
-            ->with('userBets', $this->userBets);
+            ->with('userBet', $this->userBet);
     }
 }

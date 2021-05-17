@@ -19,20 +19,24 @@
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
                 Available Balance
             </p>
-            <p class="text-center text-yellow-500">{{number_format($balance, 2)}}</p>
+            <p class="text-center text-yellow-500">{{number_format($balance, 2)}}
+                @if($userBet)
+                    <span class="text-green-400 opacity-50">
+                        +{{number_format($payouts['betPayout'], 2)}}
+                    </span>
+                @endif
+            </p>
         </div>
         <div class="flex-auto w-1/2">
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
                 Your Bet
             </p>
             <p class="text-center text-yellow-500 font-semibold">
-                @if($userBets)
-                    @if($userBets->isNotEmpty())
-                        @if($userBets->first()->bet == 1)
-                            <span class="text-xs p-0 text-red-500">PULA</span>
-                        @else
-                            <span class="text-xs p-0 text-gray-50">PUTI</span>
-                        @endif
+                @if($userBet)
+                    @if($userBet->bet == 1)
+                        <span class="text-xs p-0 text-red-500">PULA</span>
+                    @else
+                        <span class="text-xs p-0 text-gray-50">PUTI</span>
                     @endif
                 @endif
                 {{number_format($amount)}}
@@ -53,7 +57,7 @@
             </div>
         </div>
     </div>
-    <div class="flex flex-wrap my-3 ">
+    <div class="flex flex-wrap my-3">
         <div class="flex-auto text-center w-1/2">
             <p class="uppercase text-sm font-semibold leading-normal text-gray-50">
                 Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['pula'], 2)}}</span>

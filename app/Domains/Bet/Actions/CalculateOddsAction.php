@@ -20,7 +20,14 @@ class CalculateOddsAction
             $pulaPayout = $pulaTotalBet ? $potMoney / $pulaTotalBet : 0;
             $putiPayout = $putiTotalBet ? $potMoney / $putiTotalBet : 0;
         }
-        $betPayout = 0;
+
+        if ($bet && $bet->bet === Bet::PUTI) {
+            $betPayout = $putiPayout * $bet->bet_amount;
+        } elseif ($bet && $bet->bet === Bet::PULA) {
+            $betPayout = $pulaPayout * $bet->bet_amount;
+        } else {
+            $betPayout = 0;
+        }
 
         return [
             'puti' => $putiPayout * 100,

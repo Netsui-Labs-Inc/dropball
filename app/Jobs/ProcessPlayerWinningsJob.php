@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
@@ -54,8 +55,8 @@ class ProcessPlayerWinningsJob implements ShouldQueue
     {
         $bettingRound = $bet->bettingRound->fresh();
         logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
-        $payoutPercentage = $bettingRound->payouts[Bet::RESULT[$bet->bet]];
-        $bet->payout = ($payoutPercentage / 100) * $bet->bet_amount;
+        $payout = (new CalculateOddsAction)($bettingRound, $bet);
+        $bet->payout = $payout['betPayout'];
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
         $bet->user->depositFloat($bet->payout, ['betting_round_id' => $bettingRound->id]);

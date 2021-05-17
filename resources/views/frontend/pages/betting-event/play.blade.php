@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="xl:w-2/5 w-full py-0 xl:pl-6 ">
-                <div class="w-full py-2 md:py-6 bg-gray-800 rounded">
+                <div class="w-full py-3 md:py-6 bg-gray-800 rounded">
                     <div class="px-2 md:px-6 lg:px-8">
                         <livewire:frontend.event-betting-round theme="tailwind" :bettingEventId="$bettingEvent->id" />
                         <livewire:frontend.bet-form theme="tailwind" :bettingEventId="$bettingEvent->id" />
