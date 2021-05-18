@@ -23,7 +23,7 @@
                                         <rect x="14" y="14" width="6" height="6" rx="1" />
                                     </svg>
                                 </span>
-                        Dashboard
+                        <x-utils.link :href="route('frontend.user.dashboard')" :text="__('Dashboard')" />
                     </li>
                     <li class="cursor-pointer h-full flex items-center text-sm hover:text-yellow-500 text-white mx-10 tracking-normal transition duration-150 ease-in-out">
                         <span class="mr-2">
