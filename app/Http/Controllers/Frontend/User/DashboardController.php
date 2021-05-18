@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Frontend\User;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Http\Controllers\Controller;
 
@@ -20,6 +21,7 @@ class DashboardController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
+        /** @var User $user */
         $user = auth()->user();
         $bettingEvent = BettingEvent::today($user->timezone)->first();
         return view('frontend.user.dashboard')

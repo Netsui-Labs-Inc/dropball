@@ -4,18 +4,16 @@ namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
 /**
  * Class BettingRoundsTable.
  */
-class PlayersTable extends TableComponent
+class PlayersTable extends DataTableComponent
 {
-    use HtmlComponents;
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     /**
      * @var string
@@ -86,19 +84,19 @@ class PlayersTable extends TableComponent
                 ->searchable()
                 ->sortable(),
             Column::make(__('Verified'))
-                ->format(function (User $model) {
-                    return view('backend.auth.user.includes.verified', ['user' => $model]);
+                ->format(function ($value, $column, User $row) {
+                    return view('backend.auth.user.includes.verified', ['user' => $row]);
                 })
                 ->sortable(function ($builder, $direction) {
                     return $builder->orderBy('email_verified_at', $direction);
                 }),
             Column::make(__('Balance'))
-                ->format(function (User $model) {
-                    return $this->html(number_format($model->balanceFloat));
-                }),
+                ->format(function ($value, $column, User $row) {
+                    return number_format($row->balanceFloat);
+                })->asHtml(),
             Column::make(__('Actions'))
-                ->format(function (User $model) {
-                    return view("backend.player.action", ['user' => $model]);
+                ->format(function ($value, $column, User $row) {
+                    return view("backend.player.action", ['user' => $row]);
                 }),
         ];
     }

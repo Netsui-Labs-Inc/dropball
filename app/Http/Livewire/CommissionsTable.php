@@ -5,19 +5,17 @@ namespace App\Http\Livewire;
 use App\Domains\BettingRound\Models\BettingRound;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class CommissionsTable extends TableComponent
+class CommissionsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
     public $sortField = 'id';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public int $perPage = 10;
     /**
      * @var string
      */
@@ -72,28 +70,29 @@ class CommissionsTable extends TableComponent
             Column::make(__('Transaction ID'), 'uuid')
                 ->searchable()
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    return $this->html("#".$model->id);
-                }),
+                ->format(function ($value, $column, Transaction $row) {
+                    return "#".$row->id;
+                })->asHtml(),
             Column::make(__('Betting Round ID'), )
-                ->format(function (Transaction $model) {
-                    if (! isset($model->meta['betting_round_id'])) {
+                ->format(function ($value, $column, Transaction $row) {
+                    if (! isset($row->meta['betting_round_id'])) {
                         return "N/A";
                     }
-                    $bettingRound = BettingRound::find($model->meta['betting_round_id']);
+                    $bettingRound = BettingRound::find($row->meta['betting_round_id']);
 
                     $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
 
-                    return $this->html("<a href='$linkToBettingRound'> #".$model->meta['betting_round_id']."</a>");
-                }),
+                    return "<a href='$linkToBettingRound'> #".$row->meta['betting_round_id']."</a>";
+                })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->amountFloat < 0 ? 'text-danger': 'text-success';
-                    $sign = $model->amountFloat > 0 ? '+' : null;
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
+                    $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return $this->html("<div class='$class'>$sign".number_format($model->amountFloat, 2)."</div>");
-                }),
+                    return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
+                    return "testphp artisan view:clear";
+                })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable(),
         ];
@@ -102,7 +101,7 @@ class CommissionsTable extends TableComponent
             $columns[] = Column::make(__('Action'))
                 ->format(function (Transaction $model) {
                     return view('backend.wallet.action', ['transaction' => $model]);
-                });
+                })->asHtml();
         }
 
         return $columns;

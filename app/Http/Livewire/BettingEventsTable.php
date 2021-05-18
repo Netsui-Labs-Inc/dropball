@@ -4,13 +4,11 @@ namespace App\Http\Livewire;
 
 use App\Domains\BettingEvent\Models\BettingEvent;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class BettingEventsTable extends TableComponent
+class BettingEventsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -55,8 +53,8 @@ class BettingEventsTable extends TableComponent
             Column::make(__('Event ID'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BettingEvent $model) {
-                    return $this->html('#'.$model->id);
+                ->format(function ($value, $column, BettingEvent $row) {
+                    return '#'.$row->id;
                 }),
             Column::make(__('Name'), 'name')
                 ->searchable()
@@ -64,9 +62,9 @@ class BettingEventsTable extends TableComponent
             Column::make(__('Schedule'), 'schedule')
                 ->sortable(),
             Column::make(__('Actions'))
-                ->format(function (BettingEvent $model) {
-                    return view('backend.betting-event.includes.actions', ['bettingEvent' => $model]);
-                }),
+                ->format(function ($value, $column, BettingEvent $row) {
+                    return view('backend.betting-event.includes.actions', ['bettingEvent' => $row]);
+                })->asHtml(),
         ];
     }
 }

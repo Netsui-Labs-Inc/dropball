@@ -5,19 +5,17 @@ namespace App\Http\Livewire;
 use App\Domains\BettingRound\Models\BettingRound;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class PlayersTransactionsTable extends TableComponent
+class PlayersTransactionsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
     public $sortField = 'id';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public int $perPage = 10;
     /**
      * @var string
      */
@@ -80,44 +78,44 @@ class PlayersTransactionsTable extends TableComponent
             Column::make(__('Transaction ID'), 'uuid')
                 ->searchable()
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    return $this->html("#".$model->id);
-                }),
+                ->format(function ($value, $column, Transaction $row) {
+                    return "#".$row->id;
+                })->asHtml(),
             Column::make(__('Player'), 'payable')
-                ->format(function (Transaction $model) {
-                    return $this->html($model->payable->name);
-                }),
+                ->format(function ($value, $column, Transaction $row) {
+                    return $row->payable->name;
+                })->asHtml(),
             Column::make(__('Type'), 'type')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->type == 'deposit' ? 'badge-success' : 'badge-warning';
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
 
-                    return $this->html("<span class='badge $class'> {$model->type}</span>");
-                }),
+                    return "<span class='badge $class'> {$row->type}</span>";
+                })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->amountFloat < 0 ? 'text-danger': 'text-success';
-                    $sign = $model->amountFloat > 0 ? '+' : null;
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
+                    $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return $this->html("<div class='$class'>$sign".number_format($model->amountFloat)."</div>");
-                }),
+                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
+                })->asHtml(),
             Column::make(__('Confirmed'), 'confirmed')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->confirmed ? 'badge-success': 'badge-warning';
-                    $confirmed = $model->confirmed ? 'confirmed': 'pending';
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->confirmed ? 'badge-success': 'badge-warning';
+                    $confirmed = $row->confirmed ? 'confirmed': 'pending';
 
-                    return $this->html("<span class='badge $class'>$confirmed</span>");
-                }),
+                    return "<span class='badge $class'>$confirmed</span>";
+                })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable(),
         ];
 
         if ($this->action) {
             $columns[] = Column::make(__('Action'))
-                ->format(function (Transaction $model) {
-                    return view('backend.wallet.action', ['transaction' => $model]);
+                ->format(function ($value, $column, Transaction $row) {
+                    return view('backend.wallet.action', ['transaction' => $row]);
                 });
         }
         if ($this->wallet === 'income-wallet') {
@@ -125,16 +123,16 @@ class PlayersTransactionsTable extends TableComponent
             array_unshift(
                 $columns,
                 Column::make(__('Betting Round'))
-                    ->format(function (Transaction $model) {
-                        if (! isset($model->meta['betting_round_id'])) {
+                    ->format(function ($value, $column, Transaction $row) {
+                        if (! isset($row->meta['betting_round_id'])) {
                             return "N/A";
                         }
-                        $bettingRound = BettingRound::find($model->meta['betting_round_id']);
+                        $bettingRound = BettingRound::find($row->meta['betting_round_id']);
 
                         $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
 
-                        return $this->html("<a href='$linkToBettingRound'> #".$model->meta['betting_round_id']."</a>");
-                    }),
+                        return "<a href='$linkToBettingRound'> #".$row->meta['betting_round_id']."</a>";
+                    })->asHtml(),
             );
             array_unshift($columns, $transactionIdCol);
         }

@@ -5,13 +5,11 @@ namespace App\Http\Livewire;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class BetsTable extends TableComponent
+class BetsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -19,7 +17,7 @@ class BetsTable extends TableComponent
 
     public $sortDirection = 'desc';
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -68,46 +66,46 @@ class BetsTable extends TableComponent
             Column::make(__('#Event/Round'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html('#'.$model->bettingRound->bettingEvent->id."/".$model->bettingRound->queue);
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return '#'.$row->bettingRound->bettingEvent->id."/".$row->bettingRound->queue;
+                })->asHtml(),
             Column::make(__('Player'), 'user_id')
                 ->searchable()
                 ->sortable()
                 ->hideIf(! is_null($this->user->id ?? null))
-                ->format(function (Bet $model) {
-                    return $this->html("<a href=".route('admin.auth.user.show', $model->user).">".$model->user->name."</a>");
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return "<a href=".route('admin.auth.user.show', $row->user).">".$row->user->name."</a>";
+                })->asHtml(),
             Column::make(__('Bet'), 'bet')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html($model->betLabel());
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return $row->betLabel();
+                })->asHtml(),
             Column::make(__('Amount'), 'bet_amount')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html(number_format($model->bet_amount, 0));
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return number_format($row->bet_amount, 0);
+                })->asHtml(),
             Column::make(__('Status'), 'status')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html($model->statusLabel());
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return $row->statusLabel();
+                })->asHtml(),
             Column::make(__('Gain/Loss'), 'gain_loss')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html($model->gainLossLabel());
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return $row->gainLossLabel();
+                })->asHtml(),
             Column::make(__('Datetime'), 'created_at')
                 ->searchable()
                 ->sortable()
-                ->format(function (Bet $model) {
-                    return $this->html($model->created_at->setTimezone($model->user->timezone)->toDateTimeString());
-                }),
+                ->format(function ($value, $column, Bet $row) {
+                    return $row->created_at->setTimezone($row->user->timezone)->toDateTimeString();
+                })->asHtml(),
 
         ];
     }

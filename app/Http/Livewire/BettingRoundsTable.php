@@ -5,13 +5,11 @@ namespace App\Http\Livewire;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class BettingRoundsTable extends TableComponent
+class BettingRoundsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -19,7 +17,7 @@ class BettingRoundsTable extends TableComponent
 
     public $sortDirection = 'asc';
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -58,33 +56,33 @@ class BettingRoundsTable extends TableComponent
             Column::make(__('Betting Round ID'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BettingRound $model) {
-                    return $this->html('#'.$model->id);
-                }),
+                ->format(function ($value, $column, BettingRound $row) {
+                    return '#'.$row->id;
+                })->asHtml(),
             Column::make(__('Queue'), 'queue')
                 ->searchable()
                 ->sortable(),
             Column::make(__('Status'), 'status')
                 ->searchable()
                 ->sortable()
-                ->format(function (BettingRound $model) {
-                    return $this->html($model->statusLabel());
-                }),
+                ->format(function ($value, $column, BettingRound $row) {
+                    return $row->statusLabel();
+                })->asHtml(),
             Column::make(__('Result'), 'result')
                 ->searchable()
                 ->sortable()
-                ->format(function (BettingRound $model) {
-                    return $this->html($model->resultLabel());
-                }),
+                ->format(function ($value, $column, BettingRound $row) {
+                    return $row->resultLabel();
+                })->asHtml(),
             Column::make(__('Betting Open'), 'is_betting_open')
                 ->searchable()
                 ->sortable()
-                ->format(function (BettingRound $model) {
-                    return $this->html($model->bettingOpenLabel());
-                }),
+                ->format(function ($value, $column, BettingRound $row) {
+                    return $row->bettingOpenLabel();
+                })->asHtml(),
             Column::make(__('Action'))
-                ->format(function (BettingRound $model) {
-                    return view('backend.betting-round.includes.action', ['bettingRound' => $model]);
+                ->format(function ($value, $column, BettingRound $row) {
+                    return view('backend.betting-round.includes.action', ['bettingRound' => $row]);
                 }),
         ];
     }

@@ -5,13 +5,11 @@ namespace App\Http\Livewire;
 use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class HubsTable extends TableComponent
+class HubsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -19,7 +17,7 @@ class HubsTable extends TableComponent
 
     public $sortDirection = 'desc';
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -44,32 +42,32 @@ class HubsTable extends TableComponent
             Column::make(__('ID'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (Hub $model) {
-                    return $this->html('#'.$model->id);
-                }),
+                ->format(function ($value, $column, Hub $row) {
+                    return '#'.$row->id;
+                })->asHtml(),
             Column::make(__('Name'), 'name')
                 ->searchable()
                 ->sortable()
-                ->format(function (Hub $model) {
-                    return $this->html($model->name);
-                }),
+                ->format(function ($value, $column, Hub $row) {
+                    return $row->name;
+                })->asHtml(),
             Column::make(__('Admin'), 'admin')
                 ->searchable()
                 ->sortable()
-                ->format(function (Hub $model) {
-                    return $this->html($model->admin->name ?? 'N/A');
-                }),
+                ->format(function ($value, $column, Hub $row) {
+                    return $row->admin->name ?? 'N/A';
+                })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
-                ->format(function (Hub $model) {
-                    return $this->html(number_format($model->balanceFloat));
-                }),
+                ->format(function ($value, $column, Hub $row) {
+                    return number_format($row->balanceFloat);
+                })->asHtml(),
             Column::make(__('Income Balance'), 'name')
-                ->format(function (Hub $model) {
-                    return $this->html(number_format($model->getWallet('income-wallet')->balanceFloat ?? 0));
-                }),
+                ->format(function ($value, $column, Hub $row) {
+                    return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0);
+                })->asHtml(),
             Column::make(__('Actions'))
-                ->format(function (Hub $model) {
-                    return view("backend.hub.action", ['hub' => $model]);
+                ->format(function ($value, $column, Hub $row) {
+                    return view("backend.hub.action", ['hub' => $row]);
                 }),
         ];
     }

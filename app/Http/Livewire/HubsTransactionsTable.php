@@ -2,23 +2,20 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\Hub\Models\Hub;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class HubsTransactionsTable extends TableComponent
+class HubsTransactionsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
     public $sortField = 'id';
     public $sortDirection = 'desc';
-    public $perPage = 10;
+    public int $perPage = 10;
     /**
      * @var string
      */
@@ -72,46 +69,46 @@ class HubsTransactionsTable extends TableComponent
             Column::make(__('Transaction ID'), 'uuid')
                 ->searchable()
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    return $this->html("#".$model->id);
-                }),
+                ->format(function ($value, $column, Transaction $row) {
+                    return "#".$row->id;
+                })->asHtml(),
             Column::make(__('Hub'), 'hub')
                 ->searchable()
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    return $this->html($model->payable->name);
-                }),
+                ->format(function ($value, $column, Transaction $row) {
+                    return $row->payable->name;
+                })->asHtml(),
             Column::make(__('Type'), 'type')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->type == 'deposit' ? 'badge-success' : 'badge-warning';
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
 
-                    return $this->html("<span class='badge $class'> {$model->type}</span>");
-                }),
+                    return "<span class='badge $class'> {$row->type}</span>";
+                })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->amountFloat < 0 ? 'text-danger': 'text-success';
-                    $sign = $model->amountFloat > 0 ? '+' : null;
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
+                    $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return $this->html("<div class='$class'>$sign".number_format($model->amountFloat)."</div>");
-                }),
+                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
+                })->asHtml(),
             Column::make(__('Confirmed'), 'confirmed')
                 ->sortable()
-                ->format(function (Transaction $model) {
-                    $class = $model->confirmed ? 'badge-success': 'badge-warning';
-                    $confirmed = $model->confirmed ? 'confirmed': 'pending';
+                ->format(function ($value, $column, Transaction $row) {
+                    $class = $row->confirmed ? 'badge-success': 'badge-warning';
+                    $confirmed = $row->confirmed ? 'confirmed': 'pending';
 
-                    return $this->html("<span class='badge $class'>$confirmed</span>");
-                }),
+                    return "<span class='badge $class'>$confirmed</span>";
+                })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable(),
         ];
 
         if ($this->action) {
             $columns[] = Column::make(__('Action'))
-                ->format(function (Transaction $model) {
-                    return view('backend.wallet.action', ['transaction' => $model]);
+                ->format(function ($value, $column, Transaction $row) {
+                    return view('backend.wallet.action', ['transaction' => $row]);
                 });
         }
 

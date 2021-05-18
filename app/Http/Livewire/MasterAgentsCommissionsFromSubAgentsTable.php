@@ -5,13 +5,11 @@ namespace App\Http\Livewire;
 use App\Domains\Bet\Models\BetCommission;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class MasterAgentsCommissionsFromSubAgentsTable extends TableComponent
+class MasterAgentsCommissionsFromSubAgentsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -19,7 +17,7 @@ class MasterAgentsCommissionsFromSubAgentsTable extends TableComponent
 
     public $sortDirection = 'desc';
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     protected string $tableName = 'master-agents-commissions-from-master-agent';
     protected string $pageName = 'master-agents-commissions-from-master-agent';
@@ -57,34 +55,34 @@ class MasterAgentsCommissionsFromSubAgentsTable extends TableComponent
             Column::make(__('Bet ID'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html('#'.$model->bet_id);
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return '#'.$row->bet_id;
+                })->asHtml(),
             Column::make(__('Bet Status'), 'id')
                 ->searchable()
-                ->format(function (BetCommission $model) {
-                    return $this->html($model->bet->statusLabel() ?? 'N/A');
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return $row->bet->statusLabel() ?? 'N/A';
+                })->asHtml(),
             Column::make(__('From Sub-Agent'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    $name = $model->bet->user->masterAgent->name;
+                ->format(function ($value, $column, BetCommission $row) {
+                    $name = $row->bet->user->masterAgent->name;
 
-                    return $this->html($name);
-                }),
+                    return $name;
+                })->asHtml(),
             Column::make(__('Rate'), 'rate')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html(number_format($model->rate, 2)."%". "({$model->bet->bet_amount})");
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return number_format($row->rate, 2)."%". "({$row->bet->bet_amount})";
+                })->asHtml(),
             Column::make(__('Commission Amount'), 'amount')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html('PHP '.number_format($model->amount, 2));
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return 'PHP '.number_format($row->amount, 2);
+                })->asHtml(),
         ];
     }
 }

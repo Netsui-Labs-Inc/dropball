@@ -5,13 +5,11 @@ namespace App\Http\Livewire;
 use App\Domains\Bet\Models\BetCommission;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
-use Rappasoft\LaravelLivewireTables\TableComponent;
-use Rappasoft\LaravelLivewireTables\Traits\HtmlComponents;
+use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class BetCommissionsTable extends TableComponent
+class BetCommissionsTable extends DataTableComponent
 {
-    use HtmlComponents;
     /**
      * @var string
      */
@@ -19,7 +17,7 @@ class BetCommissionsTable extends TableComponent
 
     public $sortDirection = 'desc';
 
-    public $perPage = 10;
+    public int $perPage = 10;
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -57,37 +55,37 @@ class BetCommissionsTable extends TableComponent
             Column::make(__('Bet ID'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html('#'.$model->bet_id);
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return '#'.$row->bet_id;
+                })->asHtml(),
             Column::make(__('Type'), 'type')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html(str_replace("_", " ", ucfirst($model->type)));
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return str_replace("_", " ", ucfirst($row->type));
+                })->asHtml(),
             Column::make(__('Commission'), 'type')
-                ->format(function (BetCommission $model) {
-                    return $this->html($model->commission->name);
+                ->format(function ($value, $column, BetCommission $row) {
+                    return $row->commission->name;
                 }),
             Column::make(__('Player'), 'id')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html($model->bet->user->name ?? 'N/A');
+                ->format(function ($value, $column, BetCommission $row) {
+                    return $row->bet->user->name ?? 'N/A';
                 }),
             Column::make(__('Rate'), 'rate')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html(number_format($model->rate, 2)."%". "({$model->bet->bet_amount})");
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return number_format($row->rate, 2)."%". "({$row->bet->bet_amount})";
+                })->asHtml(),
             Column::make(__('Commission Amount'), 'amount')
                 ->searchable()
                 ->sortable()
-                ->format(function (BetCommission $model) {
-                    return $this->html('PHP '.number_format($model->amount, 2));
-                }),
+                ->format(function ($value, $column, BetCommission $row) {
+                    return 'PHP '.number_format($row->amount, 2);
+                })->asHtml(),
         ];
     }
 }
