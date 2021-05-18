@@ -6,12 +6,15 @@ use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Models\Traits\Uuid;
+use Database\Factories\BettingRoundFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BettingRound extends Model
 {
     use SoftDeletes,
+        HasFactory,
         Uuid;
 
     protected $table = 'betting_rounds';
@@ -121,5 +124,10 @@ class BettingRound extends Model
     public function winners()
     {
         return $this->bets()->with('user')->where('bet', $this->result)->get()->pluck('user');
+    }
+
+    protected static function newFactory()
+    {
+        return BettingRoundFactory::new();
     }
 }

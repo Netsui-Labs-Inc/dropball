@@ -10,6 +10,8 @@ use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
 use Carbon\Carbon;
+use Database\Factories\BetFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -29,7 +31,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Bet extends Model implements Wallet, WalletFloat
 {
-    use SoftDeletes,
+    use HasFactory,
+        SoftDeletes,
         Uuid,
         HasWalletFloat,
         HasWallets;
@@ -146,5 +149,10 @@ class Bet extends Model implements Wallet, WalletFloat
     public function scopeBetType($query, $type)
     {
         return $query->where('bet', $type);
+    }
+
+    protected static function newFactory()
+    {
+        return BetFactory::new();
     }
 }

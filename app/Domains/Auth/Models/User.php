@@ -17,8 +17,10 @@ use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
 use DarkGhostHunter\Laraguard\Contracts\TwoFactorAuthenticatable;
 use DarkGhostHunter\Laraguard\TwoFactorAuthentication;
+use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -32,6 +34,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable, Wallet, WalletFloat, Confirmable
 {
     use HasRoles,
+        HasFactory,
         Impersonate,
         HasWalletFloat,
         HasWallets,
@@ -170,5 +173,10 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     public function canBeImpersonated(): bool
     {
         return ! $this->isMasterAdmin();
+    }
+
+    protected static function newFactory()
+    {
+        return UserFactory::new();
     }
 }

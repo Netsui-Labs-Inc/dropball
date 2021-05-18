@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingEvent\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use \Illuminate\Database\Eloquent\Model;
 use App\Domains\Auth\Models\User;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BettingEvent extends Model
 {
-    use SoftDeletes, Uuid;
+    use SoftDeletes, Uuid, HasFactory;
 
     protected $table = 'betting_events';
 
@@ -56,5 +57,10 @@ class BettingEvent extends Model
     public function scopeOnDate($query, $date)
     {
         return $query->where('schedule', $date);
+    }
+
+    public function newF()
+    {
+
     }
 }

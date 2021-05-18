@@ -1,40 +1,48 @@
 <?php
 
-/** @var \Illuminate\Database\Eloquent\Factory $factory */
+namespace Database\Factories;
 
-use \App\Domains\BettingRound\Models\BettingRound;
+use \App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\Bet\Models\Bet;
-use App\Domains\BettingEvent\Models\BettingEvent;
-use Faker\Generator as Faker;
+use App\Domains\BettingRound\Models\BettingRound;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-$factory->define(BettingRound::class, function (Faker $faker) {
-    return [
-        'betting_event_id' => function () {
-            return factory(BettingEvent::class)->create()->id;
-        },
-        'is_betting_open' => false,
-        'status' => 'upcoming',
-    ];
-});
+class BettingRoundFactory extends Factory
+{
+    protected $model = BettingRound::class;
 
-$factory->state(BettingRound::class, 'today', function (Faker $faker) {
-    return [
-        'betting_event_id' => function () {
-            return factory(BettingEvent::class)->state('today')->create()->id;
-        },
-    ];
-});
+    public function definition()
+    {
+        return [
+            'betting_event_id' => function () {
+                return BettingEvent::factory()->create()->id;
+            },
+            'is_betting_open' => false,
+            'status' => 'upcoming',
+        ];
+    }
 
-$factory->state(BettingRound::class, 'open-with-bets', function (Faker $faker) {
-    return [
-        'status' => 'placing_bets',
-        'queue' => 1,
-        'is_betting_open' => 1,
-   ];
-});
+    public function today()
+    {
+        return $this->state(function () {
+            return [
+                'betting_event_id' => function () {
+                    return BettingEvent::factory()->today()->create()->id;
+                },
+            ];
+        });
+    }
 
-$factory->afterCreatingState(BettingRound::class, 'open-with-bets', function (BettingRound $bettingRound, Faker $faker) {
-    factory(Bet::class, 10)->state('ongoing')->create(['betting_round_id' => $bettingRound->id]);
-
-    return [];
-});
+    public function openWithBets()
+    {
+        return $this->state(function () {
+            return [
+                'status' => 'placing_bets',
+                'queue' => 1,
+                'is_betting_open' => 1,
+            ];
+        })->afterCreating(function (BettingRound $bettingRound) {
+            Bet::factory()->count(10)->ongoing()->create(['betting_round_id' => $bettingRound->id]);
+        });
+    }
+}
