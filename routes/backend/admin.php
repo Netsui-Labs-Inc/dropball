@@ -12,7 +12,7 @@ use App\Domains\Player\Http\Controllers\Backend\PlayerController;
 use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
 use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
-
+use App\Domains\Player\Http\Controllers\Backend\PlayerBetsController;
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
 Route::get('dashboard', [DashboardController::class, 'index'])
@@ -180,6 +180,15 @@ Route::get('players-transactions', [PlayerController::class, 'transactions'])
         $trail->parent('admin.players.index');
         $trail->push("Player Transactions", route('admin.players.transactions'));
     });
+
+Route::get('players/{player}/bet-histories', [PlayerBetsController::class, 'index'])
+    ->name('players.bet-histories')
+    ->middleware('can:admin.access.players.info')
+    ->breadcrumbs(function (Trail $trail, $player) {
+        $trail->parent('admin.players.index');
+        $trail->push("Player Bet History", route('admin.players.bet-histories', $player));
+    });
+
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');
 Route::post('players/{player}/verification', [PlayerController::class, 'verify'])->name('players.verify');
