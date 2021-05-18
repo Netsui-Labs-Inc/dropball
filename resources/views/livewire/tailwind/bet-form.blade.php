@@ -68,9 +68,6 @@
                 Payout <span class="text-yellow-500 font-semibold">{{number_format($payouts['puti'])}}%</span>
             </p>
         </div>
-        ``
-        BroadCast to
-        ``
     </div>
     <div class="flex space-x-2">
         <div class="flex-auto w-1/2">

@@ -12,8 +12,7 @@ class TransactionsTable extends DataTableComponent
     /**
      * @var string
      */
-    public $sortField = 'id';
-    public $sortDirection = 'desc';
+    public $sortField = 'created_at';
     public int $perPage = 10;
     /**
      * @var string
@@ -85,7 +84,7 @@ class TransactionsTable extends DataTableComponent
     {
         $user = auth()->user();
         $columns = [
-            Column::make(__('Transaction ID'), 'uuid')
+            Column::make(__('Transaction ID'), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {

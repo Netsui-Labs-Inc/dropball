@@ -90,7 +90,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.master-agents.transactions')"
+                    :href="route('admin.master-agents.transactions', ['sorts' => ['created_at' => 'desc']])"
                     :active="activeClass(Request::is('admin/master-agents-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Master Agents Wallet')" />
@@ -98,7 +98,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.sub-agents.pending')"
+                    :href="route('admin.sub-agents.pending', ['sorts' => ['created_at' => 'desc']])"
                     :active="activeClass(Route::is('admin.sub-agents.pending'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-user"
                     :text="__('Sub-agents Approval')" />

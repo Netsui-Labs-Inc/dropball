@@ -77,12 +77,12 @@
                                 :text="__('Dashboard')"
                                 class="dropdown-item" />
                             <x-utils.link
-                                :href="route('frontend.wallet.index')"
+                                :href="route('frontend.wallet.index', ['sorts' => ['created_at' => 'desc']])"
                                 :active="activeClass(Route::is('frontend.wallet.index'))"
                                 :text="__('Withdrawal/Deposit')"
                                 class="dropdown-item" />
                             <x-utils.link
-                                :href="route('frontend.bets.index')"
+                                :href="route('frontend.bets.index', ['sorts' => ['created_at' => 'desc']])"
                                 :active="activeClass(Route::is('frontend.bets.index'))"
                                 :text="__('Bet History')"
                                 class="dropdown-item" />

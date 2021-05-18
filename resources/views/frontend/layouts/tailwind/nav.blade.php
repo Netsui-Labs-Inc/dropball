@@ -39,7 +39,7 @@
                                 <line x1="16" y1="14" x2="16" y2="17" />
                             </svg>
                         </span>
-                        <x-utils.link :href="route('frontend.wallet.index')" :text="__('Withdrawal/Deposit')"/>
+                        <x-utils.link :href="route('frontend.wallet.index', ['sorts' => ['created_at' => 'desc']])" :text="__('Withdrawal/Deposit')"/>
                     </li>
                     <li class="cursor-pointer h-full flex items-center text-sm hover:text-yellow-500 text-white mr-10 tracking-normal transition duration-150 ease-in-out">
                         <span class="mr-2">
@@ -49,7 +49,7 @@
                                 <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5" />
                             </svg>
                         </span>
-                        <x-utils.link :href="route('frontend.bets.index')" :text="__('Bet History')"/>
+                        <x-utils.link :href="route('frontend.bets.index', ['sorts' => ['created_at' => 'desc']])" :text="__('Bet History')"/>
                     </li>
                 </ul>
             </div>
