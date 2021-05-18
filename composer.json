@@ -36,6 +36,7 @@
         "pusher/pusher-php-server": "^4.1",
         "rappasoft/laravel-livewire-tables": "^0.3",
         "rappasoft/lockout": "^2.1",
+        "sentry/sentry-laravel": "^2.5",
         "silviolleite/laravelpwa": "^2.0",
         "spatie/laravel-activitylog": "^3.14",
         "spatie/laravel-littlegatekeeper": "^1.1",
