@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
@@ -59,7 +60,7 @@ class ProcessBetRefundJob implements ShouldQueue
         logger("------------------ END Refund BettingRound#{$bettingRound->id} -------------\n");
     }
 
-    public function processRefund($bet)
+    public function processRefund(Bet $bet)
     {
         $bettingRound = $bet->bettingRound;
         logger("BettingRound#{$bettingRound->id} Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");

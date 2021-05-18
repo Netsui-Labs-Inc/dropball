@@ -37,7 +37,13 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single', 'vapor'],
+            'ignore_exceptions' => false,
+        ],
+
+        'vapor' => [
+            'driver' => 'stack',
+            'channels' => ['stderr', 'papertrail'],
             'ignore_exceptions' => false,
         ],
 
