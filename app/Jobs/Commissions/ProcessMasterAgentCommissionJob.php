@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessMasterAgentCommissionJob implements ShouldQueue
@@ -25,6 +26,13 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue
     public function __construct(Bet $bet)
     {
         $this->bet = $bet;
+    }
+
+    public function middleware()
+    {
+        return [
+            new WithoutOverlapping("agent-".$this->bet->user->masterAgent->id, 5),
+        ];
     }
 
     public function handle()
@@ -58,5 +66,4 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue
         DB::rollBack();
         logger("ProcessMasterAgentCommissionJob.error =".$exception->getMessage());
     }
-
 }

@@ -66,14 +66,14 @@ class BettingRoundResultListener
         $bettingRound->bets()->orderBy('agent_id')->chunk(100, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
-                Bus::dispatchChain([
+                Bus::chain([
                     new ProcessMasterAgentCommissionJob($bet),
                     new ProcessSubAgentCommissionJob($bet),
                     new ProcessHubCommissionJob($bet),
                     new ProcessDeveloperCommissionJob($bet),
                     new ProcessOperatorCommissionJob($bet),
                     new ProcessBetBalanceJob($bet),
-                ])->allOnQueue('commissions');
+                ])->onQueue('commissions')->dispatch();
             }
         });
     }

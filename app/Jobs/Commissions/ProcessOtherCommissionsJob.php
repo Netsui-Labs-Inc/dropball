@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessOtherCommissionsJob implements ShouldQueue
@@ -26,6 +27,15 @@ class ProcessOtherCommissionsJob implements ShouldQueue
     public function __construct(BettingRound $bettingRound)
     {
         $this->bettingRound = $bettingRound;
+    }
+
+    public function middleware()
+    {
+        $operator = $this->getOperator();
+
+        return [
+            new WithoutOverlapping("operator-".$operator->id, 3),
+        ];
     }
 
     /**

@@ -9,6 +9,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessSubAgentCommissionJob implements ShouldQueue
@@ -25,6 +26,22 @@ class ProcessSubAgentCommissionJob implements ShouldQueue
     public function __construct(Bet $bet)
     {
         $this->bet = $bet;
+    }
+
+    public function middleware()
+    {
+        $player = $this->bet->user;
+        $subAgent = $player->masterAgent;
+        if (! $subAgent) {
+            return [];
+        }
+        if ($subAgent->hasRole('Master Agent') && $subAgent->masterAgent) {
+            return [
+                new WithoutOverlapping("agent-".$subAgent->masterAgent->id, 3),
+            ];
+        }
+
+        return [];
     }
 
     public function handle()

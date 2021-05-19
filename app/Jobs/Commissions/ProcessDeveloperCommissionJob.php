@@ -2,16 +2,13 @@
 
 namespace App\Jobs\Commissions;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
-use App\Models\Company;
-use DB;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessDeveloperCommissionJob implements ShouldQueue
@@ -30,6 +27,14 @@ class ProcessDeveloperCommissionJob implements ShouldQueue
         $this->bet = $bet;
     }
 
+    public function middleware()
+    {
+        $developer = $this->getDevelopers();
+
+        return [
+            new WithoutOverlapping($developer->id, 3),
+        ];
+    }
     /**
      * Execute the job.
      *
@@ -39,5 +44,4 @@ class ProcessDeveloperCommissionJob implements ShouldQueue
     {
         $this->processDevelopersCommission($this->bet);
     }
-
 }
