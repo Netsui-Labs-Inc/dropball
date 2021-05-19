@@ -1,5 +1,5 @@
 <div>
-    <input type="text" class="@error('amount') border border-red-500 @enderror mt-3 w-full text-lg leading-3 text-gray-600 py-2 dark:bg-gray-700 dark:text-gray-100 bg-gray-100 px-2 focus:ouline-none"
+    <input type="text" class="@error('amount') border border-red-500 @enderror mt-2 w-full text-lg leading-3 text-gray-600 py-2 dark:bg-gray-700 dark:text-gray-100 bg-gray-100 px-2 focus:ouline-none"
            placeholder="Enter Bet Amount" type="number" min="50" wire:model="amount" {{$userCanBet ? '': 'disabled'}}
     />
     @error('amount')<p class="py-0.5 text-red-500 text-xs italic">{{ $message }}</p> @enderror
@@ -71,12 +71,12 @@
     </div>
     <div class="flex space-x-2">
         <div class="flex-auto w-1/2">
-            <button class="disabled:opacity-50 my-2 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-10 py-4 text-sm" wire:click="$emit('confirmBet', 1)" {{$userCanBet ? '': 'disabled'}}>
+            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-10 py-4 text-sm" wire:click="$emit('confirmBet', 1)" {{$userCanBet ? '': 'disabled'}}>
                 <i class="fas fa-plus-circle"></i> BET PULA
             </button>
         </div>
         <div class="flex-auto w-1/2">
-            <button class="disabled:opacity-50 my-2 w-full transition duration-150 ease-in-out bg-white hover:bg-gray-200 rounded text-gray-700 px-10 py-4 text-sm" wire:click="$emit('confirmBet', 2)" {{$userCanBet ? '': 'disabled'}}>
+            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-white hover:bg-gray-200 rounded text-gray-700 px-10 py-4 text-sm" wire:click="$emit('confirmBet', 2)" {{$userCanBet ? '': 'disabled'}}>
                 <i class="fas fa-plus-circle"></i> BET PUTI
             </button>
         </div>
