@@ -37,10 +37,6 @@ class BettingRoundResultListener
         }
 
         logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
-        logger("BettingRound#{$bettingRound->id} total pool money {$bettingRound->balanceFloat}");
-
-        $totalPayouts = getPayout($bettingRound->totalBetType($bettingRound->result));
-        logger("BettingRound#{$bettingRound->id} Total Payout $totalPayouts");
 
         ProcessBetStatusJob::dispatchNow($bettingRound);
 
@@ -53,7 +49,7 @@ class BettingRoundResultListener
 
     public function processWinners(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(100, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(50, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatch($bet)->onQueue('winners');
@@ -63,7 +59,7 @@ class BettingRoundResultListener
 
     public function processCommissions(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->orderBy('agent_id')->chunk(100, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->orderBy('agent_id')->chunk(50, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
                 Bus::chain([
@@ -73,7 +69,9 @@ class BettingRoundResultListener
                     new ProcessDeveloperCommissionJob($bet),
                     new ProcessOperatorCommissionJob($bet),
                     new ProcessBetBalanceJob($bet),
-                ])->onQueue('commissions')->dispatch();
+                ])->catch(function(\Exception $e) {
+                    logger($e->getTraceAsString());
+                })->onQueue('commissions')->dispatch();
             }
         });
     }
@@ -81,14 +79,17 @@ class BettingRoundResultListener
     public function refund($bettingRound)
     {
         if (! $bettingRound->bets()->exists()) {
-            return true;
+            return null;
         }
+
         logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
-        $bettingRound->bets()->chunk(30, function ($bets) use ($bettingRound) {
-            dispatch(new ProcessBetRefundJob($bets, $bettingRound));
+        $bettingRound->bets()->chunk(50, function ($bets) {
+            foreach ($bets as $bet) {
+                ProcessBetRefundJob::dispatch($bet);
+            }
         });
 
-        return true;
+        return null;
     }
 }

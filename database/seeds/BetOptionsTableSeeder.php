@@ -15,6 +15,7 @@ class BetOptionsTableSeeder extends Seeder
             ['name' => 'PULA', 'color' => '#DB2B39', 'hidden' => false],
             ['name' => 'PUTI', 'color' => '#FFFFFF' , 'hidden' => false],
             ['name' => 'BOKYA', 'color' => '#636f83', 'hidden' => true],
+            ['name' => 'JACKPOT', 'color' => '#FCD34D', 'hidden' => true],
         ]);
     }
 }

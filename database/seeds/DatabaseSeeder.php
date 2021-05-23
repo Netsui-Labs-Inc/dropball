@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
+use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingRound\Models\BettingRound;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,6 +25,9 @@ class DatabaseSeeder extends Seeder
         $this->call(CompaniesTableSeeder::class);
         $this->call(BetOptionsTableSeeder::class);
         //$this->call(AnnouncementSeeder::class);
+        if (app()->environment(['local', 'testing'])) {
+            BettingEvent::factory()->has(BettingRound::factory())->today()->create();
+        }
 
         Model::reguard();
     }

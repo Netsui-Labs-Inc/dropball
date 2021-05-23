@@ -16,9 +16,7 @@ class BetFactory extends Factory
         $betAmount = $this->faker->randomElement([50, 100, 300, 500, 1000, 500]);
 
         return [
-            'betting_round_id' => function () {
-                return BettingRound::factory()->create()->id;
-            },
+            'betting_round_id' => BettingRound::factory(),
             'user_id' => function () {
                 return User::factory()->player()->withWallet()->create([
                     'referred_by' => User::role('Master Agent')->inRandomOrder()->first()->id,

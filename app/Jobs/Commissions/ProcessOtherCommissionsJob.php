@@ -39,6 +39,16 @@ class ProcessOtherCommissionsJob implements ShouldQueue
     }
 
     /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "operator-betting-round-".$this->bettingRound->id;
+    }
+
+    /**
      * Execute the job.
      *
      * @return void

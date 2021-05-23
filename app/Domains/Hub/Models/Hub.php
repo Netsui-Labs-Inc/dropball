@@ -9,6 +9,8 @@ use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\CanConfirm;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
+use Database\Factories\HubFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Hub extends Model implements WalletFloat, Wallet
@@ -17,6 +19,7 @@ class Hub extends Model implements WalletFloat, Wallet
     use HasWalletFloat;
     use CanConfirm;
     use HasBetCommission;
+    use HasFactory;
 
     protected $fillable = [
         'name', 'admin_id',
@@ -25,5 +28,10 @@ class Hub extends Model implements WalletFloat, Wallet
     public function admin()
     {
         return $this->belongsTo(User::class, 'admin_id');
+    }
+
+    protected static function newFactory()
+    {
+        return HubFactory::new();
     }
 }

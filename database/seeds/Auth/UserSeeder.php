@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
         ]);
 
         if (app()->environment(['local', 'testing'])) {
-            User::create([
+            $user = User::create([
                 'type' => User::TYPE_USER,
                 'name' => 'Test User',
                 'email' => 'user@user.com',
@@ -36,6 +36,7 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'active' => true,
             ]);
+            $user->depositFloat(10000);
         }
 
         $this->enableForeignKeys();

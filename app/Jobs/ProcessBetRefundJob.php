@@ -7,29 +7,45 @@ use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessBetRefundJob implements ShouldQueue
+class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public $bettingRound;
-    public $bets;
+    public Bet $bet;
 
     /**
      * Create a new job instance.
      *
-     * @param $bets
-     * @param BettingRound $bettingRound
+     * @param Bet $bet
      */
-    public function __construct($bets, BettingRound $bettingRound)
+    public function __construct(Bet $bet)
     {
-        $this->bettingRound = $bettingRound;
-        $this->bets = $bets;
+        $this->bet = $bet;
+    }
+
+    public function middleware()
+    {
+        return [
+            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
+        ];
+    }
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "refund-bet-".$this->bet->id;
     }
 
     /**
@@ -40,22 +56,20 @@ class ProcessBetRefundJob implements ShouldQueue
     public function handle()
     {
         //update bets status
-        $bettingRound = $this->bettingRound;
+        $bettingRound = $this->bet->bettingRound;
+        $bet = $this->bet;
+
         logger("\n------------------ START Refund BettingRound#{$bettingRound->id} -------------");
         logger("BettingRound#{$bettingRound->id} result was Cancelled/Draw. All bets will be refunded");
 
-        foreach ($this->bets as $bet) {
+        try {
             DB::beginTransaction();
-
-            try {
-                logger("BettingRound#{$bettingRound->id} Pot Money : {$bettingRound->balanceFloat}");
-                $this->processRefund($bet);
-                DB::commit();
-            } catch (\Exception $e) {
-                logger("ProcessBetRefundJob.error = ".$e->getMessage(), [$e->getTraceAsString()]);
-
-                DB::rollBack();
-            }
+            logger("BettingRound#{$bettingRound->id} Pot Money : {$bettingRound->balanceFloat}");
+            $this->processRefund($bet);
+            DB::commit();
+        } catch (\Exception $e) {
+            logger("ProcessBetRefundJob.error = ".$e->getMessage(), [$e->getTraceAsString()]);
+            DB::rollBack();
         }
         logger("------------------ END Refund BettingRound#{$bettingRound->id} -------------\n");
     }
@@ -65,6 +79,5 @@ class ProcessBetRefundJob implements ShouldQueue
         $bettingRound = $bet->bettingRound;
         logger("BettingRound#{$bettingRound->id} Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
         $bet->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
-        //logger("BettingRound#{$bettingRound->id} Updated Pot Money : {$bettingRound->balanceFloat} Player New Balance : {$bet->user->balanceFloat}");
     }
 }

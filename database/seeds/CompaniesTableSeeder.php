@@ -14,5 +14,9 @@ class CompaniesTableSeeder extends Seeder
         \App\Models\Company::create([
            'name' => 'Drop Ball'
         ]);
+
+        \App\Models\Company::create([
+           'name' => 'System'
+        ]);
     }
 }

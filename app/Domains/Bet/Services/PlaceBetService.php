@@ -8,6 +8,7 @@ use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBetPlaced;
 use Faker\Factory;
+use DB;
 
 class PlaceBetService
 {
@@ -78,19 +79,26 @@ class PlaceBetService
             throw new \Exception("Invalid bet amount");
         }
 
-        $bet = $this->bettingRound->bets()->create([
-            'user_id' => $this->bettor->id,
-            'bet_amount' => $this->amount,
-            'bet' => $this->bet->id,
-            'agent_id' => $this->bettor->masterAgent->id,
-            'payout' => getPayout($this->amount),
-        ]);
+        try {
+            DB::beginTransaction();
+            $bet = $this->bettingRound->bets()->create([
+                'user_id' => $this->bettor->id,
+                'bet_amount' => $this->amount,
+                'bet' => $this->bet->id,
+                'agent_id' => $this->bettor->masterAgent->id,
+                'payout' => getPayout($this->amount),
+            ]);
 
-        $this->bettor->forceTransferFloat($bet, $this->amount);
+            $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
 
-        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
+            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
 
-        logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
+            logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
+            DB::commit();
+
+        } catch ( \Exception $e) {
+            DB::rollBack();
+        }
 
         //$this->setPoolMoney($bet);
 

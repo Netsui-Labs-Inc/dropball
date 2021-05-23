@@ -16,9 +16,7 @@ class BettingEventFactory extends Factory
             'name' => $this->faker->dayOfWeek. " Event",
             'description' => $this->faker->text,
             'schedule' => $this->faker->date('Y-m-d'),
-            'bet_admin_id' => function () {
-                return factory(User::class)->state('bet_admin')->create()->id;
-            },
+            'bet_admin_id' => User::factory()->betAdmin()
         ];
     }
 

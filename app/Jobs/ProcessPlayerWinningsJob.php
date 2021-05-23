@@ -10,6 +10,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
 class ProcessPlayerWinningsJob implements ShouldQueue
@@ -17,7 +18,7 @@ class ProcessPlayerWinningsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public $bet;
+    public Bet $bet;
 
     /**
      * Create a new job instance.
@@ -28,6 +29,13 @@ class ProcessPlayerWinningsJob implements ShouldQueue
     {
         $this->onQueue('winners');
         $this->bet = $bet;
+    }
+
+    public function middleware()
+    {
+        return [
+            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
+        ];
     }
 
     /**
@@ -59,7 +67,7 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         $bet->payout = $payout['betPayout'];
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
-        $bet->user->depositFloat($bet->payout, ['betting_round_id' => $bettingRound->id]);
+        $bet->user->depositFloat($payout['betPayout'], ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
         $bet->save();
     }

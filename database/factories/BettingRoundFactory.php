@@ -14,9 +14,7 @@ class BettingRoundFactory extends Factory
     public function definition()
     {
         return [
-            'betting_event_id' => function () {
-                return BettingEvent::factory()->create()->id;
-            },
+            'betting_event_id' => BettingEvent::factory(),
             'is_betting_open' => false,
             'status' => 'upcoming',
         ];

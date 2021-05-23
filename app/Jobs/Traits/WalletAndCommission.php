@@ -5,17 +5,17 @@ namespace App\Jobs\Traits;
 use App\Domains\Bet\Models\Bet;
 use App\Models\Company;
 use Str;
-
+use DB;
 trait WalletAndCommission
 {
     public function getOperator()
     {
-        return Company::firstOrCreate(['name' => 'Operator']);
+        return Company::first();
     }
 
     public function getDevelopers()
     {
-        return Company::firstOrCreate(['name' => 'System']);
+        return Company::where('name', 'System')->first();
     }
 
     public function getWallet($walletHolder, $walletName)
@@ -34,15 +34,21 @@ trait WalletAndCommission
     public function processDevelopersCommission(Bet $bet)
     {
         $developer = $this->getDevelopers();
-//        $operator = $this->getOperator();
         $bettingRound = $bet->bettingRound;
         $rate = 0.01;
         $commission = $bet->bet_amount * $rate;
-        logger("BettingRound#{$bettingRound->id} Developers Current Balance is {$developer->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
-        $bet->forceTransferFloat($developer, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
-        logger("BettingRound#{$bettingRound->id} Developers New Balance is {$developer->balanceFloat}");
-        $this->createCommission($bet, $developer, 'system', $commission, $rate * 100);
+
+        try {
+            DB::beginTransaction();;
+            logger("BettingRound#{$bettingRound->id} Developers Current Balance is {$developer->balanceFloat}");
+            logger("BettingRound#{$bettingRound->id} Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
+            $bet->forceTransferFloat($developer, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
+            logger("BettingRound#{$bettingRound->id} Developers New Balance is {$developer->balanceFloat}");
+            $this->createCommission($bet, $developer, 'system', $commission, $rate * 100);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
     }
 
     public function createCommission(Bet $bet, $commissionable, $type, $amount, $rate, $meta = null)

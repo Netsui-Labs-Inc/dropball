@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property BettingRound $bettingRound
  * @property Carbon $created_at
  * @property Carbon $updated_at
+ * @property int $id
  * @property User $user
  * @property int $user_id,
  * @property int $betting_round_id

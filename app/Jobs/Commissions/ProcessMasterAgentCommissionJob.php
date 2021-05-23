@@ -4,20 +4,23 @@ namespace App\Jobs\Commissions;
 
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
+use App\Jobs\TransferToWalletJob;
 use DB;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 
-class ProcessMasterAgentCommissionJob implements ShouldQueue
+class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public $bet;
+    public Bet $bet;
 
     /**
      * ProcessDeveloperCommissionJob constructor.
@@ -31,8 +34,18 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue
     public function middleware()
     {
         return [
-            new WithoutOverlapping("agent-".$this->bet->user->masterAgent->id, 5),
+            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
         ];
+    }
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "bet-".$this->bet->id;
     }
 
     public function handle()
@@ -48,17 +61,9 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue
         $commission = $bet->bet_amount * $rate;
 
         logger("BettingRound#{$bettingRound->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
-
-        try {
-            DB::beginTransaction();
-            $masterAgentWallet = $masterAgent->getWallet('income-wallet');
-            $transaction = $bet->forceTransferFloat($masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
-            logger("BettingRound#{$bettingRound->id} Master Agent #{$masterAgent->id} {$masterAgent->name}  new balance {$masterAgentWallet->balanceFloat}");
-            $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
-            DB::commit();
-        } catch (\Exception $e) {
-            throw $e;
-        }
+        $masterAgentWallet = $masterAgent->getWallet('income-wallet');
+        TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id])->onQueue('commissions');
+        $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  []);
     }
 
     public function fail($exception = null)

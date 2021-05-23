@@ -21,6 +21,7 @@
 </head>
 <body class="bg-gray-900">
 <div class="main-content">
+    @include('cookieConsent::index')
     @yield('content')
 </div>
 @stack('before-scripts')

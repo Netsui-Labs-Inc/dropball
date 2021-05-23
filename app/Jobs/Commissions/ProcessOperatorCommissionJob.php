@@ -5,19 +5,23 @@ namespace App\Jobs\Commissions;
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
+use App\Jobs\TransferToWalletJob;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use DB;
+use Illuminate\Support\Facades\Bus;
 
-class ProcessOperatorCommissionJob implements ShouldQueue
+class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public $bet;
+    public Bet $bet;
 
     /**
      * ProcessDeveloperCommissionJob constructor.
@@ -28,13 +32,15 @@ class ProcessOperatorCommissionJob implements ShouldQueue
         $this->bet = $bet;
     }
 
-    public function middleware()
-    {
-        $operator = $this->getOperator();
 
-        return [
-            new WithoutOverlapping("operator-".$operator->id, 3),
-        ];
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "bet-".$this->bet->id;
     }
 
     public function handle()
@@ -45,18 +51,17 @@ class ProcessOperatorCommissionJob implements ShouldQueue
         $rate = $this->hasSubAgent($bet->user) ? .0675 : .07;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
-        if ($commission > 0) {
-            logger("BettingRound#{$bettingRound->id} Operator Current balance is {$operator->balanceFloat}");
-            logger("BettingRound#{$bettingRound->id} Transferring amount of $commission to Operator");
-            $transaction = $bet->forceTransferFloat($operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
-            logger("BettingRound#{$bettingRound->id} Operator new balance is {$operator->balanceFloat}");
+
+        if(!$commission) {
+            return $operator;
         }
 
-        $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  ['transaction' => $transaction->uuid]);
+        logger("BettingRound#{$bettingRound->id} Operator Current balance is {$operator->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id} Transferring amount of $commission to Operator");
 
-        $bettingRound->update(['meta' => [
-            'operator_balance' => $operator->balanceFloat,
-        ]]);
+        TransferToWalletJob::dispatch($bet, $operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
+
+        $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  []);
 
         return $operator;
     }

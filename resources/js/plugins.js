@@ -50,23 +50,24 @@ $(function () {
     /**
      * Add a confirmation to a delete button/form
      */
-    $('body').on('submit', 'form[name=delete-item]', function(e) {
-        e.preventDefault();
+    $('body')
+        .on('submit', 'form[name=delete-item]', function(e) {
+            e.preventDefault();
 
-        Swal.fire({
-            title: 'Are you sure you want to delete this item?',
-            showCancelButton: true,
-            confirmButtonText: 'Confirm Delete',
-            cancelButtonText: 'Cancel',
-            icon: 'warning'
-        }).then((result) => {
-            if (result.value) {
-                this.submit()
-            } else {
-                enableSubmitButtons($(this));
-            }
-        });
-    })
+            Swal.fire({
+                title: 'Are you sure you want to delete this item?',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm Delete',
+                cancelButtonText: 'Cancel',
+                icon: 'warning'
+            }).then((result) => {
+                if (result.value) {
+                    this.submit()
+                } else {
+                    enableSubmitButtons($(this));
+                }
+            });
+        })
         .on('submit', 'form[name=confirm-item]', function (e) {
             e.preventDefault();
 
@@ -85,42 +86,45 @@ $(function () {
             });
         })
         .on('click', 'a[name=confirm-item]', function (e) {
-        /**
-         * Add an 'are you sure' pop-up to any button/link
-         */
-        e.preventDefault();
+            /**
+             * Add an 'are you sure' pop-up to any button/link
+             */
+            e.preventDefault();
 
-        Swal.fire({
-            title: 'Are you sure you want to do this?',
-            showCancelButton: true,
-            confirmButtonText: 'Continue',
-            cancelButtonText: 'Cancel',
-            icon: 'info',
-        }).then((result) => {
-            result.value && window.location.assign($(this).attr('href'));
-        });
-    })
+            Swal.fire({
+                title: 'Are you sure you want to do this?',
+                showCancelButton: true,
+                confirmButtonText: 'Continue',
+                cancelButtonText: 'Cancel',
+                icon: 'info',
+            }).then((result) => {
+                result.value && window.location.assign($(this).attr('href'));
+            });
+        })
         .on('submit', 'form[data-confirm]', function (e) {
-        /**
-         * Add an 'are you sure' pop-up to any button/link
-         */
-        e.preventDefault();
-        let config =  $(this).data('confirm');
-        let swalConfig = {
-            title: config.title || 'Are you sure you want to do this?',
-            showCancelButton: config.showCancelButton || true,
-            confirmButtonText: config.confirmButtonText || 'Continue',
-            cancelButtonText: config.cancelButtonText || 'Cancel',
-            icon: config.icon || 'info',
-        };
-        Swal.fire(swalConfig).then((result) => {
-            if (result.value) {
-                this.submit()
-            } else {
-                enableSubmitButtons($(this));
-            }
-        });
-    });
+            /**
+             * Add an 'are you sure' pop-up to any button/link
+             */
+            e.preventDefault();
+            let config =  $(this).data('confirm');
+            let swalConfig = {
+                title: config.title || 'Are you sure you want to do this?',
+                showCancelButton: config.showCancelButton || true,
+                confirmButtonText: config.confirmButtonText || 'Continue',
+                cancelButtonText: config.cancelButtonText || 'Cancel',
+                icon: config.icon || 'info',
+            };
+            Swal.fire(swalConfig).then((result) => {
+                if (result.value) {
+                    this.submit()
+                } else {
+                    enableSubmitButtons($(this));
+                }
+            });
+        })
+        .on('click', '.close-alert', function(e) {
+            $(".alert").remove();
+        })
 
     // Remember tab on page load
     $('a[data-toggle="tab"], a[data-toggle="pill"]').on('shown.bs.tab', function (e) {

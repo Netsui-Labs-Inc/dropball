@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingEvent\Models;
 
+use Database\Factories\BettingEventFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use \Illuminate\Database\Eloquent\Model;
 use App\Domains\Auth\Models\User;
@@ -59,8 +60,8 @@ class BettingEvent extends Model
         return $query->where('schedule', $date);
     }
 
-    public function newF()
+    protected static function newFactory()
     {
-
+        return BettingEventFactory::new();
     }
 }

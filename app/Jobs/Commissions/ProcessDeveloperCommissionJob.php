@@ -5,18 +5,19 @@ namespace App\Jobs\Commissions;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessDeveloperCommissionJob implements ShouldQueue
+class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public $bet;
+    public Bet $bet;
 
     /**
      * ProcessDeveloperCommissionJob constructor.
@@ -29,12 +30,21 @@ class ProcessDeveloperCommissionJob implements ShouldQueue
 
     public function middleware()
     {
-        $developer = $this->getDevelopers();
-
         return [
-            new WithoutOverlapping($developer->id, 3),
+            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
         ];
     }
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "bet-".$this->bet->id;
+    }
+
     /**
      * Execute the job.
      *
