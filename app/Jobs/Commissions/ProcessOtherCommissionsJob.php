@@ -66,7 +66,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         logger("BettingRound#{$bettingRound->id} Operator current balance is : {$operator->balanceFloat}");
 
         $remainingMoney = $bettingRound->bets()->where('commission_processed', true)->sum('other_commissions');
-        $operator->deposit($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
+        $operator->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
         logger("BettingRound#{$bettingRound->id} Operator new balance is : {$operator->balanceFloat}");
 
         $commissions = $operator->commissions()->whereHas('bet', function ($query) use ($bettingRound) {

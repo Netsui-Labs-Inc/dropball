@@ -38,7 +38,7 @@ class BettingRoundResultListener
 
         logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
 
-        ProcessBetStatusJob::dispatchNow($bettingRound);
+        ProcessBetStatusJob::dispatchSync($bettingRound);
 
         $this->processWinners($bettingRound);
 
