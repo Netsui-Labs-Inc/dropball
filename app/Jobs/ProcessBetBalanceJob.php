@@ -34,7 +34,6 @@ class ProcessBetBalanceJob implements ShouldQueue
      */
     public function handle()
     {
-        logger("ProcessBetBalanceJob.handle :: Bet#{$this->bet->id} Balance ".$this->bet->balanceFloat);
         if($this->bet->status === 'win') {
             $this->bet->withdrawFloat($this->bet->balanceFloat);
         }

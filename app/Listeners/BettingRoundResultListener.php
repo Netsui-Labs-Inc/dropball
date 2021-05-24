@@ -49,7 +49,7 @@ class BettingRoundResultListener
 
     public function processWinners(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->where('bet', $bettingRound->result)->chunk(50, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(50, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatch($bet)->onQueue('winners');
@@ -84,7 +84,7 @@ class BettingRoundResultListener
 
         logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
-        $bettingRound->bets()->chunk(50, function ($bets) {
+        $bettingRound->bets()->whereNull('refund_processed_at')->chunk(50, function ($bets) {
             foreach ($bets as $bet) {
                 ProcessBetRefundJob::dispatch($bet);
             }

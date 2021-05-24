@@ -1,6 +1,6 @@
 <div>
-    <input type="text" class="@error('amount') border border-red-500 @enderror mt-2 w-full text-lg leading-3 text-gray-600 py-2 dark:bg-gray-700 dark:text-gray-100 bg-gray-100 px-2 focus:ouline-none"
-           placeholder="Enter Bet Amount" type="number" min="50" wire:model="amount" {{$userCanBet ? '': 'disabled'}}
+    <input type="number" class="@error('amount') border border-red-500 @enderror mt-2 w-full text-lg leading-3 text-gray-600 py-2 dark:bg-gray-700 dark:text-gray-100 bg-gray-100 px-2 focus:ouline-none"
+           placeholder="Enter Bet Amount" type="number" min="50" wire:model.debounce.500ms="amount" {{$userCanBet ? '': 'disabled'}}
     />
     @error('amount')<p class="py-0.5 text-red-500 text-xs italic">{{ $message }}</p> @enderror
     <div class="flex flex-no-wrap py-2 overflow-x-auto">
@@ -39,7 +39,7 @@
                         <span class="text-xs p-0 text-gray-50">PUTI</span>
                     @endif
                 @endif
-                {{number_format($amount)}}
+                {{number_format((float) $amount)}}
             </p>
         </div>
     </div>

@@ -29,6 +29,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $bet_amount
  * @property string $status
  * @property float $payout
+ * @property string $winnings_processed_at
+ * @property string $refund_processed_at
  */
 class Bet extends Model implements Wallet, WalletFloat
 {
@@ -51,6 +53,7 @@ class Bet extends Model implements Wallet, WalletFloat
         'payout',
         'commission_processed',
         'other_commissions',
+        'winnings_processed_at',
         'agent_id',
         'note',
     ];

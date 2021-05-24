@@ -40,10 +40,10 @@ trait WalletAndCommission
 
         try {
             DB::beginTransaction();;
-            logger("BettingRound#{$bettingRound->id} Developers Current Balance is {$developer->balanceFloat}");
-            logger("BettingRound#{$bettingRound->id} Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
+            logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers Current Balance is {$developer->balanceFloat}");
+            logger("BettingRound#{$bettingRound->id}  Bet#{$bet->id}  Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
             $bet->forceTransferFloat($developer, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
-            logger("BettingRound#{$bettingRound->id} Developers New Balance is {$developer->balanceFloat}");
+            logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers New Balance is {$developer->balanceFloat}");
             $this->createCommission($bet, $developer, 'system', $commission, $rate * 100);
             DB::commit();
         } catch (\Exception $e) {

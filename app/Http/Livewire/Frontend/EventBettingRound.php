@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Frontend;
 
-use App\Domains\Bet\Models\Bet;
+use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use Livewire\Component;
@@ -140,13 +140,11 @@ class EventBettingRound extends Component
 
     public function setPayouts()
     {
-        $bettingRound = $this->bettingRound->fresh();
-
-        $totalBet = $bettingRound->userBets(auth()->user()->id)->where('bet', $bettingRound->result)->sum('bet_amount');
-        $payoutPercentage = $bettingRound->payouts[Bet::RESULT[$bettingRound->result]] ?? 0;
-        logger("EventBettingRound.setPayouts BettingRound#{$bettingRound->id} TotalBet: $totalBet Payouts :: ", $bettingRound->payouts);
-
-        $this->payout = ($payoutPercentage / 100) * $totalBet;
+        $bet = $this->bettingRound->userBet(auth()->user()->id);
+        if($bet) {
+            $payout = (new CalculateOddsAction)($this->bettingRound, $bet);
+            $this->payout = $payout['betPayout'];
+        }
     }
 
     public function render()

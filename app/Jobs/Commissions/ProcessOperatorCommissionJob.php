@@ -56,8 +56,8 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             return $operator;
         }
 
-        logger("BettingRound#{$bettingRound->id} Operator Current balance is {$operator->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} Transferring amount of $commission to Operator");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operator->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id}  Bet#{$bet->id} Transferring amount of $commission to Operator");
 
         TransferToWalletJob::dispatch($bet, $operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
 

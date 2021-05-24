@@ -48,10 +48,8 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         try {
             $bettingRound = $this->bet->bettingRound;
             $bet = $this->bet;
-            logger("------------------ START USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------");
             DB::beginTransaction();
             $this->processWin($bet);
-            logger("------------------ END USER#{$bet->user->id} BettingRound#{$bettingRound->id} -------------\n");
             DB::commit();
         } catch (\Exception $e) {
             logger("ProcessPlayerWinningsJob.error = ".$e->getMessage());
@@ -61,14 +59,19 @@ class ProcessPlayerWinningsJob implements ShouldQueue
 
     public function processWin(Bet $bet)
     {
+        if($bet->fresh()->winnings_processed_at) {
+            return true;
+        }
+
         $bettingRound = $bet->bettingRound->fresh();
-        logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
         $payout = (new CalculateOddsAction)($bettingRound, $bet);
         $bet->payout = $payout['betPayout'];
-        logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
+        $bet->winnings_processed_at = now();
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
         $bet->user->depositFloat($payout['betPayout'], ['betting_round_id' => $bettingRound->id]);
-        logger("BettingRound#{$bettingRound->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
         $bet->save();
     }
 }
