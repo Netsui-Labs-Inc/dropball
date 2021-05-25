@@ -49,15 +49,15 @@ class LocalBettingTest extends Command
         $result  = $this->argument('result');
         $bettingRound = BettingRound::factory()->create();
 
-        Bet::factory()->ongoing()->count(100)->create(['betting_round_id' => $bettingRound->id]);
+        Bet::factory()->ongoing()->count(50)->create(['betting_round_id' => $bettingRound->id]);
 
         $bettingRound->update([
             'payouts' => (new CalculateOddsAction)($bettingRound),
             'status' => 'ended',
             'result' => $result,
         ]);
-
-        BettingRoundResultUpdated::dispatch($bettingRound->fresh());
+        $bettingRound->refresh();
+        BettingRoundResultUpdated::dispatch($bettingRound);
 
         return 0;
     }

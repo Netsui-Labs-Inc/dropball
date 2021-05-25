@@ -28,6 +28,16 @@ class ProcessBetBalanceJob implements ShouldQueue
     }
 
     /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "bet-".$this->bet->id;
+    }
+
+    /**
      * Execute the job.
      *
      * @return void

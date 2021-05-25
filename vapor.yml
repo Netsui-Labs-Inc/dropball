@@ -16,3 +16,4 @@ environments:
             - 'php artisan event:cache'
         deploy:
           - 'php artisan migrate --force'
+          - 'php artisan queue:restart'

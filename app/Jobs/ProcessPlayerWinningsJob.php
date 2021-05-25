@@ -52,26 +52,29 @@ class ProcessPlayerWinningsJob implements ShouldQueue
             $this->processWin($bet);
             DB::commit();
         } catch (\Exception $e) {
-            logger("ProcessPlayerWinningsJob.error = ".$e->getMessage());
+            logger("Bet#{$bet->id} ProcessPlayerWinningsJob.error = ".$e->getMessage());
+            \Sentry::captureLastError();
             DB::rollBack();
         }
     }
 
     public function processWin(Bet $bet)
     {
-        if($bet->fresh()->winnings_processed_at) {
+        $bet->refresh();
+        if($bet->winnings_processed_at) {
             return true;
         }
 
-        $bettingRound = $bet->bettingRound->fresh();
+        $bettingRound = $bet->bettingRound;
         $payout = (new CalculateOddsAction)($bettingRound, $bet);
         $bet->payout = $payout['betPayout'];
         $bet->winnings_processed_at = now();
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
+        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
+        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
+        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
         $bet->user->depositFloat($payout['betPayout'], ['betting_round_id' => $bettingRound->id]);
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
         $bet->save();
+        $bet->refresh();
+        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
     }
 }

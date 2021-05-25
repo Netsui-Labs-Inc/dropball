@@ -43,7 +43,7 @@ return [
 
         'vapor' => [
             'driver' => 'stack',
-            'channels' => ['stderr', 'papertrail'],
+            'channels' => ['stderr', 'papertrail', 'sentry'],
             'ignore_exceptions' => false,
         ],
 
@@ -105,6 +105,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'sentry' => [
+            'driver' => 'sentry',
+            'level'  => null,
+            'bubble' => true,
+        ],
+
     ],
 
 ];

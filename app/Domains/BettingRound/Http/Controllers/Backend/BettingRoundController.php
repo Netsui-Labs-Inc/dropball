@@ -44,8 +44,8 @@ class BettingRoundController extends Controller
             'is_betting_open' => true,
             'status' => 'placing_bets',
         ]);
-
-        event(new BettingRoundBettingWindowUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundBettingWindowUpdated($bettingRound));
 
         $this->setMixer($bettingRound);
 
@@ -57,8 +57,8 @@ class BettingRoundController extends Controller
         if ($bettingRound->status !== 'placing_bets') {
             throw new GeneralException("Cannot Send Last Call");
         }
-
-        event(new BettingRoundBettingLastCall($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundBettingLastCall($bettingRound));
 
         return redirect()->back()->withFlashSuccess(__('Betting last call was broadcast'));
     }
@@ -68,7 +68,8 @@ class BettingRoundController extends Controller
         $bettingRound->update([
             'is_betting_open' => false,
         ]);
-        event(new BettingRoundBettingWindowUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundBettingWindowUpdated($bettingRound));
 
         return redirect()->back()->withFlashSuccess(__('Betting window was closed'));
     }
@@ -81,7 +82,8 @@ class BettingRoundController extends Controller
         $bettingRound->status = 'ongoing';
         $bettingRound->is_betting_open = false;
         $bettingRound->save();
-        event(new BettingRoundStatusUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundStatusUpdated($bettingRound));
         logger("BettingRound#{$bettingRound->id} has started : Betting window is closed");
         logger("---------- BettingRound#{$bettingRound->id} BETTING CLOSED ------------");
 
@@ -95,8 +97,8 @@ class BettingRoundController extends Controller
         }
         $bettingRound->status = 'ended';
         $bettingRound->save();
-
-        event(new BettingRoundStatusUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundStatusUpdated($bettingRound));
 
         return redirect()->back()->withFlashSuccess(__('Betting Round Ended'));
     }
@@ -111,8 +113,9 @@ class BettingRoundController extends Controller
         $bettingRound->result = null;
 
         $bettingRound->save();
-        event(new BettingRoundStatusUpdated($bettingRound->fresh()));
-        event(new BettingRoundResultUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundStatusUpdated($bettingRound));
+        event(new BettingRoundResultUpdated($bettingRound));
 
         return redirect()->back()->withFlashSuccess(__('Betting Round Cancelled'));
     }
@@ -127,8 +130,9 @@ class BettingRoundController extends Controller
         $bettingRound->result = null;
 
         $bettingRound->save();
-        event(new BettingRoundStatusUpdated($bettingRound->fresh()));
-        event(new BettingRoundResultUpdated($bettingRound->fresh()));
+        $bettingRound->refresh();
+        event(new BettingRoundStatusUpdated($bettingRound));
+        event(new BettingRoundResultUpdated($bettingRound));
 
         return redirect()->back()->withFlashSuccess(__('Betting Round Bokya'));
     }
@@ -141,7 +145,8 @@ class BettingRoundController extends Controller
         $bettingRound->save();
         logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
 
-        BettingRoundResultUpdated::dispatch($bettingRound->fresh());
+        $bettingRound->refresh();
+        BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 

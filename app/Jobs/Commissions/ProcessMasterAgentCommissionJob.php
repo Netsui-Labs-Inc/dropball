@@ -61,7 +61,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $commission = $bet->bet_amount * $rate;
 
         logger("BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
-        $masterAgentWallet = $masterAgent->getWallet('income-wallet');
+        $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
         TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id])->onQueue('commissions');
         $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate * 100,  []);
     }

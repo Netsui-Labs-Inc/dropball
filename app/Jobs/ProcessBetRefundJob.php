@@ -76,7 +76,8 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
 
     public function processRefund(Bet $bet)
     {
-        if($bet->fresh()->refund_processed_at) {
+        $bet->refresh();
+        if($bet->refund_processed_at) {
             return true;
         }
 

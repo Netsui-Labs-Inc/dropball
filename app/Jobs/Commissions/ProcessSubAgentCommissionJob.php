@@ -63,7 +63,7 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             $commission = $bet->bet_amount * $rate;
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
 
-            $masterAgentWallet = $masterAgent->getWallet('income-wallet');
+            $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master Agent #{$masterAgent->id} {$masterAgent->name} current balance {$masterAgent->balanceFloat}");
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master agent #{$masterAgent->id} {$masterAgent->name} new balance {$masterAgent->balanceFloat}");
 
