@@ -43,7 +43,7 @@ return [
 
         'vapor' => [
             'driver' => 'stack',
-            'channels' => ['stderr', 'papertrail', 'sentry'],
+            'channels' => ['stderr', 'papertrail'],
             'ignore_exceptions' => false,
         ],
 

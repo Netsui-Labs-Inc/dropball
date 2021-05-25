@@ -69,12 +69,12 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         $payout = (new CalculateOddsAction)($bettingRound, $bet);
         $bet->payout = $payout['betPayout'];
         $bet->winnings_processed_at = now();
-        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
-        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
-        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
         $bet->user->depositFloat($payout['betPayout'], ['betting_round_id' => $bettingRound->id]);
         $bet->save();
         $bet->refresh();
-        logger("WIN - BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
     }
 }
