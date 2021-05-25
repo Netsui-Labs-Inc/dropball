@@ -81,7 +81,7 @@ return [
         'stderr' => [
             'driver' => 'monolog',
             'handler' => StreamHandler::class,
-            'formatter' => env('LOG_STDERR_FORMATTER'),
+            'formatter' => env('LOG_STDERR_FORMATTER', "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n"),
             'with' => [
                 'stream' => 'php://stderr',
             ],
