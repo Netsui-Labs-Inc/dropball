@@ -71,6 +71,7 @@ class BettingRoundResultListener
                     new ProcessBetBalanceJob($bet),
                 ])->catch(function(\Exception $e) {
                     logger($e->getTraceAsString());
+                    \Sentry::captureException($e);
                 })->onQueue('commissions')->dispatch();
             }
         });
@@ -86,7 +87,7 @@ class BettingRoundResultListener
 
         $bettingRound->bets()->whereNull('refund_processed_at')->chunk(50, function ($bets) {
             foreach ($bets as $bet) {
-                ProcessBetRefundJob::dispatch($bet);
+                ProcessBetRefundJob::dispatch($bet)->onQueue('winners');
             }
         });
 

@@ -53,7 +53,7 @@ class LocalBettingTest extends Command
 
         $bettingRound->update([
             'payouts' => (new CalculateOddsAction)($bettingRound),
-            'status' => 'ended',
+            'status' => 'cancelled',
             'result' => $result,
         ]);
         $bettingRound->refresh();

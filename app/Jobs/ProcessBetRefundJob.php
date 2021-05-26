@@ -55,23 +55,15 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
      */
     public function handle()
     {
-        //update bets status
-        $bettingRound = $this->bet->bettingRound;
-        $bet = $this->bet;
-
-        logger("\n------------------ START Refund BettingRound#{$bettingRound->id} -------------");
-        logger("BettingRound#{$bettingRound->id} result was Cancelled/Draw. All bets will be refunded");
-
-        try {
-            DB::beginTransaction();
-            logger("BettingRound#{$bettingRound->id} Pot Money : {$bettingRound->balanceFloat}");
-            $this->processRefund($bet);
-            DB::commit();
-        } catch (\Exception $e) {
-            logger("ProcessBetRefundJob.error = ".$e->getMessage(), [$e->getTraceAsString()]);
-            DB::rollBack();
-        }
-        logger("------------------ END Refund BettingRound#{$bettingRound->id} -------------\n");
+      $bet = $this->bet;
+      try {
+          DB::beginTransaction();
+          $this->processRefund($bet);
+          DB::commit();
+      } catch (\Exception $e) {
+          logger("ProcessBetRefundJob.error = ".$e->getMessage(), [$e->getTraceAsString()]);
+          DB::rollBack();
+      }
     }
 
     public function processRefund(Bet $bet)
@@ -82,8 +74,8 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
         }
 
         $bettingRound = $bet->bettingRound;
-        logger("BettingRound#{$bettingRound->id} Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
-        $bet->forceTransferFloat($bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true]);
+        logger("BettingRound#{$bettingRound->id} Bet#$bet->id Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
+        TransferToWalletJob::dispatch($bet, $bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'refund' => true])->onQueue('winners');
         $bet->refund_processed_at = now();
         $bet->save();
     }
