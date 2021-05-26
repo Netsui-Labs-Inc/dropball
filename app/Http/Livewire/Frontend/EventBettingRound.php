@@ -61,10 +61,14 @@ class EventBettingRound extends Component
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
 
         if ($userBets->isEmpty()) {
-            $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
+            if(in_array($this->bettingRound->status,  ['draw','cancelled'])) {
+                $result = "<h1 class='text-danger'> Cancelled </h1>";
+            } else {
+                $color = $this->bettingRound->betOption->id == 2 ? '#8898aa' : $this->bettingRound->betOption->color;
+                $result = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
+            }
             $icon = 'info';
             $title = 'Betting Round #'.$this->bettingRound->queue;
-            $result = "<h1 style='color:{$color}'>".strtoupper($this->bettingRound->betOption->name)."</h1>";
         } elseif (in_array($this->bettingRound->status,  ['draw','cancelled'])) {
             $icon = 'info';
             $title = "<h1 class='text-danger'> Cancelled </h1>";

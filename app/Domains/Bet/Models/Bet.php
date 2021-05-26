@@ -54,6 +54,7 @@ class Bet extends Model implements Wallet, WalletFloat
         'commission_processed',
         'other_commissions',
         'winnings_processed_at',
+        'refund_processed_at',
         'agent_id',
         'note',
     ];
