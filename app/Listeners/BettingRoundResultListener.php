@@ -38,8 +38,10 @@ class BettingRoundResultListener
 
         logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
 
-        ProcessBetStatusJob::dispatchSync($bettingRound);
-
+        $this->updatePoolMoney($bettingRound);
+        $this->updateWinners($bettingRound);
+        $this->updateLosers($bettingRound);
+        
         $this->processWinners($bettingRound);
 
         $this->processCommissions($bettingRound);
@@ -49,7 +51,7 @@ class BettingRoundResultListener
 
     public function processWinners(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(50, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(1000, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatch($bet)->onQueue('winners');
@@ -59,7 +61,7 @@ class BettingRoundResultListener
 
     public function processCommissions(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->orderBy('agent_id')->chunk(50, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->orderBy('agent_id')->chunk(1000, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
                 Bus::chain([
@@ -85,12 +87,34 @@ class BettingRoundResultListener
 
         logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
-        $bettingRound->bets()->whereNull('refund_processed_at')->chunk(50, function ($bets) {
+        $bettingRound->bets()->whereNull('refund_processed_at')->chunk(1000, function ($bets) {
             foreach ($bets as $bet) {
                 ProcessBetRefundJob::dispatch($bet)->onQueue('winners');
             }
         });
 
         return null;
+    }
+
+    public function updatePoolMoney(BettingRound $bettingRound)
+    {
+        $poolMoney = $bettingRound->bets()->sum('bet_amount');
+        $bettingRound->update(['pool_money' => $poolMoney]);
+    }
+
+    public function updateWinners(BettingRound $bettingRound)
+    {
+        $bettingRound->bets()->where('bet', $bettingRound->result)->update([
+            'status' => 'win',
+            'gain_loss' => DB::raw('(2 * bets.bet_amount) - (bets.bet_amount * .10)'),
+        ]);
+    }
+
+    public function updateLosers(BettingRound $bettingRound)
+    {
+        $bettingRound->bets()->where('bet', '!=', $bettingRound->result)->update([
+            'status' => 'lose',
+            'gain_loss' => DB::raw('-1 * bets.bet_amount'),
+        ]);
     }
 }
