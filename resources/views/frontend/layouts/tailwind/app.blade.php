@@ -16,7 +16,6 @@
     @stack('after-styles')
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
     @include('includes.partials.ga')
-    @laravelPWA
 </head>
 <body class="bg-gray-900">
     @include('frontend.layouts.tailwind.nav')

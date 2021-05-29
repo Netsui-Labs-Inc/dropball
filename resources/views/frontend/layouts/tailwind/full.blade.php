@@ -17,7 +17,6 @@
     @stack('after-styles')
 
     @include('includes.partials.ga')
-    @laravelPWA
 </head>
 <body class="bg-gray-900">
 <div class="main-content">

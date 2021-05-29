@@ -91,7 +91,6 @@ class CommissionsTable extends DataTableComponent
                     $sign = $row->amountFloat > 0 ? '+' : null;
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
-                    return "testphp artisan view:clear";
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable(),
