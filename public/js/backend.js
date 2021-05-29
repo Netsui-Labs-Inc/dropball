@@ -10836,7 +10836,7 @@ PerfectScrollbar.prototype.removePsClasses = function removePsClasses () {
 /******/ "use strict";
 /******/ 
 /******/ var __webpack_exec__ = (moduleId) => (__webpack_require__(__webpack_require__.s = moduleId))
-/******/ __webpack_require__.O(0, ["/js/vendor"], () => (__webpack_exec__("./resources/js/backend/app.js")));
+/******/ __webpack_require__.O(0, ["/vendor"], () => (__webpack_exec__("./resources/js/backend/app.js")));
 /******/ var __webpack_exports__ = __webpack_require__.O();
 /******/ }
 ]);

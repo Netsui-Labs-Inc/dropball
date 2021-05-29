@@ -1,9 +1,10 @@
 {
     "/js/frontend.js": "/js/frontend.js",
     "/js/backend.js": "/js/backend.js",
-    "/js/manifest.js": "/js/manifest.js",
+    "/serviceworker.js": "/serviceworker.js",
+    "/manifest.js": "/manifest.js",
     "/css/backend.css": "/css/backend.css",
     "/css/frontend.css": "/css/frontend.css",
     "/css/tailwind.css": "/css/tailwind.css",
-    "/js/vendor.js": "/js/vendor.js"
+    "/vendor.js": "/vendor.js"
 }
