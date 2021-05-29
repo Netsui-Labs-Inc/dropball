@@ -82,6 +82,8 @@ class MasterAgentsCommissionsFromPlayersTable extends DataTableComponent
                 ->format(function ($value, $column, BetCommission $row) {
                     return 'PHP '.number_format($row->amount, 2);
                 })->asHtml(),
+            Column::make(__('Created at'), 'created_at')
+                ->sortable(),
         ];
     }
 }
