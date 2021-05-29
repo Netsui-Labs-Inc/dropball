@@ -48,7 +48,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         $operator = $this->getOperator();
         $bet = $this->bet;
 
-        $rate = $this->hasSubAgent($bet->user) ? .00675 : .007;
+        $rate = $this->hasSubAgent($bet->user) ? .0675 : .07;
         $bettingRound = $bet->bettingRound;
         $commission = $bet->bet_amount * $rate;
 
