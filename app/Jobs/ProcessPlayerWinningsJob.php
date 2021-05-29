@@ -61,8 +61,15 @@ class ProcessPlayerWinningsJob implements ShouldQueue
     public function processWin(Bet $bet)
     {
         $bet->refresh();
-        if($bet->winnings_processed_at) {
-            return true;
+        if ($bet->winnings_processed_at ||
+            $bet->user->transactions()
+                ->where('meta->betting_round_id', $bet->bettingRound->id)
+                ->where('meta->bet_id', $bet->id)
+                ->where('meta->type', 'win')
+                ->exists()
+        ) {
+            logger("Duplicate Winning Bet#$bet->id", $bet->toArray());
+            return throw new \Exception("Duplicate Winning");
         }
 
         $bettingRound = $bet->bettingRound;
@@ -72,9 +79,16 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Payout :: ", $payout);
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
-        $bet->user->depositFloat($payout['betPayout'], ['betting_round_id' => $bettingRound->id]);
+
+        $transaction = $bet->user->depositFloat($payout['betPayout'], [
+            'betting_round_id' => $bettingRound->id,
+            'bet_id' => $bet->id,
+            'type' => 'win'
+        ]);
+
         $bet->save();
         $bet->refresh();
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        return $transaction;
     }
 }
