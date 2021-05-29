@@ -69,7 +69,7 @@ class ProcessPlayerWinningsJob implements ShouldQueue
                 ->exists()
         ) {
             logger("Duplicate Winning Bet#$bet->id", $bet->toArray());
-            return throw new \Exception("Duplicate Winning");
+            throw new \Exception("Duplicate Winning");
         }
 
         $bettingRound = $bet->bettingRound;
