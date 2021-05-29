@@ -86,6 +86,8 @@ class BetCommissionsTable extends DataTableComponent
                 ->format(function ($value, $column, BetCommission $row) {
                     return 'PHP '.number_format($row->amount, 2);
                 })->asHtml(),
+            Column::make(__('Created at'), 'create_at')
+                ->sortable(),
         ];
     }
 }
