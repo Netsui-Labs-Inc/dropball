@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
