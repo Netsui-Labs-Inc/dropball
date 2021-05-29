@@ -59,7 +59,7 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         if ($subAgent->hasRole('Master Agent') && $subAgent->masterAgent) {
             $masterAgent = $subAgent->masterAgent;
             $bettingRound = $bet->bettingRound;
-            $rate = 0.025;
+            $rate = 0.0025;
             $commission = $bet->bet_amount * $rate;
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
 
