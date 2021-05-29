@@ -12,10 +12,11 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
     <link href="{{ mix('css/tailwind.css') }}" rel="stylesheet">
-    <livewire:styles />
+    @livewireStyles
     @stack('after-styles')
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js" defer></script>
     @include('includes.partials.ga')
+    @laravelPWA
 </head>
 <body class="bg-gray-900">
     @include('frontend.layouts.tailwind.nav')
@@ -27,7 +28,7 @@
     <script src="{{ mix('js/manifest.js') }}"></script>
     <script src="{{ mix('js/vendor.js') }}"></script>
     <script src="{{ mix('js/frontend.js') }}"></script>
-    <livewire:scripts />
+    @livewireScripts
     @stack('after-scripts')
 </body>
 </html>
