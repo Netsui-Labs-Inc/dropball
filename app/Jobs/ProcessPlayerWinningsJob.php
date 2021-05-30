@@ -85,7 +85,7 @@ class ProcessPlayerWinningsJob implements ShouldQueue
             'bet_id' => $bet->id,
             'type' => 'win'
         ]);
-
+        $bet->gain_loss = $payout['betPayout'];
         $bet->save();
         $bet->refresh();
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");

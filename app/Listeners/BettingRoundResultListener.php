@@ -15,7 +15,7 @@ use App\Jobs\ProcessBetStatusJob;
 use App\Jobs\ProcessPlayerWinningsJob;
 use App\Jobs\Traits\WalletAndCommission;
 use Illuminate\Support\Facades\Bus;
-
+use DB;
 class BettingRoundResultListener
 {
     use WalletAndCommission;
@@ -41,7 +41,7 @@ class BettingRoundResultListener
         $this->updatePoolMoney($bettingRound);
         $this->updateWinners($bettingRound);
         $this->updateLosers($bettingRound);
-        
+
         $this->processWinners($bettingRound);
 
         $this->processCommissions($bettingRound);
@@ -106,7 +106,6 @@ class BettingRoundResultListener
     {
         $bettingRound->bets()->where('bet', $bettingRound->result)->update([
             'status' => 'win',
-            'gain_loss' => DB::raw('(2 * bets.bet_amount) - (bets.bet_amount * .10)'),
         ]);
     }
 
