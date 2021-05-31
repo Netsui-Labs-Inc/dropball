@@ -88,6 +88,11 @@ class SubAgentsTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat);
                 }),
+            Column::make(__('Created at'), 'created_at')
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml()
         ];
     }
 }

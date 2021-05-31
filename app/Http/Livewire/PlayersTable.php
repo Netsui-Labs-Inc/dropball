@@ -94,6 +94,11 @@ class PlayersTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat);
                 })->asHtml(),
+            Column::make(__('Created at'), 'created_at')
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, User $row) {
                     return view("backend.player.action", ['user' => $row]);

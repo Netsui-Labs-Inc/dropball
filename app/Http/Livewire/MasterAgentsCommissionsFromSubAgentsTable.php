@@ -84,7 +84,10 @@ class MasterAgentsCommissionsFromSubAgentsTable extends DataTableComponent
                     return 'PHP '.number_format($row->amount, 2);
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, BetCommission $row) {
+                    return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml()
         ];
     }
 }

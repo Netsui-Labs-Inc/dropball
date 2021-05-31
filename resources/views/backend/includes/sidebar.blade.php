@@ -17,7 +17,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.betting-events.index')"
+                :href="route('admin.betting-events.index', ['sorts' => ['id' => 'desc']])"
                 :active="activeClass(Route::is('admin.betting-events.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-calendar"
                 :text="__('Betting Events')" />
@@ -28,7 +28,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.players.index')"
+                :href="route('admin.players.index', ['sorts' => ['id' => 'desc']])"
                 :active="activeClass(Route::is('admin.players.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-user"
                 :text="__('Players List')" />
@@ -36,7 +36,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.players.transactions')"
+                :href="route('admin.players.transactions', ['sorts' => ['id' => 'desc']])"
                 :active="activeClass(Route::is('admin.players.transactions'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />
@@ -47,7 +47,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.sub-agents.index')"
+                :href="route('admin.sub-agents.index', ['sorts' => ['id' => 'desc']])"
                 :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-user"
                 :text="__('Sub-Agents List')" />
@@ -59,7 +59,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.my.wallet.transactions')"
+                    :href="route('admin.my.wallet.transactions', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Route::is('admin.my.wallet.transactions'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Wallet Transactions')" />
@@ -71,7 +71,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.my.commissions.index')"
+                :href="route('admin.my.commissions.index', ['sorts' => ['id' => 'desc']])"
                 :active="activeClass(Route::is('admin.my.commissions.index'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Commissions')" />
@@ -82,7 +82,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.master-agents.index')"
+                    :href="route('admin.master-agents.index', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Request::is('admin/master-agents/*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-user"
                     :text="__('Master Agents List')" />
@@ -109,7 +109,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.hubs.index')"
+                    :href="route('admin.hubs.index', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Request::is('admin/hubs/*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-building"
                     :text="__('Hubs List')" />
@@ -117,7 +117,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.hubs.transactions')"
+                    :href="route('admin.hubs.transactions', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Request::is('admin/hubs-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Hubs Wallet')" />
@@ -157,7 +157,7 @@
                     )
                         <li class="c-sidebar-nav-item">
                             <x-utils.link
-                                :href="route('admin.auth.user.index')"
+                                :href="route('admin.auth.user.index', ['sorts' => ['id' => 'desc']])"
                                 class="c-sidebar-nav-link"
                                 :text="__('User Management')"
                                 :active="activeClass(Route::is('admin.auth.user.*'), 'c-active')" />

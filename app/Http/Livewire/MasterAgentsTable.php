@@ -90,16 +90,14 @@ class MasterAgentsTable extends DataTableComponent
             Column::make(__('Commission rate'), 'commission_rate')
                 ->searchable()
                 ->sortable(),
-            Column::make(__('Verified'))
-                ->format(function ($value, $column, User $row) {
-                    return view('backend.auth.user.includes.verified', ['user' => $row]);
-                })
-                ->sortable(function ($builder, $direction) {
-                    return $builder->orderBy('email_verified_at', $direction);
-                }),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat);
+                })->asHtml(),
+            Column::make(__('Created at'), 'created_at')
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, User $row) {

@@ -74,8 +74,10 @@ class PendingSubAgentsTable extends DataTableComponent
                     return $row->hub->name;
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
-                ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, User $row) {
                     return view("backend.master-agent.sub-agent.action", ['user' => $row]);

@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Domains\BettingRound\Models\BettingRound;
 use Bavix\Wallet\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -109,7 +110,10 @@ class PlayersTransactionsTable extends DataTableComponent
                     return "<span class='badge $class'>$confirmed</span>";
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, Transaction $row) {
+                    return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml()
         ];
 
         if ($this->action) {

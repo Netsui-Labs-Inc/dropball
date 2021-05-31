@@ -15,6 +15,7 @@ use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\CanConfirm;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
+use Carbon\Carbon;
 use DarkGhostHunter\Laraguard\Contracts\TwoFactorAuthenticatable;
 use DarkGhostHunter\Laraguard\TwoFactorAuthentication;
 use Database\Factories\UserFactory;
@@ -30,6 +31,7 @@ use Spatie\Permission\Traits\HasRoles;
 /**
  * Class User.
  * @property User $masterAgent
+ * @property Carbon $created_at
  */
 class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable, Wallet, WalletFloat, Confirmable
 {
@@ -99,6 +101,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
      * @var array
      */
     protected $dates = [
+        'created_at',
         'last_login_at',
         'email_verified_at',
         'mobile_verified_at',
