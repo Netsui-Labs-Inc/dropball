@@ -62,13 +62,9 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             $bettingRound = $bet->bettingRound;
             $rate = 0.0025;
             $commission = $bet->bet_amount * $rate;
-            logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
-
+            logger("ProcessSubAgentCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-            logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master Agent #{$masterAgent->id} {$masterAgent->name} current balance {$masterAgent->balanceFloat}");
-            logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master agent #{$masterAgent->id} {$masterAgent->name} new balance {$masterAgent->balanceFloat}");
-
-            TransferToWalletJob::dispatchSync($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
+            TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true])->onQueue('commissions');
 
             $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate * 100,  ['sub_agent_id' => $subAgent->id]);
 

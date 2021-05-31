@@ -58,16 +58,20 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         //TODO:: Remaning money not correct
         $bettingRound = $this->bettingRound;
 
-        logger("BettingRound#{$bettingRound->id} Processing Other Commissions");
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Processing Other Commissions");
         // Operator
         /** @var Company $operator */
         $operator = $this->getOperator();
+        $operatorWallet = $this->getWallet($operator, 'Income Wallet');
 
-        logger("BettingRound#{$bettingRound->id} Operator current balance is : {$operator->balanceFloat}");
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operator->balanceFloat}");
 
         $remainingMoney = $bettingRound->bets()->where('commission_processed', true)->sum('other_commissions');
-        $operator->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
-        logger("BettingRound#{$bettingRound->id} Operator new balance is : {$operator->balanceFloat}");
+
+        dispatch(function() use ($operatorWallet, $remainingMoney, $bettingRound) {
+            $operatorWallet->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
+            logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
+        })->onQueue('other-commissions');
 
         $commissions = $operator->commissions()->whereHas('bet', function ($query) use ($bettingRound) {
             $query->where('betting_round_id', $bettingRound->id);
@@ -75,7 +79,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
 
         $operatorCommission = $commissions + ($remainingMoney / 100);
 
-        logger("BettingRound#{$bettingRound->id} Operator Commission : $operatorCommission");
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator Commission : $operatorCommission");
 
         $bettingRound->update([
             'meta' => [

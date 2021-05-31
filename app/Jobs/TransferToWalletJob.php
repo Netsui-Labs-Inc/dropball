@@ -29,7 +29,7 @@ class TransferToWalletJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return $this->transferFrom->id;
+        return get_class($this->transferTo).$this->transferTo->id;
     }
 
     /**
@@ -61,6 +61,11 @@ class TransferToWalletJob implements ShouldQueue, ShouldBeUnique
                 $this->meta
             );
             logger("TransferToWalletJob.handle :: Transaction id = $transaction->uuid");
+            $from = get_class($this->transferFrom);
+            $to = get_class($this->transferTo);
+            logger("TransferToWalletJob.handle :: $from:{$this->transferFrom->id} new balance is {$this->transferFrom->balanceFloat}");
+            logger("TransferToWalletJob.handle :: $from:{$this->transferTo->id} new balance is {$this->transferTo->balanceFloat}");
+
             DB::commit();
         } catch (\Exception $exception) {
             logger("TransferToWalletJob.error :: From :".$exception->getMessage());

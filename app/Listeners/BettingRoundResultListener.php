@@ -84,7 +84,7 @@ class BettingRoundResultListener
                         'other_commissions' => $bet->balanceFloat > 0 ? $bet->balanceFloat : 0,
                     ]);
 
-                })->catch(function(\Exception $e) {
+                })->catch(function(Batch $batch, \Exception $e) {
                     logger($e->getTraceAsString());
                     \Sentry::captureException($e);
                 })
