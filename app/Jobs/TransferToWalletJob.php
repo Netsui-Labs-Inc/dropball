@@ -63,7 +63,7 @@ class TransferToWalletJob implements ShouldQueue, ShouldBeUnique
             logger("TransferToWalletJob.handle :: Transaction id = $transaction->uuid");
             DB::commit();
         } catch (\Exception $exception) {
-            logger("TransferToWalletJob.error =".$exception->getMessage());
+            logger("TransferToWalletJob.error :: From :".$exception->getMessage());
             \Sentry::captureException($exception);
             DB::rollback();
         }

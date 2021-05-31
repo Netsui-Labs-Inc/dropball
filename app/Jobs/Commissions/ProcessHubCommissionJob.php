@@ -8,6 +8,7 @@ use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Models\Company;
 use DB;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +19,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public Bet $bet;

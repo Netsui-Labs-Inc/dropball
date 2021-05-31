@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,7 +18,7 @@ use DB;
 
 class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public $bet;
@@ -67,7 +68,7 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master Agent #{$masterAgent->id} {$masterAgent->name} current balance {$masterAgent->balanceFloat}");
             logger("BettingRound#{$bettingRound->id} Bet#{$bet->id}  Master agent #{$masterAgent->id} {$masterAgent->name} new balance {$masterAgent->balanceFloat}");
 
-            TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true])->onQueue('commissions');
+            TransferToWalletJob::dispatchSync($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
 
             $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate * 100,  ['sub_agent_id' => $subAgent->id]);
 

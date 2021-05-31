@@ -4,6 +4,7 @@ namespace App\Jobs\Commissions;
 
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -14,7 +15,7 @@ use Illuminate\Queue\SerializesModels;
 
 class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public Bet $bet;

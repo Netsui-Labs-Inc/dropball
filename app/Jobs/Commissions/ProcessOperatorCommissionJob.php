@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Bus;
 
 class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public Bet $bet;
@@ -59,7 +60,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operator->balanceFloat}");
         logger("BettingRound#{$bettingRound->id}  Bet#{$bet->id} Transferring amount of $commission to Operator");
 
-        TransferToWalletJob::dispatch($bet, $operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
+        TransferToWalletJob::dispatchSync($bet, $operator, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
 
         $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  []);
 

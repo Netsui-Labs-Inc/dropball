@@ -14,6 +14,7 @@ use App\Jobs\ProcessBetRefundJob;
 use App\Jobs\ProcessBetStatusJob;
 use App\Jobs\ProcessPlayerWinningsJob;
 use App\Jobs\Traits\WalletAndCommission;
+use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
 use DB;
 class BettingRoundResultListener
@@ -46,7 +47,7 @@ class BettingRoundResultListener
 
         $this->processCommissions($bettingRound);
 
-        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions');
+        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinutes(3));
     }
 
     public function processWinners(BettingRound $bettingRound)
@@ -64,19 +65,31 @@ class BettingRoundResultListener
         $bettingRound->bets()->orderBy('agent_id')->chunk(300, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
-                Bus::chain([
+                Bus::batch([
                     new ProcessMasterAgentCommissionJob($bet),
                     new ProcessSubAgentCommissionJob($bet),
                     new ProcessHubCommissionJob($bet),
                     new ProcessDeveloperCommissionJob($bet),
                     new ProcessOperatorCommissionJob($bet),
-                    new ProcessBetBalanceJob($bet),
-                ])->catch(function(\Exception $e) {
+                ])->finally(function(Batch $batch) use ($bet) {
+
+                    $bet->refresh();
+
+                    if($bet->status === 'win') {
+                        $bet->withdrawFloat($bet->balanceFloat);
+                    }
+
+                    $bet->update([
+                        'commission_processed' => true,
+                        'other_commissions' => $bet->balanceFloat > 0 ? $bet->balanceFloat : 0,
+                    ]);
+
+                })->catch(function(\Exception $e) {
                     logger($e->getTraceAsString());
                     \Sentry::captureException($e);
                 })
                     ->onQueue('commissions')
-                    ->delay(now()->addMinutes(2))
+                    ->name('Commissions for Betting Round#'.$bettingRound->id)
                     ->dispatch();
             }
         });
