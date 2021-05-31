@@ -22,9 +22,9 @@ class CalculateOddsAction
         }
 
         if ($bet && $bet->bet === Bet::PUTI) {
-            $betPayout = floor($putiPayout) * $bet->bet_amount;
+            $betPayout = (floor($putiPayout * 100) * $bet->bet_amount) / 100;
         } elseif ($bet && $bet->bet === Bet::PULA) {
-            $betPayout = floor($pulaPayout) * $bet->bet_amount;
+            $betPayout = (floor($pulaPayout * 100) * $bet->bet_amount) / 100;
         } else {
             $betPayout = 0;
         }

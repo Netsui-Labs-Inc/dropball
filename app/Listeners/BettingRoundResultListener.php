@@ -51,8 +51,8 @@ class BettingRoundResultListener
 
     public function processWinners(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(1000, function ($bets, $batch) use ($bettingRound) {
-            logger("BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
+        $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(300, function ($bets, $batch) use ($bettingRound) {
+            logger("BettingRoundResultListener.processWinners :: BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatchSync($bet);
             }
@@ -61,7 +61,7 @@ class BettingRoundResultListener
 
     public function processCommissions(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->orderBy('agent_id')->chunk(1000, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->orderBy('agent_id')->chunk(300, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
                 Bus::chain([
@@ -74,7 +74,10 @@ class BettingRoundResultListener
                 ])->catch(function(\Exception $e) {
                     logger($e->getTraceAsString());
                     \Sentry::captureException($e);
-                })->onQueue('commissions')->dispatch();
+                })
+                    ->onQueue('commissions')
+                    ->delay(now()->addMinutes(2))
+                    ->dispatch();
             }
         });
     }
@@ -87,9 +90,9 @@ class BettingRoundResultListener
 
         logger("BettingRound#{$bettingRound->id} result is Cancelled All bets will be refunded");
 
-        $bettingRound->bets()->whereNull('refund_processed_at')->chunk(1000, function ($bets) {
+        $bettingRound->bets()->whereNull('refund_processed_at')->chunk(300, function ($bets) {
             foreach ($bets as $bet) {
-                ProcessBetRefundJob::dispatch($bet)->onQueue('winners');
+                ProcessBetRefundJob::dispatchSync($bet);
             }
         });
 

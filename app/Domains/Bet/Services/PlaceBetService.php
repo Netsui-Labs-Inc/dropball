@@ -81,12 +81,12 @@ class PlaceBetService
 
         try {
             DB::beginTransaction();
+            /** @var Bet $bet */
             $bet = $this->bettingRound->bets()->create([
                 'user_id' => $this->bettor->id,
                 'bet_amount' => $this->amount,
                 'bet' => $this->bet->id,
                 'agent_id' => $this->bettor->masterAgent->id,
-                'payout' => getPayout($this->amount),
             ]);
 
             $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
