@@ -9,6 +9,7 @@ use App\Domains\Hub\Models\Hub;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use App\Models\Company;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class DashboardController.
@@ -82,7 +83,7 @@ class DashboardController extends Controller
         $hub = Hub::where('admin_id', $user->id)->first();
         if (! $hub) {
             auth()->logout();
-            throw new GeneralException("Something is wrong with your account");
+            throw ValidationException::withMessages(['email' => "Something is wrong with your account"]);
         }
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)

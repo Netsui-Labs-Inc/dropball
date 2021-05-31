@@ -126,7 +126,7 @@ class TransactionsTable extends DataTableComponent
         if ($this->action) {
             $columns[] = Column::make(__('Action'))
                 ->format(function ($value, $column, Transaction $row) {
-                    return view('backend.wallet.action', ['transaction' => $model]);
+                    return view('backend.wallet.action', ['transaction' => $row]);
                 })->asHtml();
         }
         if ($this->withUser) {
