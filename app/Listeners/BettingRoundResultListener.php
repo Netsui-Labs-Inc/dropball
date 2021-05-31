@@ -2,6 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Domains\Bet\Actions\CalculateOddsAction;
+use App\Domains\Bet\Models\Bet;
+use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Commissions\ProcessDeveloperCommissionJob;
 use App\Jobs\Commissions\ProcessHubCommissionJob;
@@ -33,9 +36,11 @@ class BettingRoundResultListener
 
         if ($bettingRound->status == 'cancelled') {
             logger("BettingRound#{$bettingRound->id} was Cancelled");
-
+            activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
             return $this->refund($bettingRound);
         }
+
+        activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} result is {$bettingRound->betOption->name}");
 
         logger("BettingRound#{$bettingRound->id} Result ".strtoupper($bettingRound->betOption->name));
 
@@ -47,7 +52,7 @@ class BettingRoundResultListener
 
         $this->processCommissions($bettingRound);
 
-        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinutes(3));
+        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions');
     }
 
     public function processWinners(BettingRound $bettingRound)
@@ -67,23 +72,12 @@ class BettingRoundResultListener
             foreach ($bets as $bet) {
                 Bus::batch([
                     new ProcessMasterAgentCommissionJob($bet),
-                    new ProcessSubAgentCommissionJob($bet),
+                    new ProcessMasterAgentCommissionJob($bet, true),
                     new ProcessHubCommissionJob($bet),
                     new ProcessDeveloperCommissionJob($bet),
                     new ProcessOperatorCommissionJob($bet),
                 ])->finally(function(Batch $batch) use ($bet) {
-
-                    $bet->refresh();
-
-                    if($bet->status === 'win') {
-                        $bet->withdrawFloat($bet->balanceFloat);
-                    }
-
-                    $bet->update([
-                        'commission_processed' => true,
-                        'other_commissions' => $bet->balanceFloat > 0 ? $bet->balanceFloat : 0,
-                    ]);
-
+                    $bet->update(['commission_processed' => true]);
                 })->catch(function(Batch $batch, \Exception $e) {
                     logger($e->getTraceAsString());
                     \Sentry::captureException($e);
@@ -115,7 +109,26 @@ class BettingRoundResultListener
     public function updatePoolMoney(BettingRound $bettingRound)
     {
         $poolMoney = $bettingRound->bets()->sum('bet_amount');
-        $bettingRound->update(['pool_money' => $poolMoney]);
+        $payouts = (new CalculateOddsAction)($bettingRound);
+        $totalBets = 0;
+        if($bettingRound->result = Bet::PULA) {
+            $totalBets = $bettingRound->totalBetType(Bet::PULA) ;
+            $winningPayout = ($totalBets * $payouts['pula']) / 100;
+        } elseif($bettingRound->result = Bet::PUTI) {
+            $totalBets = $bettingRound->totalBetType(Bet::PUTI) ;
+            $winningPayout = ($totalBets * $payouts['puti']) / 100;
+        } else {
+            $winningPayout = 0;
+        }
+        $payouts['betPayout'] = $winningPayout;
+
+        $bettingRound->update([
+            'pool_money' => $poolMoney,
+            'meta' => ['winningPayout' => floor($winningPayout), 'totalBets' => $totalBets],
+            'payouts' => $payouts]);
+
+        logger("updatePoolMoney#$bettingRound->id Winning Payout = $winningPayout");
+        logger("updatePoolMoney#$bettingRound->id Pool Money = $poolMoney");
     }
 
     public function updateWinners(BettingRound $bettingRound)

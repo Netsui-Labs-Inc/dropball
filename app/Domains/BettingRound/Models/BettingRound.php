@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Class BettingRound
+ * @package App\Domains\BettingRound\Models
+ * @property int $result;
+ * @property string $uuid;
+ * @property int $queue;
+ * @property float $pool_money;
+ * @property array $meta;
+ * @property array $payouts;
+ * @property string $status;
+ */
 class BettingRound extends Model
 {
     use SoftDeletes,

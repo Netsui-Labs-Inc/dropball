@@ -24,6 +24,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
     use WalletAndCommission;
 
     public Bet $bet;
+    public Company $operator;
 
     /**
      * ProcessDeveloperCommissionJob constructor.
@@ -32,8 +33,15 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
     public function __construct(Bet $bet)
     {
         $this->bet = $bet;
+        $this->operator = $this->getOperator();
     }
 
+    public function middleware()
+    {
+        return [
+            (new WithoutOverlapping("this-company-".$this->operator->id))->dontRelease(),
+        ];
+    }
 
     /**
      * The unique ID of the job.
@@ -42,13 +50,12 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "bet-".$this->bet->id;
+        return "company-".$this->operator->id;
     }
 
     public function handle()
     {
-        /** @var Company $operator */
-        $operator = $this->getOperator();
+        $operator = $this->operator;
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
 
         $bet = $this->bet;
@@ -62,11 +69,19 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         }
 
         logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operator->balanceFloat}");
-        logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id}  Bet#{$bet->id} Transferring amount of $commission to Operator");
+        logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Transferring amount of $commission to Operator");
 
-        TransferToWalletJob::dispatch($bet, $operatorWallet, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
+//        TransferToWalletJob::dispatch($bet, $operatorWallet, $commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true])->onQueue('commissions');
+        $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
+        $rate = $rate * 100;
 
-        $this->createCommission($bet, $operator, 'operator', $commission, $rate * 100,  []);
+        $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
+
+        activity('commissions')
+            ->performedOn($operator)
+            ->causedBy($bet)
+            ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $operator->balanceFloat])
+            ->log("Operator #{$operator->id} {$operator->name} received $rate%($commission) commission. New Balance is {$operator->balanceFloat}");
 
         return $operator;
     }

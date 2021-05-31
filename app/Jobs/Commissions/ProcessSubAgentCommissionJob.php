@@ -46,7 +46,7 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "bet-".$this->bet->id;
+        return "master-agent-".$this->bet->user->masterAgent->id;
     }
 
     public function handle()
@@ -64,9 +64,17 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             $commission = $bet->bet_amount * $rate;
             logger("ProcessSubAgentCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-            TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true])->onQueue('commissions');
+//            TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true])->onQueue('commissions');
+            $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
+            $rate = $rate * 100;
 
-            $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate * 100,  ['sub_agent_id' => $subAgent->id]);
+            $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $subAgent->id]);
+
+            activity('commissions')
+                ->performedOn($masterAgent)
+                ->causedBy($bet)
+                ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
+                ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
 
         }
     }

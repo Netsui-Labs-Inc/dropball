@@ -9,7 +9,7 @@ class CalculateOddsAction
 {
     public function __invoke(BettingRound $bettingRound, Bet $bet = null)
     {
-        $percentage = env('BET_PERCENTAGE', 0.05);
+        $percentage = env('BET_PERCENTAGE', 0.10);
         $pulaTotalBet = $bettingRound->totalBetType(Bet::PULA);
         $putiTotalBet = $bettingRound->totalBetType(Bet::PUTI);
         $potMoney = $pulaTotalBet + $putiTotalBet;

@@ -82,8 +82,14 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
 
         $bettingRound = $bet->bettingRound;
         logger("BettingRound#{$bettingRound->id} Bet#$bet->id Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
-        TransferToWalletJob::dispatch($bet, $bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'type' => 'refund', 'refund' => true, 'bet_id' => $bet->id])->onQueue('commissions');
+        //TransferToWalletJob::dispatch($bet, $bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'type' => 'refund', 'refund' => true, 'bet_id' => $bet->id])->onQueue('commissions');
+        $bet->user->depositFloat($bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'type' => 'refund', 'refund' => true, 'bet_id' => $bet->id]);
         $bet->refund_processed_at = now();
         $bet->save();
+
+        activity('player')
+            ->performedOn($bet->user)
+            ->withProperties(['bet' => $bet->id, 'balance' => $bet->user->balanceFloat, 'bettinground' => $bettingRound->id, 'amount' => $bet->bet_amount])
+            ->log("Player#{$bet->user->id} will received a refund of {$bet->bet_amount}");
     }
 }

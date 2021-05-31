@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Models\Company;
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,10 +15,11 @@ use Illuminate\Queue\SerializesModels;
 
 class ProcessOtherCommissionsJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public $bettingRound;
+    public Company $operator;
 
     /**
      * Create a new job instance.
@@ -27,14 +29,14 @@ class ProcessOtherCommissionsJob implements ShouldQueue
     public function __construct(BettingRound $bettingRound)
     {
         $this->bettingRound = $bettingRound;
+        $this->operator = $this->getOperator();
     }
 
     public function middleware()
     {
-        $operator = $this->getOperator();
 
         return [
-            new WithoutOverlapping("operator-".$operator->id, 3),
+            (new WithoutOverlapping("operator-".$this->operator->id))->dontRelease(),
         ];
     }
 
@@ -45,7 +47,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
      */
     public function uniqueId()
     {
-        return "operator-betting-round-".$this->bettingRound->id;
+        return "operator-".$this->operator->id;
     }
 
     /**
@@ -55,37 +57,31 @@ class ProcessOtherCommissionsJob implements ShouldQueue
      */
     public function handle()
     {
-        //TODO:: Remaning money not correct
         $bettingRound = $this->bettingRound;
-
+        $bettingRound->refresh();
         logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Processing Other Commissions");
-        // Operator
+
         /** @var Company $operator */
-        $operator = $this->getOperator();
+        $operator = $this->operator;
+
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
+        $commissions = $bettingRound->pool_money * .10;
+        $remainingMoney = $bettingRound->pool_money - $bettingRound->meta['winningPayout'] - $commissions;
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Remaining Money: $remainingMoney, Winning Payouts: {$bettingRound->meta['winningPayout']}, Commission: $commissions ");
 
-        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operator->balanceFloat}");
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operatorWallet->balanceFloat}");
+        $operatorWallet->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
+        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
 
-        $remainingMoney = $bettingRound->bets()->where('commission_processed', true)->sum('other_commissions');
-
-        dispatch(function() use ($operatorWallet, $remainingMoney, $bettingRound) {
-            $operatorWallet->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
-            logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
-        })->onQueue('other-commissions');
-
-        $commissions = $operator->commissions()->whereHas('bet', function ($query) use ($bettingRound) {
-            $query->where('betting_round_id', $bettingRound->id);
-        })->sum('amount');
-
-        $operatorCommission = $commissions + ($remainingMoney / 100);
-
-        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator Commission : $operatorCommission");
-
-        $bettingRound->update([
-            'meta' => [
-                'operator_commission' => $operatorCommission,
-                'operator_balance' => $operator->balanceFloat,
-            ],
-        ]);
+        activity('commissions')
+            ->performedOn($operator)
+            ->causedBy($bettingRound)
+            ->withProperties([
+                'bettingRound' => $bettingRound->id,
+                'commission' => $remainingMoney,
+                'payouts' => $bettingRound->payouts,
+                'balance' => $operatorWallet->balanceFloat
+            ])
+            ->log("Operator #{$operator->id} received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
     }
 }

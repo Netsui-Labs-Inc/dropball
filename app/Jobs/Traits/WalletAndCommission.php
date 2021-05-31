@@ -34,6 +34,7 @@ trait WalletAndCommission
 
     public function processDevelopersCommission(Bet $bet)
     {
+        /** @var Company $developer */
         $developer = $this->getDevelopers();
         $bettingRound = $bet->bettingRound;
         $rate = 0.01;
@@ -43,10 +44,18 @@ trait WalletAndCommission
             DB::beginTransaction();;
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers Current Balance is {$developer->balanceFloat}");
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id}  Bet#{$bet->id}  Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
-            TransferToWalletJob::dispatch($bet, $developer, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id])->onQueue('commissions');
+
+            $developer->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
 
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers New Balance is {$developer->balanceFloat}");
-            $this->createCommission($bet, $developer, 'system', $commission, $rate * 100);
+            $rate = $rate * 100;
+
+            $this->createCommission($bet, $developer, 'system', $commission, $rate);
+            activity('commissions')
+                ->performedOn($developer)
+                ->causedBy($bet)
+                ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $developer->balanceFloat])
+                ->log("Developer #{$developer->id} received $rate%($commission) commission. New Balance is {$developer->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

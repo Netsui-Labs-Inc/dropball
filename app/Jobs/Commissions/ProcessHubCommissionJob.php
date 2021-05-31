@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Domains\Hub\Models\Hub;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
 use App\Models\Company;
@@ -56,6 +57,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $bet = $this->bet;
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
+        /** @var Hub $hub */
         $hub = $masterAgent->hub;
         $bettingRound = $bet->bettingRound;
         $percentage = (3 - $masterAgent->commission_rate);
@@ -66,10 +68,19 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::beginTransaction();;
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name} will receive $percentage%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}");
             $hubWallet = $this->getWallet($hub, 'Income Wallet');
-            TransferToWalletJob::dispatch($bet, $hubWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id])->onQueue('commissions');
+            //TransferToWalletJob::dispatch($bet, $hubWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id])->onQueue('commissions');
+            $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name}  new balance {$hubWallet->balanceFloat}");
+            $rate = $rate * 100;
 
-            $this->createCommission($bet, $hub, 'hub', $commission, $rate * 100,  []);
+            $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
+
+            activity('commissions')
+                ->performedOn($hub)
+                ->causedBy($bet)
+                ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'balance' => $hubWallet->balanceFloat])
+                ->log("Hub received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

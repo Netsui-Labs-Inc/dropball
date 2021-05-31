@@ -4,6 +4,7 @@ namespace App\Jobs\Commissions;
 
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
+use App\Models\Company;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -19,6 +20,7 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
     use WalletAndCommission;
 
     public Bet $bet;
+    public Company $developer;
 
     /**
      * ProcessDeveloperCommissionJob constructor.
@@ -27,6 +29,7 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
     public function __construct(Bet $bet)
     {
         $this->bet = $bet;
+        $this->developer = $this->getDevelopers();
     }
 
     public function middleware()
@@ -43,7 +46,7 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "bet-".$this->bet->id;
+        return "company-".$this->developer->id;
     }
 
     /**

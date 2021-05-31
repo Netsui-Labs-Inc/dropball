@@ -89,6 +89,11 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         $bet->save();
         $bet->refresh();
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        activity('player')
+            ->causedBy($bet)
+            ->performedOn($bet->user)
+            ->withProperties(['bet' => $bet->id, 'betAmount' => $bet->bet_amount,'payout' => $payout, 'balance' => $bet->user->balanceFloat])
+            ->log("Player#{$bet->user->id} won {$payout['betPayout']} in Betting Round #$bettingRound->id. New Balance is {$bet->user->balanceFloat}");
         return $transaction;
     }
 }

@@ -94,6 +94,11 @@ class PlaceBetService
             event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
 
             logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
+            activity('player')
+                ->causedBy($bet)
+                ->performedOn($this->bettor)
+                ->withProperties(['bet' => $bet->id])
+                ->log("Player#{$this->bettor->id} placed a bet to {$bet->option->name} worth {$bet->bet_amount} in betting round #{$this->bettingRound->id}");
             DB::commit();
 
         } catch ( \Exception $e) {
