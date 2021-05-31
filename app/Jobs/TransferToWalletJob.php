@@ -29,7 +29,7 @@ class TransferToWalletJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return $this->transferTo->id;
+        return $this->transferFrom->id;
     }
 
     /**

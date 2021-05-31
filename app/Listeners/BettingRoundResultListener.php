@@ -54,7 +54,7 @@ class BettingRoundResultListener
         $bettingRound->bets()->whereNull('winnings_processed_at')->where('bet', $bettingRound->result)->chunk(1000, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
-                ProcessPlayerWinningsJob::dispatch($bet)->onQueue('winners');
+                ProcessPlayerWinningsJob::dispatchSync($bet);
             }
         });
     }
