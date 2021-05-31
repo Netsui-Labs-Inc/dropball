@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
+use Brick\Math\BigDecimal;
 use DB;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -89,18 +90,18 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         }
         $bettingRound = $bet->bettingRound;
         $rate = ($masterAgent->commission_rate / 100) ?? .01;
-        $commission = $bet->bet_amount * $rate;
+        $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         logger("ProcessMasterAgentCommissionJob BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
         $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
         $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
-        $rate = $rate * 100;
+        $rate = BigDecimal::of($rate * 100)->toFloat();
         $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
 
         activity('commissions')
             ->performedOn($masterAgent)
             ->causedBy($bet)
-            ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'balance' => $masterAgent->balanceFloat])
+            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'balance' => $masterAgent->balanceFloat])
             ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
     }
 
@@ -109,7 +110,8 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $masterAgent = $this->masterAgent;
         $bettingRound = $this->bet->bettingRound;
         $bet = $this->bet;
-        $rate = 0.0025;
+        $rate = BigDecimal::of(0.0025 )->toFloat();
+
         $commission = $bet->bet_amount * $rate;
         logger("ProcessSubAgentCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
         $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
@@ -121,7 +123,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         activity('commissions')
             ->performedOn($masterAgent)
             ->causedBy($bet)
-            ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
+            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
             ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
 
     }

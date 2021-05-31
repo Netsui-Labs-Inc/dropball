@@ -9,6 +9,7 @@ use App\Domains\Hub\Models\Hub;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
 use App\Models\Company;
+use Brick\Math\BigDecimal;
 use DB;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -62,7 +63,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $bettingRound = $bet->bettingRound;
         $percentage = (3 - $masterAgent->commission_rate);
         $rate = ($percentage / 100) ?? 0.01;
-        $commission = $bet->bet_amount * $rate;
+        $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         try {
             DB::beginTransaction();;
@@ -71,14 +72,14 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
             //TransferToWalletJob::dispatch($bet, $hubWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id])->onQueue('commissions');
             $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name}  new balance {$hubWallet->balanceFloat}");
-            $rate = $rate * 100;
+            $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
 
             activity('commissions')
                 ->performedOn($hub)
                 ->causedBy($bet)
-                ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'balance' => $hubWallet->balanceFloat])
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'balance' => $hubWallet->balanceFloat])
                 ->log("Hub received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
             DB::commit();

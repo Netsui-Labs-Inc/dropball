@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Models\Company;
+use Brick\Math\BigDecimal;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -12,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-
+use DB;
 class ProcessOtherCommissionsJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -65,23 +66,30 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $operator = $this->operator;
 
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
-        $commissions = $bettingRound->pool_money * .10;
+        $commissions = BigDecimal::of($bettingRound->pool_money * .10)->toFloat();
         $remainingMoney = $bettingRound->pool_money - $bettingRound->meta['winningPayout'] - $commissions;
         logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Remaining Money: $remainingMoney, Winning Payouts: {$bettingRound->meta['winningPayout']}, Commission: $commissions ");
+        try {
+            DB::beginTransaction();
+            logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operatorWallet->balanceFloat}");
+            $operatorWallet->depositFloat($remainingMoney, ['betting_round_id' => $bettingRound->id]);
+            logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
 
-        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operatorWallet->balanceFloat}");
-        $operatorWallet->depositFloat($remainingMoney,  ['betting_round_id' => $bettingRound->id]);
-        logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
-
-        activity('commissions')
-            ->performedOn($operator)
-            ->causedBy($bettingRound)
-            ->withProperties([
-                'bettingRound' => $bettingRound->id,
-                'commission' => $remainingMoney,
-                'payouts' => $bettingRound->payouts,
-                'balance' => $operatorWallet->balanceFloat
-            ])
-            ->log("Operator #{$operator->id} received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
+            activity('commissions')
+                ->performedOn($operator)
+                ->causedBy($bettingRound)
+                ->withProperties([
+                    'bettingRound' => $bettingRound->id,
+                    'commission' => $remainingMoney,
+                    'payouts' => $bettingRound->payouts,
+                    'balance' => $operatorWallet->balanceFloat
+                ])
+                ->log("Operator #{$operator->id} received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
+            DB::commit();
+        } catch (\Exception $e) {
+            $this->fail($e);
+            DB::rollBack();
+        }
     }
+
 }

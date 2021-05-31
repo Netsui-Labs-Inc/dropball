@@ -26,7 +26,7 @@ class BetFactory extends Factory
             'bet_amount' => $betAmount,
             'status' => $this->faker->randomElement(['win','lose']),
             'gain_loss' => $this->faker->randomElement([50, 100, 300, 500, 1000, 500]),
-            'payout' => getPayout($betAmount),
+            'payout' => 0,
             'note' => $this->faker->text,
         ];
     }

@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
+use Brick\Math\BigDecimal;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -61,19 +62,19 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             $masterAgent = $subAgent->masterAgent;
             $bettingRound = $bet->bettingRound;
             $rate = 0.0025;
-            $commission = $bet->bet_amount * $rate;
+            $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
             logger("ProcessSubAgentCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
 //            TransferToWalletJob::dispatch($bet, $masterAgentWallet, $commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true])->onQueue('commissions');
             $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
-            $rate = $rate * 100;
+            $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $subAgent->id]);
 
             activity('commissions')
                 ->performedOn($masterAgent)
                 ->causedBy($bet)
-                ->withProperties(['bet' => $bet, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
                 ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
 
         }

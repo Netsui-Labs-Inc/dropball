@@ -53,22 +53,7 @@
             </x-slot>
         </x-backend.card>
     </div>
-    <div class="col">
-        <x-backend.card headerClass="bg-primary">
-            <x-slot name="header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h4 class="h4 text-white mb-0">
-                            @lang('Operator Commission')
-                        </h4>
-                    </div>
-                </div>
-            </x-slot>
-            <x-slot name="body">
-                <h2 class="text-muted">{{ number_format($bettingRound->meta['operator_commission'] ?? 0, 2) }}</h2>
-            </x-slot>
-        </x-backend.card>
-    </div>
+
 </div>
 
 <div class="row">

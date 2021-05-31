@@ -67,7 +67,7 @@ class BettingRoundResultListener
 
     public function processCommissions(BettingRound $bettingRound)
     {
-        $bettingRound->bets()->orderBy('agent_id')->chunk(300, function ($bets, $batch) use ($bettingRound) {
+        $bettingRound->bets()->chunk(300, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
                 Bus::batch([
@@ -83,7 +83,6 @@ class BettingRoundResultListener
                     \Sentry::captureException($e);
                 })
                     ->onQueue('commissions')
-                    ->name('Commissions for Betting Round#'.$bettingRound->id)
                     ->dispatch();
             }
         });

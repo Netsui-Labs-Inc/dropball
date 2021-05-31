@@ -69,7 +69,7 @@ class DashboardController extends Controller
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
         return view('backend.dashboard.super-admin')
-            ->with('company', $company)
+            ->with('company', $company->getWallet('income-wallet'))
             ->with('players', $players)
             ->with('events', $events)
             ->with('bettingRound', $bettingRound)

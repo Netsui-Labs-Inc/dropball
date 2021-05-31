@@ -9,7 +9,7 @@
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($company->balanceFloat ?? 0)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Balance")</small>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Operator Total Balance")</small>
                 </x-slot>
             </x-backend.card>
         </div>
@@ -70,7 +70,7 @@
                 <x-slot name="header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h3 class="h3 text-white mb-0"> @lang("Company Commission History")</h3>
+                            <h3 class="h3 text-white mb-0"> @lang("Operator Commission History")</h3>
                         </div>
                     </div>
                 </x-slot>
