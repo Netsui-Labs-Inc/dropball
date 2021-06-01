@@ -33,13 +33,6 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $this->operator = $this->getOperator();
     }
 
-    public function middleware()
-    {
-
-        return [
-            (new WithoutOverlapping("operator-".$this->operator->id))->dontRelease(),
-        ];
-    }
 
     /**
      * The unique ID of the job.
@@ -88,6 +81,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
             DB::commit();
         } catch (\Exception $e) {
             $this->fail($e);
+            logger("ProcessOtherCommissionsJob.error :: ".$e->getMessage());
             DB::rollBack();
         }
     }

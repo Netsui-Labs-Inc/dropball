@@ -83,6 +83,7 @@ class BettingRoundResultListener
                     \Sentry::captureException($e);
                 })
                     ->onQueue('commissions')
+                    ->name("")
                     ->dispatch();
             }
         });

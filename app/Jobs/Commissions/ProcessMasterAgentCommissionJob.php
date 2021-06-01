@@ -8,6 +8,7 @@ use App\Jobs\Traits\WalletAndCommission;
 use App\Jobs\TransferToWalletJob;
 use Brick\Math\BigDecimal;
 use DB;
+use Cache;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -45,13 +46,6 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         }
     }
 
-    public function middleware()
-    {
-        return [
-            (new WithoutOverlapping("master-agent-".$this->masterAgent->id))->dontRelease(),
-        ];
-    }
-
     /**
      * The unique ID of the job.
      *
@@ -60,6 +54,11 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     public function uniqueId()
     {
         return "master-agent-".$this->masterAgent->id;
+    }
+
+    public function uniqueVia()
+    {
+        return Cache::driver('database');
     }
 
     public function handle()
@@ -101,30 +100,32 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         activity('commissions')
             ->performedOn($masterAgent)
             ->causedBy($bet)
-            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'balance' => $masterAgent->balanceFloat])
-            ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
+            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'balance' => $masterAgentWallet->balanceFloat])
+            ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
     }
 
     public function subAgent()
     {
+        $player = $this->bet->user;
+        $subAgent = $player->masterAgent;
         $masterAgent = $this->masterAgent;
         $bettingRound = $this->bet->bettingRound;
         $bet = $this->bet;
         $rate = BigDecimal::of(0.0025 )->toFloat();
 
-        $commission = $bet->bet_amount * $rate;
+        $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
         logger("ProcessSubAgentCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
         $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
         $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
-        $rate = $rate * 100;
+        $rate = BigDecimal::of($rate * 100)->toFloat();
 
         $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $subAgent->id]);
 
         activity('commissions')
             ->performedOn($masterAgent)
             ->causedBy($bet)
-            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
-            ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
+            ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgentWallet->balanceFloat])
+            ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
     }
 

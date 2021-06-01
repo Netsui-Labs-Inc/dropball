@@ -36,12 +36,6 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->bet = $bet;
     }
 
-    public function middleware()
-    {
-        return [
-            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
-        ];
-    }
 
     /**
      * The unique ID of the job.

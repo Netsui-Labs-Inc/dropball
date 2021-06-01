@@ -32,12 +32,6 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->developer = $this->getDevelopers();
     }
 
-    public function middleware()
-    {
-        return [
-            (new WithoutOverlapping("company-".$this->developer->id))->dontRelease(),
-        ];
-    }
 
     /**
      * The unique ID of the job.

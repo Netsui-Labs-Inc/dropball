@@ -33,12 +33,6 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->bet = $bet;
     }
 
-    public function middleware()
-    {
-        return [
-            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
-        ];
-    }
 
     /**
      * The unique ID of the job.
@@ -74,8 +68,8 @@ class ProcessSubAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             activity('commissions')
                 ->performedOn($masterAgent)
                 ->causedBy($bet)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgent->balanceFloat])
-                ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgent->balanceFloat}");
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgentWallet->balanceFloat])
+                ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
         }
     }

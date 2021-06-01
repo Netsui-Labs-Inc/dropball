@@ -18,7 +18,7 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use DB;
 use Illuminate\Support\Facades\Bus;
-
+use Cache;
 class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -37,13 +37,6 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->operator = $this->getOperator();
     }
 
-    public function middleware()
-    {
-        return [
-            (new WithoutOverlapping("company-".$this->operator->id))->dontRelease(),
-        ];
-    }
-
     /**
      * The unique ID of the job.
      *
@@ -52,6 +45,11 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
     public function uniqueId()
     {
         return "company-".$this->operator->id;
+    }
+
+    public function uniqueVia()
+    {
+        return Cache::driver('database');
     }
 
     public function handle()
@@ -69,14 +67,14 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             return $operatorWallet;
         }
 
-        logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
-        logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Transferring amount of {$operatorWallet->balanceFloat} to Operator");
         try {
             DB::beginTransaction();
+            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
             $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
+            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Transferring amount of {$operatorWallet->balanceFloat} to Operator");
 
             activity('commissions')
                 ->performedOn($operator)
@@ -87,6 +85,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::commit();
         } catch (\Exception $e) {
             $this->fail($e);
+            logger("ProcessOperatorCommissionJob.error ".$e->getMessage());
             DB::rollBack();
         }
 //
