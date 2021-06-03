@@ -46,6 +46,10 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         }
     }
 
+    public function middleware()
+    {
+        return [new WithoutOverlapping($this->masterAgent->id)];
+    }
     /**
      * The unique ID of the job.
      *

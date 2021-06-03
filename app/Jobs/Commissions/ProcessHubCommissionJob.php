@@ -19,7 +19,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-
+use Cache;
 class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -44,7 +44,17 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "bet-".$this->bet->id;
+        return "hub-".$this->bet->user->masterAgent->hub->id;
+    }
+
+    public function middleware()
+    {
+        return [new WithoutOverlapping("hub-".$this->bet->user->masterAgent->hub->id)];
+    }
+
+    public function uniqueVia()
+    {
+        return Cache::driver('database');
     }
 
     public function handle()

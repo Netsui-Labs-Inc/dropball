@@ -47,6 +47,12 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         return "company-".$this->operator->id;
     }
 
+    public function middleware()
+    {
+        return [new WithoutOverlapping("company-".$this->operator->id)];
+    }
+
+
     public function uniqueVia()
     {
         return Cache::driver('database');

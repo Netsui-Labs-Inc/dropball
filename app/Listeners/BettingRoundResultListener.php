@@ -70,20 +70,17 @@ class BettingRoundResultListener
         $bettingRound->bets()->chunk(300, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
-                Bus::batch([
+                Bus::chain([
                     new ProcessMasterAgentCommissionJob($bet),
                     new ProcessMasterAgentCommissionJob($bet, true),
                     new ProcessHubCommissionJob($bet),
                     new ProcessDeveloperCommissionJob($bet),
-                    new ProcessOperatorCommissionJob($bet),
-                ])->finally(function(Batch $batch) use ($bet) {
-                    $bet->update(['commission_processed' => true]);
-                })->catch(function(Batch $batch, \Exception $e) {
-                    logger($e->getTraceAsString());
+                    new ProcessOperatorCommissionJob($bet)
+                ])->catch(function(\Exception $e) {
+                    logger($e->getMessage());
                     \Sentry::captureException($e);
                 })
                     ->onQueue('commissions')
-                    ->name("")
                     ->dispatch();
             }
         });

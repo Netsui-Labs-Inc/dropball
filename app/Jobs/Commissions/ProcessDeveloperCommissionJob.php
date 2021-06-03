@@ -13,7 +13,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-
+use Cache;
 class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -41,6 +41,17 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
     public function uniqueId()
     {
         return "company-".$this->developer->id;
+    }
+
+    public function middleware()
+    {
+        return [new WithoutOverlapping($this->developer->id)];
+    }
+
+
+    public function uniqueVia()
+    {
+        return Cache::driver('database');
     }
 
     /**
