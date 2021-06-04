@@ -65,6 +65,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         try {
             DB::beginTransaction();
             logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operatorWallet->balanceFloat}");
+            $operatorWallet->refreshBalance();
             $operatorWallet->depositFloat($remainingMoney, ['betting_round_id' => $bettingRound->id]);
             logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
 

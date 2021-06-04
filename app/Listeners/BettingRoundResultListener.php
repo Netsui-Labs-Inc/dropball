@@ -52,7 +52,7 @@ class BettingRoundResultListener
 
         $this->processCommissions($bettingRound);
 
-        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions');
+        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
     }
 
     public function processWinners(BettingRound $bettingRound)
@@ -67,6 +67,7 @@ class BettingRoundResultListener
 
     public function processCommissions(BettingRound $bettingRound)
     {
+        logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
         $bettingRound->bets()->chunk(300, function ($bets, $batch) use ($bettingRound) {
             logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
             foreach ($bets as $bet) {
@@ -79,9 +80,7 @@ class BettingRoundResultListener
                 ])->catch(function(\Exception $e) {
                     logger($e->getMessage());
                     \Sentry::captureException($e);
-                })
-                    ->onQueue('commissions')
-                    ->dispatch();
+                })->onQueue('commissions')->dispatch();
             }
         });
     }

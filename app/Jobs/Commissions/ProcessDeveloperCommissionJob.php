@@ -45,7 +45,7 @@ class ProcessDeveloperCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [new WithoutOverlapping($this->developer->id)];
+        return [(new WithoutOverlapping("dev-".$this->developer->id))->releaseAfter(30)];
     }
 
 

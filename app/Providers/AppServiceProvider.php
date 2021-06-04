@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
 
         Queue::failing(function (JobFailed $event) {
 
-            logger($event->job->getName()." - ".$event->exception->getMessage());
+            //logger($event->job->getName()." - ".$event->exception->getMessage());
         });
     }
 }

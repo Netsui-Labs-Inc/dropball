@@ -49,9 +49,8 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [new WithoutOverlapping("company-".$this->operator->id)];
+        return [(new WithoutOverlapping("operator-".$this->operator->id))->releaseAfter(30)];
     }
-
 
     public function uniqueVia()
     {
@@ -76,6 +75,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         try {
             DB::beginTransaction();
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
+            $operatorWallet->refreshBalance();
             $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
@@ -90,7 +90,6 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 
             DB::commit();
         } catch (\Exception $e) {
-            $this->fail($e);
             logger("ProcessOperatorCommissionJob.error ".$e->getMessage());
             DB::rollBack();
         }
@@ -103,6 +102,6 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
     {
         $masterAgent = $player->masterAgent;
 
-        return $masterAgent->hasRole('Master Agent') && $masterAgent->masterAgent;
+        return $masterAgent->masterAgent;
     }
 }

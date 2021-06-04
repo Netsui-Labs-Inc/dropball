@@ -46,7 +46,7 @@ trait WalletAndCommission
             DB::beginTransaction();;
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers Current Balance is {$developerWallet->balanceFloat}");
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id}  Bet#{$bet->id}  Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
-
+            $developerWallet->refreshBalance();
             $developerWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
 
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers New Balance is {$developerWallet->balanceFloat}");
