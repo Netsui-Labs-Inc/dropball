@@ -108,10 +108,10 @@ class BettingRoundResultListener
         $poolMoney = $bettingRound->bets()->sum('bet_amount');
         $payouts = (new CalculateOddsAction)($bettingRound);
         $totalBets = 0;
-        if($bettingRound->result = Bet::PULA) {
+        if($bettingRound->result == Bet::PULA) {
             $totalBets = $bettingRound->totalBetType(Bet::PULA) ;
             $winningPayout = ($totalBets * $payouts['pula']) / 100;
-        } elseif($bettingRound->result = Bet::PUTI) {
+        } elseif($bettingRound->result == Bet::PUTI) {
             $totalBets = $bettingRound->totalBetType(Bet::PUTI) ;
             $winningPayout = ($totalBets * $payouts['puti']) / 100;
         } else {
