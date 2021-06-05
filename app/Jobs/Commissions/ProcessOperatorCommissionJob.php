@@ -83,7 +83,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Transferring amount of {$operatorWallet->balanceFloat} to Operator");
 
-            activity('commissions')
+            activity('operator commissions')
                 ->performedOn($operator)
                 ->causedBy($bet->bettingRound)
                 ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat])

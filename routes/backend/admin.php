@@ -91,6 +91,13 @@ Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/reports'
         $trail->push("BettingRound #".$bettingRound->id. " Report", route('admin.betting-events.betting-rounds.report', [$bettingEvent, $bettingRound]));
     });
 
+Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/activity-logs', [BettingEventBettingRoundController::class, 'activityLogs'])
+    ->name('betting-events.betting-rounds.activity-logs')
+    ->breadcrumbs(function (Trail $trail, $bettingEvent, $bettingRound) {
+        $trail->parent('admin.betting-events.show', $bettingEvent);
+        $trail->push("BettingRound #".$bettingRound->id. " Activity Logs", route('admin.betting-events.betting-rounds.activity-logs', [$bettingEvent, $bettingRound]));
+    });
+
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/edit', [BettingEventBettingRoundController::class, 'edit'])
     ->name('betting-events.betting-rounds.edit')
     ->middleware('can:admin.access.betting-rounds.edit')

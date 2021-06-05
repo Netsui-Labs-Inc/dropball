@@ -39,10 +39,10 @@
                 @can('admin.access.betting-rounds.report')
                     @if ($bettingRound->status == 'ended')
                         <div class="row">
-                            <div class="col h1 text-center">
+                            <div class="col-6 h1 text-center">
                                 {!! $bettingRound->resultLabel() !!}
                             </div>
-                            <div class="col h1">
+                            <div class="col-3 h1">
                                 <x-utils.form-button
                                     :action="route('admin.betting-events.betting-rounds.report', [$bettingRound->bettingEvent, $bettingRound])"
                                     method="get"
@@ -53,7 +53,19 @@
                                     @lang('View report')
                                 </x-utils.form-button>
                             </div>
+                            <div class="col-3 h1">
+                                <x-utils.form-button
+                                    :action="route('admin.betting-events.betting-rounds.activity-logs', [$bettingRound->bettingEvent, $bettingRound, 'sorts' => ['log_name' => 'desc']])"
+                                    method="get"
+                                    button-class="btn btn-info btn-lg btn-block text-white"
+                                    icon="fas fa-chart-bar"
+                                    name="view-activity-logs"
+                                >
+                                    @lang('View Logs')
+                                </x-utils.form-button>
+                            </div>
                         </div>
+
                     @endif
                 @endcan
             </x-slot>

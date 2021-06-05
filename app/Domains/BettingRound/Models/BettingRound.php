@@ -10,6 +10,7 @@ use Database\Factories\BettingRoundFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Models\Activity;
 
 /**
  * Class BettingRound
@@ -135,6 +136,11 @@ class BettingRound extends Model
     public function winners()
     {
         return $this->bets()->with('user')->where('bet', $this->result)->get()->pluck('user');
+    }
+
+    public function activityLogs()
+    {
+        return $this->morphMany(Activity::class, 'causer');
     }
 
     protected static function newFactory()

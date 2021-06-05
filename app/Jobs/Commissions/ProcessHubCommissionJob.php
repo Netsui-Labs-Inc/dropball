@@ -81,7 +81,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 
             $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
             $hubWallet->refreshBalance();
-            activity('commissions')
+            activity('hub commissions')
                 ->performedOn($hub)
                 ->causedBy($bettingRound)
                 ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $hubWallet->balanceFloat])

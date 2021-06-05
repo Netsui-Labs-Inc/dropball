@@ -54,7 +54,7 @@ trait WalletAndCommission
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $developer, 'system', $commission, $rate);
-            activity('commissions')
+            activity('developer commissions')
                 ->performedOn($developer)
                 ->causedBy($bettingRound)
                 ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $developerWallet->balanceFloat])

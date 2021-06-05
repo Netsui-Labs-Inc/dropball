@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 
-@section('title', __('Betting Round Report'))
+@section('title', __('Betting Round Activity Logs'))
 
 @section('content')
 <div class="row">
@@ -58,20 +58,20 @@
 
 <div class="row">
     <div class="col-12">
-    <x-backend.card headerClass="bg-primary">
-        <x-slot name="header">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h4 class="h4 text-white mb-0">
-                        @lang('Bet Commissions')
-                    </h4>
+        <x-backend.card headerClass="bg-primary">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h4 class="h4 text-white mb-0">
+                            @lang('Betting Round Activity Logs')
+                        </h4>
+                    </div>
                 </div>
-            </div>
-        </x-slot>
-        <x-slot name="body">
-            <livewire:bet-commissions-table :bettingRound="$bettingRound"/>
-        </x-slot>
-    </x-backend.card>
+            </x-slot>
+            <x-slot name="body">
+                <livewire:betting-round-activity-logs-table :bettingRound="$bettingRound"/>
+            </x-slot>
+        </x-backend.card>
     </div>
 </div>
 @endsection

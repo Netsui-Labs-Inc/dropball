@@ -67,7 +67,7 @@ class BettingEventController extends Controller
     {
         $bettingEvent = $this->bettingEventService->update($bettingEvent, $request->validated());
 
-        return redirect()->route('admin.betting-events.show', $bettingEvent)->withFlashSuccess(__('The stag event was successfully updated.'));
+        return redirect()->route('admin.betting-events.index')->withFlashSuccess(__('The stag event was successfully updated.'));
     }
 
 }

@@ -19,6 +19,9 @@ class BetCommissionsTable extends DataTableComponent
 
     public int $perPage = 10;
 
+    protected string $pageName = 'bet_commissions';
+
+
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];

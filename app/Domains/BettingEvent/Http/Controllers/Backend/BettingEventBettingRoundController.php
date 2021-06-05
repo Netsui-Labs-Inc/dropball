@@ -69,4 +69,18 @@ class BettingEventBettingRoundController extends Controller
             ->with('payout', $payout)
             ->with('nextBettingRound', $nextBettingRound);
     }
+
+    public function activityLogs(BettingEvent $bettingEvent, BettingRound $bettingRound)
+    {
+        $nextBettingRound = $bettingEvent->bettingRounds()->where('queue', $bettingRound->queue + 1)->first();
+
+        $payout = $bettingRound['payouts']['betPayout'];
+
+        return view('backend.betting-round.activity-log')
+            ->with('bettingEvent', $bettingEvent)
+            ->with('bettingRound', $bettingRound)
+            ->with('bettingOptions', BetOption::all())
+            ->with('payout', $payout)
+            ->with('nextBettingRound', $nextBettingRound);
+    }
 }
