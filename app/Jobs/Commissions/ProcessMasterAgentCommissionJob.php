@@ -102,15 +102,16 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
             $masterAgentWallet->refreshBalance();
+            $currentBalance = $masterAgentWallet->balanceFloat;
             $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
             $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
 
             activity('commissions')
                 ->performedOn($masterAgent)
-                ->causedBy($bet)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'balance' => $masterAgentWallet->balanceFloat])
-                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
+                ->causedBy($bettingRound)
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $masterAgentWallet->balanceFloat])
+                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
             DB::commit();
         } catch (\Exception $exception) {
@@ -135,6 +136,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
             $masterAgentWallet->refreshBalance();
+            $currentBalance = $masterAgentWallet->balanceFloat();
             $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
@@ -142,9 +144,9 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 
             activity('commissions')
                 ->performedOn($masterAgent)
-                ->causedBy($bet)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'balance' => $masterAgentWallet->balanceFloat])
-                ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
+                ->causedBy($bettingRound)
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $masterAgentWallet->balanceFloat])
+                ->log("Sub Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
             DB::commit();
         } catch (\Exception $exception) {

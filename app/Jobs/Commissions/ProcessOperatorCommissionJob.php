@@ -76,7 +76,8 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::beginTransaction();
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
             $operatorWallet->refreshBalance();
-            $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'commission' => true]);
+            $currentBalance = $operatorWallet->balanceFloat;
+            $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
@@ -84,9 +85,9 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 
             activity('commissions')
                 ->performedOn($operator)
-                ->causedBy($bet)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $operatorWallet->balanceFloat])
-                ->log("Operator #{$operator->id} {$operator->name} received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
+                ->causedBy($bet->bettingRound)
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat])
+                ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
 
             DB::commit();
         } catch (\Exception $e) {

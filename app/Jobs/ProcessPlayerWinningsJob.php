@@ -12,13 +12,15 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
-
+use Cache;
 class ProcessPlayerWinningsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
     public Bet $bet;
+
+    public $tries = 25;
 
     /**
      * Create a new job instance.
@@ -27,14 +29,34 @@ class ProcessPlayerWinningsJob implements ShouldQueue
      */
     public function __construct(Bet $bet)
     {
-        $this->onQueue('winners');
         $this->bet = $bet;
+    }
+
+    public function backoff()
+    {
+        return [1, 5, 10, 30];
+    }
+
+
+    /**
+     * The unique ID of the job.
+     *
+     * @return string
+     */
+    public function uniqueId()
+    {
+        return "player-".$this->bet->user->id;
+    }
+
+    public function uniqueVia()
+    {
+        return Cache::driver('database');
     }
 
     public function middleware()
     {
         return [
-            (new WithoutOverlapping("bet-".$this->bet->id))->dontRelease(),
+            (new WithoutOverlapping("bet-".$this->bet->id))->releaseAfter(10),
         ];
     }
 
@@ -61,8 +83,9 @@ class ProcessPlayerWinningsJob implements ShouldQueue
     public function processWin(Bet $bet)
     {
         $bet->refresh();
+        $player = $bet->user;
         if ($bet->winnings_processed_at ||
-            $bet->user->transactions()
+            $player->transactions()
                 ->where('meta->betting_round_id', $bet->bettingRound->id)
                 ->where('meta->bet_id', $bet->id)
                 ->where('meta->type', 'win')
@@ -73,27 +96,33 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         }
 
         $bettingRound = $bet->bettingRound;
+        $playerWallet = $player->getWallet(config('wallet.wallet.default.slug'));
+        $playerWallet->refreshBalance();
+        $currentBalance = $playerWallet->balanceFloat;
+
         $payout = (new CalculateOddsAction)($bettingRound, $bet);
         $bet->payout = $payout['betPayout'];
         $bet->winnings_processed_at = now();
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} Bet Amount = {$bet->bet_amount} Payout :: ", $payout);
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Current balance is {$bet->user->balanceFloat}");
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} Won and will receive {$bet->payout}");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$player->id} {$player->name} Current balance is $currentBalance");
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$player->id} {$player->name} Won and will receive {$bet->payout}");
 
-        $transaction = $bet->user->depositFloat($payout['betPayout'], [
+        $transaction = $playerWallet->depositFloat($payout['betPayout'], [
             'betting_round_id' => $bettingRound->id,
+            'previous_balance' => $currentBalance,
             'bet_id' => $bet->id,
             'type' => 'win'
         ]);
         $bet->gain_loss = $payout['betPayout'];
         $bet->save();
         $bet->refresh();
-        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$bet->user->id} {$bet->user->name} New balance is now {$bet->user->balanceFloat}");
+        $playerWallet->refreshBalance();
+        logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$player->id} {$player->name} New balance is now {$playerWallet->balanceFloat}");
         activity('player')
-            ->causedBy($bet)
-            ->performedOn($bet->user)
-            ->withProperties(['bet' => $bet->id, 'betAmount' => $bet->bet_amount,'payout' => $payout, 'balance' => $bet->user->balanceFloat])
-            ->log("Player#{$bet->user->id} won {$payout['betPayout']} in Betting Round #$bettingRound->id. New Balance is {$bet->user->balanceFloat}");
+            ->causedBy($bettingRound)
+            ->performedOn($player)
+            ->withProperties(['bet' => $bet->id, 'betAmount' => $bet->bet_amount,'payout' => $payout, 'previous_balance' => $currentBalance, 'new_balance' => $player->balanceFloat])
+            ->log("Player#{$player->id} {$player->name} with balance of $currentBalance won {$payout['betPayout']} in Betting Round #$bettingRound->id. New Balance is {$player->balanceFloat}");
         return $transaction;
     }
 }

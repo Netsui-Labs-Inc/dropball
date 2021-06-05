@@ -66,7 +66,8 @@ class ProcessOtherCommissionsJob implements ShouldQueue
             DB::beginTransaction();
             logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator current balance is : {$operatorWallet->balanceFloat}");
             $operatorWallet->refreshBalance();
-            $operatorWallet->depositFloat($remainingMoney, ['betting_round_id' => $bettingRound->id]);
+            $currentBalance = $operatorWallet->balanceFloat;
+            $operatorWallet->depositFloat($remainingMoney, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance]);
             logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Operator new balance is : {$operatorWallet->balanceFloat}");
 
             activity('commissions')
@@ -76,9 +77,10 @@ class ProcessOtherCommissionsJob implements ShouldQueue
                     'bettingRound' => $bettingRound->id,
                     'commission' => $remainingMoney,
                     'payouts' => $bettingRound->payouts,
-                    'balance' => $operatorWallet->balanceFloat
+                    'previous_balance' => $currentBalance,
+                    'new_balance' => $operatorWallet->balanceFloat,
                 ])
-                ->log("Operator #{$operator->id} received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
+                ->log("Operator #{$operator->id} with balance of $currentBalance received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
             $this->fail($e);

@@ -47,7 +47,8 @@ trait WalletAndCommission
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers Current Balance is {$developerWallet->balanceFloat}");
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id}  Bet#{$bet->id}  Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
             $developerWallet->refreshBalance();
-            $developerWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id]);
+            $currentBalance = $developerWallet->balanceFloat;
+            $developerWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id, 'previous_balance' => $currentBalance]);
 
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers New Balance is {$developerWallet->balanceFloat}");
             $rate = BigDecimal::of($rate * 100)->toFloat();
@@ -55,9 +56,9 @@ trait WalletAndCommission
             $this->createCommission($bet, $developer, 'system', $commission, $rate);
             activity('commissions')
                 ->performedOn($developer)
-                ->causedBy($bet)
+                ->causedBy($bettingRound)
                 ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $developerWallet->balanceFloat])
-                ->log("Developer #{$developer->id} received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
+                ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();

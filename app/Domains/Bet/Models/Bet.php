@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property int $id
- * @property User $user
+ * @property User|WalletFloat $user
  * @property int $user_id,
  * @property int $betting_round_id
  * @property int $bet

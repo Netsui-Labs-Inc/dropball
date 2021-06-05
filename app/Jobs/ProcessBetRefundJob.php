@@ -69,8 +69,9 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
     public function processRefund(Bet $bet)
     {
         $bet->refresh();
+        $player = $bet->user;
         if ($bet->refund_processed_at ||
-            $bet->user->transactions()
+            $player->transactions()
                 ->where('meta->betting_round_id', $bet->bettingRound->id)
                 ->where('meta->bet_id', $bet->id)
                 ->where('meta->type', 'refund')
@@ -81,15 +82,25 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
         }
 
         $bettingRound = $bet->bettingRound;
-        logger("BettingRound#{$bettingRound->id} Bet#$bet->id Refunding {$bet->bet_amount} to Player#{$bet->user->id} with current balance of {$bet->user->balanceFloat}");
-        //TransferToWalletJob::dispatch($bet, $bet->user, $bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'type' => 'refund', 'refund' => true, 'bet_id' => $bet->id])->onQueue('commissions');
-        $bet->user->depositFloat($bet->bet_amount, ['betting_round_id' => $bettingRound->id, 'type' => 'refund', 'refund' => true, 'bet_id' => $bet->id]);
+        $player->refreshBalance();
+        $currentBalance = $player->balanceFloat;
+
+        logger("BettingRound#{$bettingRound->id} Bet#$bet->id Refunding {$bet->bet_amount} to Player#{$player->id} with current balance of {$currentBalance}");
+        $player->depositFloat($bet->bet_amount, [
+            'betting_round_id' => $bettingRound->id,
+            'previous_balance' => $currentBalance,
+            'type' => 'refund',
+            'refund' => true,
+            'bet_id' => $bet->id
+        ]);
         $bet->refund_processed_at = now();
         $bet->save();
+        $player->refreshBalance();
 
         activity('player')
-            ->performedOn($bet->user)
-            ->withProperties(['bet' => $bet->id, 'balance' => $bet->user->balanceFloat, 'bettinground' => $bettingRound->id, 'amount' => $bet->bet_amount])
-            ->log("Player#{$bet->user->id} will received a refund of {$bet->bet_amount}");
+            ->causedBy($bettingRound)
+            ->performedOn($player)
+            ->withProperties(['bet' => $bet->id, 'previous_balance' => $currentBalance, 'new_balance' => $player->balanceFloat, 'bettinground' => $bettingRound->id, 'amount' => $bet->bet_amount])
+            ->log("Player#{$player->id} with balance of $currentBalance received a refund of {$bet->bet_amount} from Betting Round #$bettingRound->id");
     }
 }
