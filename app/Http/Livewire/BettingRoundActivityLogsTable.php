@@ -60,11 +60,11 @@ class BettingRoundActivityLogsTable extends DataTableComponent
                 ->sortable(),
             Column::make(__('Previous Balance'), 'properties')
                 ->format(function ($value, $column, Activity $row) {
-                    return number_format($row->properties['previous_balance'] ?? 0);
+                    return number_format($row->properties['previous_balance'] ?? 0, 2);
                 })->asHtml(),
             Column::make(__('New Balance'), 'properties')
                 ->format(function ($value, $column, Activity $row) {
-                    return number_format($row->properties['new_balance'] ?? 0);
+                    return number_format($row->properties['new_balance'] ?? 0, 2);
                 })->asHtml(),
             Column::make(__('Datetime'), 'created_at')
                 ->searchable()
