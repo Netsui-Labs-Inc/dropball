@@ -49,7 +49,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping("operator-".$this->operator->id))->releaseAfter(30)];
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-operator-".$this->operator->id))->dontRelease()];
     }
 
     public function uniqueVia()
