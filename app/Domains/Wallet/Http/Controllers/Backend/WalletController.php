@@ -53,10 +53,10 @@ class WalletController extends \App\Http\Controllers\Controller
         }
 
         if ($user->hasRole('Master Agent')) {
-            $user->withdrawFloat($transaction->amountFloat * -1, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
+            $user->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
         } elseif ($user->hasRole('Virtual Hub')) {
             $hub = Hub::where('admin_id', $user->id)->first();
-            $hub->withdrawFloat($transaction->amountFloat * -1, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
+            $hub->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
         }
 
         return redirect()->back()->withFlashSuccess("Request confirmed");
