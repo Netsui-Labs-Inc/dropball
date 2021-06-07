@@ -24,7 +24,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public Bet $bet;
     public $isSubAgent = false;
-    public User $masterAgent;
+    public ?User $masterAgent;
 
     public $tries = 25;
 
@@ -54,7 +54,9 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$this->masterAgent->id))->dontRelease()];
+        $agentId =$this->masterAgent->id ?? 0;
+
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$agentId))->dontRelease()];
     }
     /**
      * The unique ID of the job.
@@ -63,7 +65,8 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "master-agent-".$this->masterAgent->id;
+        $agentId =$this->masterAgent->id ?? 0;
+        return "master-agent-".$agentId;
     }
 
     public function uniqueVia()
