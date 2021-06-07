@@ -40,7 +40,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 
         $this->isSubAgent = $isSubAgent;
 
-        if($this->isSubAgent && $masterAgent->masterAgent) {
+        if($this->isSubAgent) {
             $this->masterAgent = $masterAgent->masterAgent;
         } else {
             $this->masterAgent = $masterAgent;
@@ -79,7 +79,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             return;
         }
 
-        if($this->isSubAgent && $masterAgent->masterAgent) {
+        if($this->isSubAgent) {
             $this->subAgent();
         } else {
             $this->masterAgent();
@@ -124,8 +124,11 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     public function subAgent()
     {
         $player = $this->bet->user;
-        $subAgent = $player->masterAgent;
-        $masterAgent = $this->masterAgent;
+        $masterAgent = $player->masterAgent;
+        if(!$masterAgent->masterAgent) {
+            return;
+        }
+        $parentAgent = $masterAgent->masterAgent;
         $bettingRound = $this->bet->bettingRound;
         $bet = $this->bet;
         $rate = BigDecimal::of(0.0025 )->toFloat();
@@ -133,20 +136,20 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
         try {
             DB::beginTransaction();
-            logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$subAgent->id}");
-            $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-            $masterAgentWallet->refreshBalance();
-            $currentBalance = $masterAgentWallet->balanceFloat();
-            $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
+            logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$masterAgent->id}");
+            $parentAgentWallet = $this->getWallet($parentAgent, 'Income Wallet');
+            $parentAgentWallet->refreshBalance();
+            $currentBalance = $parentAgentWallet->balanceFloat();
+            $parentAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
-            $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $subAgent->id]);
+            $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $masterAgent->id]);
 
             activity('agent referral commissions')
                 ->performedOn($masterAgent)
                 ->causedBy($bettingRound)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $subAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $masterAgentWallet->balanceFloat])
-                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission from his Sub Agent#{$subAgent->nanme}. New Balance is {$masterAgentWallet->balanceFloat}");
+                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $masterAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $parentAgentWallet->balanceFloat])
+                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission from his Sub Agent#{$masterAgent->nanme}. New Balance is {$parentAgentWallet->balanceFloat}");
 
             DB::commit();
         } catch (\Exception $exception) {

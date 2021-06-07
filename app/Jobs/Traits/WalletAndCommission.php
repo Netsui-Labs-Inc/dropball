@@ -57,7 +57,7 @@ trait WalletAndCommission
             activity('developer commissions')
                 ->performedOn($developer)
                 ->causedBy($bettingRound)
-                ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'balance' => $developerWallet->balanceFloat])
+                ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $developerWallet->balanceFloat])
                 ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
