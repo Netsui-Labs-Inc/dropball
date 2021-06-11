@@ -27,7 +27,7 @@
     icon="fas fa-chart-bar"
     name="view-activity-logs"
 >
-    @lang('logs')
+    @lang('Logs')
 </x-utils.form-button>
 @endcan
 @endif
