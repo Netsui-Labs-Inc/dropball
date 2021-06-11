@@ -51,7 +51,7 @@ class HubsTable extends DataTableComponent
                 ->format(function ($value, $column, Hub $row) {
                     return $row->name;
                 })->asHtml(),
-            Column::make(__('Admin'), 'admin')
+            Column::make(__('Admin'), 'admin_id')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Hub $row) {
