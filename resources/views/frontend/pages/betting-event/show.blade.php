@@ -7,9 +7,6 @@
         <div class="row justify-content-center">
             <div class="col-lg-12 col-xl-7 col-xxl-7 col-md-12 col-sm-12 p-0 p-md-2">
                 <x-frontend.card bodyClass="bg-gradient-gray-dark p-0"  headerClass="bg-gradient-gray-dark">
-                    <x-slot name="header">
-                        <livewire:frontend.video-header :bettingEventId="$bettingEvent->id"></livewire:frontend.video-header>
-                    </x-slot>
                     <x-slot name="body">
                         @if($bettingEvent->stream_url)
                         <iframe src="{{$bettingEvent->stream_url}}" frameborder="0" allowfullscreen
