@@ -16,7 +16,11 @@
                 </div>
             </x-slot>
             <x-slot name="body">
-                <h2 class="text-muted">{{ $bettingRound->betOption->name ?? 'N/A' }}</h2>
+                @if($bettingRound->status == 'cancelled')
+                    <h2 class="text-muted">@lang('Cancelled')</h2>
+                @else
+                    <h2 class="text-muted">{{ $bettingRound->betOption->name ?? 'N/A' }}</h2>
+                @endif
             </x-slot>
         </x-backend.card>
     </div>

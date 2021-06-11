@@ -7,8 +7,9 @@
 >
     @lang('View')
 </x-utils.form-button>
-@if($bettingRound->status == 'ended')
+@if(in_array($bettingRound->status,['ended','cancelled']))
 @can('admin.access.betting-rounds.report')
+@if($bettingRound->status == 'ended')
 <x-utils.form-button
     :action="route('admin.betting-events.betting-rounds.report', [$bettingRound->bettingEvent, $bettingRound])"
     method="get"
@@ -18,6 +19,7 @@
 >
     @lang('Report')
 </x-utils.form-button>
+@endif
 <x-utils.form-button
     :action="route('admin.betting-events.betting-rounds.activity-logs', [$bettingRound->bettingEvent, $bettingRound, 'sorts' => ['log_name' => 'desc']])"
     method="get"
