@@ -103,8 +103,8 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         try {
             DB::beginTransaction();
             logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
+            $masterAgent->refresh();
             $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
-            $masterAgentWallet->refreshBalance();
             $currentBalance = $masterAgentWallet->balanceFloat;
             $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
@@ -141,7 +141,6 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::beginTransaction();
             logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$masterAgent->id}");
             $parentAgentWallet = $this->getWallet($parentAgent, 'Income Wallet');
-            $parentAgentWallet->refreshBalance();
             $currentBalance = $parentAgentWallet->balanceFloat();
             $parentAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();

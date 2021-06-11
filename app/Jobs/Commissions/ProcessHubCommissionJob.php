@@ -72,15 +72,14 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         try {
             DB::beginTransaction();;
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name} will receive $percentage%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}");
+            $hub->refresh();
             $hubWallet = $this->getWallet($hub, 'Income Wallet');
-            $hubWallet->refreshBalance();
             $currentBalance = $hubWallet->balanceFloat;
             $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name}  new balance {$hubWallet->balanceFloat}");
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
-            $hubWallet->refreshBalance();
             activity('hub commissions')
                 ->performedOn($hub)
                 ->causedBy($bettingRound)

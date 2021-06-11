@@ -82,8 +82,8 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
         }
 
         $bettingRound = $bet->bettingRound;
+        $player->refresh();
         $playerWallet = $player->getWallet(config('wallet.wallet.default.slug'));
-        $playerWallet->refreshBalance();
         $currentBalance = $playerWallet->balanceFloat;
 
         logger("BettingRound#{$bettingRound->id} Bet#$bet->id Refunding {$bet->bet_amount} to Player#{$player->id} with current balance of {$currentBalance}");
@@ -96,12 +96,11 @@ class ProcessBetRefundJob implements ShouldQueue, ShouldBeUnique
         ]);
         $bet->refund_processed_at = now();
         $bet->save();
-        $playerWallet->refreshBalance();
 
         activity('player')
             ->causedBy($bettingRound)
             ->performedOn($player)
             ->withProperties(['bet' => $bet->id, 'previous_balance' => $currentBalance, 'new_balance' => $playerWallet->balanceFloat, 'bettinground' => $bettingRound->id, 'amount' => $bet->bet_amount])
-            ->log("Player#{$player->id} with balance of $currentBalance received a refund of {$bet->bet_amount} from Betting Round #$bettingRound->id");
+            ->log("Player#{$player->id} {$player->name} with balance of $currentBalance received a refund of {$bet->bet_amount} from Betting Round #$bettingRound->id");
     }
 }

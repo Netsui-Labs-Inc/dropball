@@ -96,8 +96,8 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         }
 
         $bettingRound = $bet->bettingRound;
+        $player->refresh();
         $playerWallet = $player->getWallet(config('wallet.wallet.default.slug'));
-        $playerWallet->refreshBalance();
         $currentBalance = $playerWallet->balanceFloat;
 
         $payout = (new CalculateOddsAction)($bettingRound, $bet);
@@ -116,7 +116,7 @@ class ProcessPlayerWinningsJob implements ShouldQueue
         $bet->gain_loss = $payout['betPayout'];
         $bet->save();
         $bet->refresh();
-        $playerWallet->refreshBalance();
+
         logger("BettingRound#{$bettingRound->id} Bet#{$bet->id} User#{$player->id} {$player->name} New balance is now {$playerWallet->balanceFloat}");
         activity('player winnings')
             ->causedBy($bettingRound)

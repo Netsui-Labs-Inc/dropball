@@ -41,12 +41,12 @@ trait WalletAndCommission
         $rate = 0.01;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
-        $developerWallet = $this->getWallet($developer, 'Income Wallet');
         try {
             DB::beginTransaction();;
+            $developer->refresh();
+            $developerWallet = $this->getWallet($developer, 'Income Wallet');
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers Current Balance is {$developerWallet->balanceFloat}");
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id}  Bet#{$bet->id}  Developers will receive 1%($commission) commission  from Player#{$bet->user->id} bet of {$bet->bet_amount}");
-            $developerWallet->refreshBalance();
             $currentBalance = $developerWallet->balanceFloat;
             $developerWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id, 'previous_balance' => $currentBalance]);
 

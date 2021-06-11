@@ -75,7 +75,6 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         try {
             DB::beginTransaction();
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
-            $operatorWallet->refreshBalance();
             $currentBalance = $operatorWallet->balanceFloat;
             $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
