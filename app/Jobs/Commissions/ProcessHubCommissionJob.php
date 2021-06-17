@@ -2,13 +2,9 @@
 
 namespace App\Jobs\Commissions;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
-use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\Hub\Models\Hub;
 use App\Jobs\Traits\WalletAndCommission;
-use App\Jobs\TransferToWalletJob;
-use App\Models\Company;
 use Brick\Math\BigDecimal;
 use DB;
 use Illuminate\Bus\Batchable;
@@ -20,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Cache;
+
 class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -49,7 +46,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->masterAgent->hub->id))->dontRelease()];
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->masterAgent->hub->id))->releaseAfter(2)];
     }
 
     public function uniqueVia()
@@ -88,6 +85,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
 
             DB::commit();
         } catch (\Exception $e) {
+            \Sentry::captureLastError();
             DB::rollBack();
         }
 

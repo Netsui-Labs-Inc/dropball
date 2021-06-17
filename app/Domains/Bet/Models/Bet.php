@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Bet
+ *
  * @package App\Domains\Bet\Models
  * @property BettingRound $bettingRound
  * @property Carbon $created_at
@@ -31,6 +32,56 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $payout
  * @property string $winnings_processed_at
  * @property string $refund_processed_at
+ * @property string $uuid
+ * @property int $user_id
+ * @property int|null $agent_id
+ * @property float|null $gain_loss
+ * @property bool|null $commission_processed
+ * @property int|null $other_commissions
+ * @property string|null $note
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read User|null $agent
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Domains\Bet\Models\BetCommission[] $commissions
+ * @property-read int|null $commissions_count
+ * @property-read int|float|string $balance
+ * @property-read int|float|string $balance_float
+ * @property-read \App\Domains\Bet\Models\BetOption $option
+ * @property-read BettingRound $play
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bavix\Wallet\Models\Transaction[] $transactions
+ * @property-read int|null $transactions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bavix\Wallet\Models\Transfer[] $transfers
+ * @property-read int|null $transfers_count
+ * @property-read \Bavix\Wallet\Models\Wallet $wallet
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Bavix\Wallet\Models\Wallet[] $wallets
+ * @property-read int|null $wallets_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet betType($type)
+ * @method static \Database\Factories\BetFactory factory(...$parameters)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet newQuery()
+ * @method static \Illuminate\Database\Query\Builder|Bet onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet uuid($uuid)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereAgentId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereBet($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereBetAmount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereBettingRoundId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereCommissionProcessed($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereGainLoss($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereOtherCommissions($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet wherePayout($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereRefundProcessedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereUuid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Bet whereWinningsProcessedAt($value)
+ * @method static \Illuminate\Database\Query\Builder|Bet withTrashed()
+ * @method static \Illuminate\Database\Query\Builder|Bet withoutTrashed()
+ * @mixin \Eloquent
  */
 class Bet extends Model implements Wallet, WalletFloat
 {
