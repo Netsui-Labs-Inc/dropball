@@ -74,9 +74,9 @@ class BettingRoundResultListener
                 Bus::chain([
                     new ProcessMasterAgentCommissionJob($bet),
                     new ProcessMasterAgentCommissionJob($bet, true),
-                    new ProcessHubCommissionJob($bet),
                     new ProcessDeveloperCommissionJob($bet),
-                    new ProcessOperatorCommissionJob($bet)
+                    new ProcessOperatorCommissionJob($bet),
+                    new ProcessHubCommissionJob($bet),
                 ])->catch(function(\Exception $e) {
                     logger($e->getMessage());
                     \Sentry::captureException($e);

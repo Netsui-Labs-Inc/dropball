@@ -41,12 +41,12 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "hub-".$this->bet->user->masterAgent->hub->id;
+        return "hub-".$this->bet->user->hub_id;
     }
 
     public function middleware()
     {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->masterAgent->hub->id))->releaseAfter(2)];
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->hub->id))->releaseAfter(2)];
     }
 
     public function uniqueVia()
@@ -60,7 +60,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
         /** @var Hub $hub */
-        $hub = $masterAgent->hub;
+        $hub = $player->hub;
         $bettingRound = $bet->bettingRound;
         $percentage = (3 - $masterAgent->commission_rate);
         $rate = ($percentage / 100) ?? 0.01;
