@@ -68,21 +68,19 @@ class BettingRoundResultListener
     public function processCommissions(BettingRound $bettingRound)
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
-        $bettingRound->bets()->chunk(300, function ($bets, $batch) use ($bettingRound) {
-            logger("BettingRound#{$bettingRound->id} Processing Commissions Batch #$batch");
-            foreach ($bets as $bet) {
-                Bus::chain([
-                    new ProcessMasterAgentCommissionJob($bet),
-                    new ProcessMasterAgentCommissionJob($bet, true),
-                    new ProcessDeveloperCommissionJob($bet),
-                    new ProcessOperatorCommissionJob($bet),
-                    new ProcessHubCommissionJob($bet),
-                ])->catch(function(\Exception $e) {
-                    logger($e->getMessage());
-                    \Sentry::captureException($e);
-                })->onQueue('commissions')->dispatch();
-            }
-        });
+        foreach ($bettingRound->bets as $bet) {
+            Bus::batch([
+                new ProcessMasterAgentCommissionJob($bet),
+                new ProcessMasterAgentCommissionJob($bet, true),
+                new ProcessDeveloperCommissionJob($bet),
+                new ProcessOperatorCommissionJob($bet),
+                new ProcessHubCommissionJob($bet),
+            ])->then(function (Batch $batch) use ($bet) {
+                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
+            })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
+                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
+            })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
+        }
     }
 
     public function refund($bettingRound)

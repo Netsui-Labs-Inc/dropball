@@ -74,26 +74,23 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
 
         try {
             DB::beginTransaction();
-            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}");
             $currentBalance = $operatorWallet->balanceFloat;
             $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
             $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
-            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Transferring amount of {$operatorWallet->balanceFloat} to Operator");
-
+            $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat];
+            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}", $properties);
             activity('operator commissions')
                 ->performedOn($operator)
                 ->causedBy($bet->bettingRound)
-                ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat])
+                ->withProperties($properties)
                 ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
-
             DB::commit();
         } catch (\Exception $e) {
             logger("ProcessOperatorCommissionJob.error ".$e->getMessage());
             DB::rollBack();
         }
-//
 
         return $operator;
     }

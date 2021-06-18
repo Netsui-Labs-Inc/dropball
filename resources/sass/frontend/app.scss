@@ -42,3 +42,7 @@
 .vertical-scrollable {
     max-height: 3rem;
 }
+
+[x-cloak] {
+    display: none !important;
+}

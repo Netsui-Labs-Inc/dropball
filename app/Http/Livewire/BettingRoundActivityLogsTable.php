@@ -2,11 +2,13 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Filter;
 use Spatie\Activitylog\Models\Activity;
 
 class BettingRoundActivityLogsTable extends DataTableComponent
@@ -24,6 +26,13 @@ class BettingRoundActivityLogsTable extends DataTableComponent
     public $user;
 
     /**
+     * @var array|string[]
+     */
+    public array $filterNames = [
+        'type' => 'Type',
+    ];
+
+    /**
      * @param BettingRound $bettingRound
      */
     public function mount($bettingRound = null, $bet = null, $user = null): void
@@ -38,7 +47,27 @@ class BettingRoundActivityLogsTable extends DataTableComponent
      */
     public function query(): Builder
     {
-        return $this->bettingRound->activityLogs()->getQuery();
+        return $this->bettingRound->activityLogs()->getQuery()
+            ->when($this->getFilter('type'), fn ($query, $type) => $query->where('log_name', $type));
+    }
+
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        return [
+            'type' => Filter::make('Type')
+                ->select([
+                    '' => 'All',
+                    'player winnings' => 'Player Winnings',
+                    'agent commissions' => 'Agent Commissions',
+                    'hub commissions' => 'Hub Commissions',
+                    'operator commissions' => 'Operator Commissions',
+                    'developer commissions' => 'Developer Commissions',
+                    'other commissions' => 'Other Commissions',
+                ]),
+        ];
     }
 
     /**
@@ -72,7 +101,6 @@ class BettingRoundActivityLogsTable extends DataTableComponent
                 ->format(function ($value, $column, Activity $row) {
                     return $row->created_at->setTimezone(auth()->user()->timezone)->toDateTimeString();
                 })->asHtml(),
-
         ];
     }
 }

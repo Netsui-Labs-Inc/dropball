@@ -56,7 +56,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     {
         $agentId =$this->masterAgent->id ?? 0;
 
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$agentId))->dontRelease()];
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$agentId))->releaseAfter(1)];
     }
     /**
      * The unique ID of the job.

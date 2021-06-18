@@ -18,8 +18,10 @@ class BetFactory extends Factory
         return [
             'betting_round_id' => BettingRound::factory(),
             'user_id' => function () {
+                $masterAgent = User::role('Master Agent')->inRandomOrder()->first();
                 return User::factory()->player()->withWallet()->create([
-                    'referred_by' => User::role('Master Agent')->inRandomOrder()->first()->id,
+                    'referred_by' => $masterAgent->id,
+                    'hub_id' => $masterAgent->hub_id
                 ])->id;
             },
             'bet' => $this->faker->randomElement([1,2]),
