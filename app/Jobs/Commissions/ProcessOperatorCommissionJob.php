@@ -89,6 +89,7 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::commit();
         } catch (\Exception $e) {
             logger("ProcessOperatorCommissionJob.error ".$e->getMessage());
+            \Sentry::captureLastError();
             DB::rollBack();
         }
 

@@ -176,12 +176,13 @@ class UserService extends BaseService
                 'type' => $user->isMasterAdmin() ? $this->model::TYPE_ADMIN : $data['type'] ?? $user->type,
                 'name' => $data['name'],
                 'email' => $data['email'],
+                'mobile' => $data['mobile'],
                 'commission_rate' => $data['commission_rate'] ?? null,
                 'hub_id' => $data['hub_id'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
-                'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : null,
-                'active' => isset($data['active']) && $data['active'] === '1',
+                'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : $user->email_verified_at,
+                'active' => isset($data['active']) ? $data['active'] === '1' : $user->active,
             ]);
 
             if (! $user->isMasterAdmin()) {

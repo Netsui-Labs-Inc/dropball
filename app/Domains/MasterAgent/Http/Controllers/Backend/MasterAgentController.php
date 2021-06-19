@@ -103,7 +103,7 @@ class MasterAgentController extends Controller
     {
         $user = $request->user();
         $input = $request->validated();
-        if ($request->has('email_verified')) {
+        if ($request->has('email_verified') || $masterAgent->email_verified_at) {
             $input['active'] = "1";
         }
         $input['type'] = 'admin';

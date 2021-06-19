@@ -59,6 +59,7 @@ trait WalletAndCommission
                 ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
+            \Sentry::captureLastError();
             DB::rollBack();
         }
     }

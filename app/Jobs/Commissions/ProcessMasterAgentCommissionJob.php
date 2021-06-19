@@ -119,6 +119,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::commit();
         } catch (\Exception $exception) {
             logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ".$exception->getMessage());
+            \Sentry::captureLastError();
             DB::rollBack();
         }
 
@@ -156,6 +157,8 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
+            \Sentry::captureLastError();
+
             logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ".$exception->getMessage());
         }
     }
@@ -169,6 +172,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     public function failed(\Throwable $exception)
     {
         // Send user notification of failure, etc...
+        \Sentry::captureLastError();
         logger("ProcessAgentCommissionJob ERROR :: Bet#".$this->bet->id." ".$exception->getMessage());
     }
 
