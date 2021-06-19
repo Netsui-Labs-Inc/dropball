@@ -154,5 +154,5 @@ Route::group(['as' => 'auth.', 'middleware' => 'auth'], function () {
         });
 
     Route::patch('my-account', [MyAccountController::class, 'update'])->name('my-account.update');
-    Route::post('my-account/password', [MyAccountController::class, 'changePassword'])->name('my-account.password.change');
+    Route::match(['PUT','PATCH', 'POST'],'my-account/password', [MyAccountController::class, 'changePassword'])->name('my-account.password.change');
 });
