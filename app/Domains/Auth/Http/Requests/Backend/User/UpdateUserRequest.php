@@ -37,6 +37,7 @@ class UpdateUserRequest extends FormRequest
             'timezone' => ['required', 'max:100'],
             'referral_id' => ['sometimes', 'max:100'],
             'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($this->user->id)],
+            'mobile' => ['required', 'max:100', Rule::unique('users')->ignore($this->user->id)],
             'roles' => ['sometimes', 'array'],
             'roles.*' => [Rule::exists('roles', 'id')->where('type', $this->type)],
             'email_verified' => ['sometimes', 'in:1'],

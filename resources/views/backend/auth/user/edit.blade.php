@@ -45,6 +45,13 @@
                             <input type="email" name="email" id="email" class="form-control" placeholder="{{ __('E-mail Address') }}" value="{{ old('email') ?? $user->email }}" maxlength="255" required />
                         </div>
                     </div>
+                    <div class="form-group row">
+                        <label for="mobile" class="col-md-2 col-form-label">@lang('Mobile Number')</label>
+
+                        <div class="col-md-10">
+                            <input type="text" name="mobile" class="form-control" placeholder="{{ __('Mobile Number') }}" value="{{  $user->mobile ?? old('mobile') }}" maxlength="255" required />
+                        </div>
+                    </div><!--form-group-->
                     <!--form-group-->
                     <div class="form-group row">
                         <label for="name" class="col-md-2 col-form-label">@lang('Timezone')</label>

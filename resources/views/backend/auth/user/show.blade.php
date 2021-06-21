@@ -33,6 +33,10 @@
                     <th>@lang('E-mail Address')</th>
                     <td>{{ $user->email }}</td>
                 </tr>
+                <tr>
+                    <th>@lang('Mobile')</th>
+                    <td>{{ $user->mobile }}</td>
+                </tr>
 
                 <tr>
                     <th>@lang('Status')</th>
