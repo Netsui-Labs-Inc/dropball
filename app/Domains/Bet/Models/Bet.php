@@ -33,7 +33,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $winnings_processed_at
  * @property string $refund_processed_at
  * @property string $uuid
- * @property int $user_id
  * @property int|null $agent_id
  * @property float|null $gain_loss
  * @property bool|null $commission_processed
@@ -122,6 +121,7 @@ class Bet extends Model implements Wallet, WalletFloat
     const PULA = 1;
     const PUTI = 2;
     const BOKYA = 3;
+    const JACKPOT = 4;
     const RESULT = [
         1 => 'pula',
         2 => 'puti',

@@ -102,6 +102,8 @@ class PlaceBetService
             DB::commit();
 
         } catch ( \Exception $e) {
+            logger($e->getMessage());
+            \Sentry::captureLastError();
             DB::rollBack();
         }
 
