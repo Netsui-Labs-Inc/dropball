@@ -26,7 +26,7 @@ class CalculateOddsAction
         } elseif ($bet && $bet->bet === Bet::PULA) {
             $betPayout = (floor($pulaPayout * 100) * $bet->bet_amount) / 100;
         } elseif ($bet && $bet->bet === Bet::JACKPOT) {
-            $betPayout = $bet->bet_amount * 4;
+            $betPayout = $bet->bet_amount * 5;
         } else {
             $betPayout = 0;
         }

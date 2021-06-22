@@ -23,7 +23,7 @@
                 @if($userBet)
                     <span class="text-green-400 opacity-50">
                     @if($userBet->bet == 4)
-                        +{{number_format($userBet->bet_amount * 4)}}
+                        +{{number_format($userBet->bet_amount * 5)}}
                     @else
                         +{{number_format($payouts['betPayout'])}}
                     @endif
@@ -88,7 +88,7 @@
     <div class="flex my-2 xl:my-3 md:my-3 lg:my-3">
         <div class="flex-auto text-center w-full">
             <p class="uppercase text-sm font-semibold leading-normal text-gray-50">
-                Payout <span class="text-yellow-500 font-semibold">400%</span>
+                Payout <span class="text-yellow-500 font-semibold">500%</span>
             </p>
         </div>
     </div>
