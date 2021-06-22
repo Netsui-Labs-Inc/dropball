@@ -4,26 +4,31 @@
 
 @section('content')
 <div class="row">
-    <div class="col-md-5 col-sm-6 col-12">
-        <x-backend.card headerClass="bg-primary">
+    <div class="col-12">
+        <x-backend.card headerClass="bg-primary" bodyClass="p-0 m-0">
             <x-slot name="header">
                 <div class="row align-items-center">
                     <div class="col">
                         <h3 class="h3 text-white mb-0">
-                            @lang('Betting Round Status')
+                           Betting Round #{{$bettingRound->queue}} | {!!$bettingRound->statusLabel()!!}
                         </h3>
                     </div>
                 </div>
             </x-slot>
             <x-slot name="body">
-                <div class="row">
-                    <div class="col-12 col-md-4 h1 text-center">#{{$bettingRound->queue}}</div>
-                    <div class="col-12 col-md-8 h1 text-center">{!!$bettingRound->statusLabel()!!}</div>
-                </div>
+                @if($bettingEvent->stream_url)
+                    <iframe src="{{$bettingEvent->stream_url}}&autoplay=true"
+                            javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));
+                            style="height:59vh;width:100%;border:none;overflow:hidden;"
+                            allow="autoplay; picture-in-picture"
+                            frameborder="0"></iframe>
+                @else
+                    <h2 class="text-gray text-center">No Stream Found</h2>
+                @endif
             </x-slot>
         </x-backend.card>
     </div>
-    <div class="col-12 col-md-7 col-sm-6">
+    <div class="col-12">
         <x-backend.card headerClass="bg-primary">
             <x-slot name="header">
                 <div class="row align-items-center">
@@ -42,7 +47,7 @@
                             <div class="col-6 h1 text-center">
                                 {!! $bettingRound->resultLabel() !!}
                             </div>
-                            <div class="col-3 h1">
+                            <div class="col-3 h2">
                                 <x-utils.form-button
                                     :action="route('admin.betting-events.betting-rounds.report', [$bettingRound->bettingEvent, $bettingRound])"
                                     method="get"
@@ -53,7 +58,7 @@
                                     @lang('View report')
                                 </x-utils.form-button>
                             </div>
-                            <div class="col-3 h1">
+                            <div class="col-3 h2">
                                 <x-utils.form-button
                                     :action="route('admin.betting-events.betting-rounds.activity-logs', [$bettingRound->bettingEvent, $bettingRound, 'sorts' => ['log_name' => 'desc']])"
                                     method="get"
@@ -68,6 +73,22 @@
 
                     @endif
                 @endcan
+            </x-slot>
+        </x-backend.card>
+    </div>
+    <div class="col-12">
+        <x-backend.card headerClass="bg-primary">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="h3 text-white mb-0">
+                            @lang('Pool Money')
+                        </h3>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <livewire:betting-round-pool-money :bettingRoundId="$bettingRound->id" />
             </x-slot>
         </x-backend.card>
     </div>

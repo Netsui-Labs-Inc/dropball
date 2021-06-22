@@ -10,7 +10,8 @@
                     <x-slot name="body">
                         @if($bettingEvent->stream_url)
                         <iframe src="{{$bettingEvent->stream_url}}" frameborder="0" allowfullscreen
-                                onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));' style="height:59vh;width:100%;border:none;overflow:hidden;"
+                                onload='javascript:(function(o){o.style.height=o.contentWindow.document.body.scrollHeight+"px";}(this));'
+                                style="height:59vh;width:100%;border:none;overflow:hidden;"
                         ></iframe>
                         @else
                             <h2 class="text-white text-center" style="height:59vh;width:100%;">No Stream Found</h2>
