@@ -67,7 +67,7 @@
     @endif
     @if($bettingRound->status == 'ongoing')
         @foreach ($bettingOptions as $option)
-            <div class="col-12 col-md-4 p-2">
+            <div class="col-12 col-md-3 p-2">
             <x-utils.form-button
                 :action="route('admin.betting-rounds.results', $bettingRound)"
                 method="post"
@@ -85,7 +85,7 @@
             </x-utils.form-button>
             </div>
         @endforeach
-            <div class="col-12 col-md-4 p-2">
+            <div class="col-12 col-md-3 p-2">
                 <x-utils.form-button
                 :action="route('admin.betting-rounds.cancel', $bettingRound)"
                 method="post"

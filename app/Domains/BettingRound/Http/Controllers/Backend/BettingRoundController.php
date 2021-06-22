@@ -3,6 +3,7 @@
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
 use App\Domains\Bet\Actions\CalculateOddsAction;
+use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -12,6 +13,7 @@ use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use Faker\Factory;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class BettingRoundController extends Controller
 {
@@ -139,6 +141,10 @@ class BettingRoundController extends Controller
 
     public function setResult(BettingRound $bettingRound, Request $request)
     {
+        if($request->get('result') == Bet::JACKPOT) {
+            $this->validateJackpot($bettingRound);
+        }
+
         $bettingRound->result = $request->get('result');
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
@@ -151,6 +157,19 @@ class BettingRoundController extends Controller
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
+    }
+
+    private function validateJackpot(BettingRound $bettingRound)
+    {
+        $totalPuti = $bettingRound->totalBetType(Bet::PUTI);
+        $totalPula = $bettingRound->totalBetType(Bet::PULA);
+        $totalJackpot = $bettingRound->totalBetType(Bet::JACKPOT);
+
+        if($totalJackpot * 5 > ($totalPula + $totalPuti)) {
+            throw new GeneralException("Jackpot Payout is greater than the PULA + PUTI pool money. You must cancel this round");
+        }
+        return true;
+
     }
 
     public function setMixer(BettingRound $bettingRound)

@@ -12,7 +12,11 @@
         <div class="h4 text-gray text-danger">{{number_format($pula)}}</div>
     </div>
    <div class="col">
-        <span class="h6 surtitle">JACKPOT</span>
+       @if($jackpot * 5 <  $pula + $puti)
+           <span class="h6 surtitle font-weight-bold text-success"> <i class="fa fa-check"></i> JACKPOT</span>
+       @else
+           <span class="h6 surtitle font-weight-bold text-muted"> <i class="fa fa-muted"></i> JACKPOT</span>
+       @endif
         <div class="h4 text-warning">{{number_format($jackpot)}}</div>
     </div>
     <div class="col">
