@@ -16,6 +16,7 @@ class BettingRoundFactory extends Factory
         return [
             'betting_event_id' => BettingEvent::factory(),
             'is_betting_open' => false,
+            'queue' => 1,
             'status' => 'upcoming',
         ];
     }

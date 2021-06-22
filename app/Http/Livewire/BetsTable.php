@@ -7,6 +7,7 @@ use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Filter;
 
 class BetsTable extends DataTableComponent
 {
@@ -54,7 +55,23 @@ class BetsTable extends DataTableComponent
             $query->where('user_id', $this->user->id);
         }
 
-        return $query;
+        return $query->when($this->getFilter('bet'), fn ($query, $bet) => $query->where('bet', $bet));
+    }
+
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        return [
+            'bet' => Filter::make('Bet')
+                ->select([
+                    '' => 'All',
+                    Bet::PUTI => 'PUTI',
+                    Bet::PULA => 'PULA',
+                    Bet::JACKPOT => 'JACKPOT',
+                ]),
+        ];
     }
 
     /**

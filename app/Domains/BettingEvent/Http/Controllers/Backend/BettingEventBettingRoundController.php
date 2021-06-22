@@ -24,7 +24,7 @@ class BettingEventBettingRoundController extends Controller
         return view('backend.betting-round.show')
             ->with('bettingEvent', $bettingEvent)
             ->with('bettingRound', $bettingRound)
-            ->with('bettingOptions', BetOption::all())
+            ->with('bettingOptions', BetOption::where('hidden', 0)->get())
             ->with('nextBettingRound', $nextBettingRound);
     }
 

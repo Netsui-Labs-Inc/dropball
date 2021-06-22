@@ -111,6 +111,9 @@ class BettingRoundResultListener
         } elseif($bettingRound->result == Bet::PUTI) {
             $totalBets = $bettingRound->totalBetType(Bet::PUTI) ;
             $winningPayout = ($totalBets * $payouts['puti']) / 100;
+        } elseif($bettingRound->result == Bet::JACKPOT) {
+            $totalBets = $bettingRound->totalBetType(Bet::JACKPOT) ;
+            $winningPayout = $totalBets * 5;
         } else {
             $winningPayout = 0;
         }

@@ -85,5 +85,18 @@
             </x-utils.form-button>
             </div>
         @endforeach
+            <div class="col-12 col-md-4 p-2">
+                <x-utils.form-button
+                :action="route('admin.betting-rounds.cancel', $bettingRound)"
+                method="post"
+                button-class="btn btn-danger btn-block btn-lg"
+                icon="fa fa-exclamation"
+                name="cancel-betting"
+                :confirm='["title" => "Are you sure you want cancel this round?", "icon" => "warning"]'
+            >
+                <input type="hidden" name="status" value="cancelled">
+                @lang('CANCEL')
+                </x-utils.form-button>
+            </div>
     @endif
 </div>

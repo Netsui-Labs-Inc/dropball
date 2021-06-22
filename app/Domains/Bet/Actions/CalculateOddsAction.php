@@ -34,6 +34,7 @@ class CalculateOddsAction
         return [
             'puti' => floor($putiPayout * 100),
             'pula' => floor($pulaPayout * 100),
+            'jackpot' => 500,
             'betPayout' => floor($betPayout),
         ];
     }

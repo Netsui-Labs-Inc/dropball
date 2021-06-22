@@ -35,7 +35,7 @@ class SeedBettingRound extends Command
 
         $betsCount = $this->ask("How many dummy bets you want to add?");
 
-        Bet::factory()->count($betsCount)->create(['betting_round_id' => $bettingRoundId]);
+        Bet::factory()->count($betsCount)->ongoing()->create(['betting_round_id' => $bettingRoundId]);
 
         $bettingRound->refresh();
 

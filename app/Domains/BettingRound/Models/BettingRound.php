@@ -24,16 +24,9 @@ use Spatie\Activitylog\Models\Activity;
  * @property array $payouts;
  * @property string $status;
  * @property int $id
- * @property string $uuid
- * @property int|null $queue
  * @property int $betting_event_id
- * @property int|null $result
- * @property string $status
  * @property int $is_betting_open
- * @property float|null $pool_money
  * @property string|null $note
- * @property array|null $meta
- * @property array|null $payouts
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at

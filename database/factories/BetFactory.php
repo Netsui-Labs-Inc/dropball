@@ -24,7 +24,7 @@ class BetFactory extends Factory
                     'hub_id' => $masterAgent->hub_id
                 ])->id;
             },
-            'bet' => $this->faker->randomElement([1,2]),
+            'bet' => $this->faker->randomElement([1,2,4]),
             'bet_amount' => $betAmount,
             'status' => $this->faker->randomElement(['win','lose']),
             'gain_loss' => $this->faker->randomElement([50, 100, 300, 500, 1000, 500]),
