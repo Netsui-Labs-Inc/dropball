@@ -39,8 +39,10 @@
                 @if($userBet)
                     @if($userBet->bet == 1)
                         <span class="text-xs p-0 text-red-500">PULA</span>
-                    @else
+                    @elseif ($userBet->bet == 2)
                         <span class="text-xs p-0 text-gray-50">PUTI</span>
+                    @else
+                        <span class="text-xs p-0 text-yellow-400">JACKPOT</span>
                     @endif
                 @endif
                 {{number_format((float) $amount)}}
