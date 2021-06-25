@@ -62,6 +62,7 @@ class BettingRoundActivityLogsTable extends DataTableComponent
                     '' => 'All',
                     'player winnings' => 'Player Winnings',
                     'agent commissions' => 'Agent Commissions',
+                    'agent referral commissions' => 'Agent Referral Commissions',
                     'hub commissions' => 'Hub Commissions',
                     'operator commissions' => 'Operator Commissions',
                     'developer commissions' => 'Developer Commissions',

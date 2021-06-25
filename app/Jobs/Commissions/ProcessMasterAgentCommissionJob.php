@@ -118,7 +118,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
 
             DB::commit();
         } catch (\Exception $exception) {
-            logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ".$exception->getMessage());
+            logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ");
             \Sentry::captureLastError();
             DB::rollBack();
         }
@@ -140,9 +140,9 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
         try {
             DB::beginTransaction();
-            logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} referral will receive $commission from Sub agent#{$masterAgent->id}");
+            logger("ProcessSubAgentCommissionJob.subAgent #{$masterAgent->id} BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$parentAgent->id} {$parentAgent->name} referral will receive $commission from Sub agent#{$masterAgent->id}");
             $parentAgentWallet = $this->getWallet($parentAgent, 'Income Wallet');
-            $currentBalance = $parentAgentWallet->balanceFloat();
+            $currentBalance = $parentAgentWallet->balanceFloat;
             $parentAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
 
@@ -152,14 +152,14 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->performedOn($masterAgent)
                 ->causedBy($bettingRound)
                 ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $masterAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $parentAgentWallet->balanceFloat])
-                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission from his Sub Agent#{$masterAgent->nanme}. New Balance is {$parentAgentWallet->balanceFloat}");
+                ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
 
             DB::commit();
         } catch (\Exception $exception) {
             DB::rollBack();
             \Sentry::captureLastError();
 
-            logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ".$exception->getMessage());
+            logger("ProcessSubAgentCommissionJob.subAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ".$exception->getTraceAsString());
         }
     }
 

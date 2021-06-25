@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -48,13 +49,14 @@ class LocalBettingTest extends Command
         }
         $result  = $this->argument('result');
         $bettingRound = BettingRound::factory()->create();
-
-        Bet::factory()->ongoing()->count(6)->create(['betting_round_id' => $bettingRound->id]);
+        $masterAgent = User::factory()->masterAgent()->create();
+        $subAgent = User::factory()->masterAgent()->create(['referred_by' => $masterAgent->id]);
+        Bet::factory()->ongoing()->count(50)->create(['betting_round_id' => $bettingRound->id]);
 
         $bettingRound->update([
             'payouts' => (new CalculateOddsAction)($bettingRound),
             'status' => 'ended',
-            'result' => 2,
+            'result' => $result,
         ]);
         $bettingRound->refresh();
         BettingRoundResultUpdated::dispatch($bettingRound);
