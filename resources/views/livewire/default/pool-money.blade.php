@@ -4,12 +4,12 @@
         <div class="h4 text-success">{{number_format($poolMoney)}}</div>
     </div>
     <div class="col">
-        <span class="h6 surtitle">PUTI</span>
-        <div class="h4 text-gray">{{number_format($puti)}}</div>
+        <span class="h6 surtitle">PUTI / Payout</span>
+        <div class="h4 text-gray">{{number_format($puti)}} / <strong>{{number_format($payouts['puti'])}}</strong></div>
     </div>
     <div class="col">
-        <span class="h6 surtitle">PULA</span>
-        <div class="h4 text-gray text-danger">{{number_format($pula)}}</div>
+        <span class="h6 surtitle">PULA / Payout</span>
+        <div class="h4 text-gray text-danger">{{number_format($pula)}} / <strong>{{number_format($payouts['pula'])}}</strong></div>
     </div>
    <div class="col">
        @if($jackpot * 5 <  $pula + $puti)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -18,6 +19,12 @@ class BettingRoundPoolMoney extends Component
     public $pula = 0;
     public $jackpot = 0;
     public $poolMoney = 0;
+
+    public $payouts = [
+        'puti' => 0,
+        'pula' => 0,
+        'jackpot' => 500
+    ];
 
     public function mount($bettingRoundId, $theme = 'default')
     {
@@ -49,6 +56,9 @@ class BettingRoundPoolMoney extends Component
         $this->pula = $totalPula;
         $this->jackpot = $totalJackpot;
         $this->poolMoney = $totalPuti + $totalPula + $totalJackpot;
+
+        $payouts = (new CalculateOddsAction)($this->bettingRound);
+        $this->payouts = $payouts;
     }
 
 
