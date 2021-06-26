@@ -81,6 +81,9 @@ class BettingRoundController extends Controller
         if ($bettingRound->status !== 'placing_bets') {
             throw new GeneralException("Cannot Open BettingRound at the moment");
         }
+
+        $this->validateTreshold($bettingRound);
+
         $bettingRound->status = 'ongoing';
         $bettingRound->is_betting_open = false;
         $bettingRound->save();
@@ -141,10 +144,7 @@ class BettingRoundController extends Controller
 
     public function setResult(BettingRound $bettingRound, Request $request)
     {
-        if($request->get('result') == Bet::JACKPOT) {
-            $this->validateJackpot($bettingRound);
-        }
-
+        $this->validateTreshold($bettingRound);
         $bettingRound->result = $request->get('result');
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
@@ -159,8 +159,10 @@ class BettingRoundController extends Controller
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 
-    private function validateJackpot(BettingRound $bettingRound)
+    private function validateTreshold(BettingRound $bettingRound)
     {
+        $payouts  = (new CalculateOddsAction)($bettingRound);
+
         $totalPuti = $bettingRound->totalBetType(Bet::PUTI);
         $totalPula = $bettingRound->totalBetType(Bet::PULA);
         $totalJackpot = $bettingRound->totalBetType(Bet::JACKPOT);
@@ -168,6 +170,11 @@ class BettingRoundController extends Controller
         if($totalJackpot * 5 > ($totalPula + $totalPuti)) {
             throw new GeneralException("Jackpot Payout is greater than the PULA + PUTI pool money. You must cancel this round");
         }
+
+        if($payouts['puti'] < 120 || $payouts['pula'] < 120) {
+            throw new GeneralException("PULA or PUTI odds is below 120. You must cancel this round");
+        }
+
         return true;
 
     }
