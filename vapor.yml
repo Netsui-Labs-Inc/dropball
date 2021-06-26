@@ -16,7 +16,6 @@ environments:
       build:
         - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
         - 'php artisan event:cache'
-        - 'php artisan queue:restart'
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
