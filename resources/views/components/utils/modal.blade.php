@@ -8,6 +8,7 @@
         'closeBtn' => 'Close',
         'submitBtn' => 'Save',
         'formClass' => 'd-inline',
+        'bodyClass' => '',
  ])
 
 @if($type == 'form')
@@ -23,7 +24,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body {{$bodyClass}}">
                 {{ $slot }}
             </div>
             <div class="modal-footer">

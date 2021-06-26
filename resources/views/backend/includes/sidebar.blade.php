@@ -36,7 +36,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.players.transactions', ['sorts' => ['id' => 'desc']])"
+                :href="route('admin.players.transactions', ['sorts' => ['id' => 'desc'], 'filters' => ['status' => 'pending']])"
                 :active="activeClass(Route::is('admin.players.transactions'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />

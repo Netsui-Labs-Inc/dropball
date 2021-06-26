@@ -22,7 +22,10 @@
                 role="tab"
                 aria-controls="active"
                 aria-selected="true" >
-                @lang("Pending Withdrawal") @if($pendingTransactions->count()) <span class="badge badge-danger">{{$pendingTransactions->count()}}</span>@endif
+                @lang("Withdrawals")
+                @if($pendingWithdrawals)
+                    <span class="badge badge-danger">{{$pendingWithdrawals}}</span>
+                @endif
             </x-utils.link>
         </div>
     </nav>
@@ -37,7 +40,11 @@
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:players-transactions-table :confirmed="false" :action="true" />
+                    @hasrole("Master Agent")
+                        <livewire:player-withdrawals-table :reviewer="auth()->user()->id" />
+                    @else
+                        <livewire:player-withdrawals-table  />
+                    @endhasrole
                 </x-slot>
             </x-backend.card>
         </div>

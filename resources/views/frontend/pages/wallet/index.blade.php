@@ -34,11 +34,12 @@
         targetId="requestWithdrawal"
         action="#"
         submitBtn="Send Request"
+        bodyClass="pt-0"
     >
         <div>
-            <p class="text-center">
-                Current Balance <br>
-                <span class="lead">{{number_format(auth()->user()->balanceFloat)}}</span>
+            <p class="text-center m-0">
+                Current Balance:
+                <span>{{number_format(auth()->user()->balanceFloat)}}</span>
             </p>
             <label for="amount" class="col-form-label">@lang('Amount')</label>
             <div class="form-group mb-0">
@@ -48,17 +49,21 @@
             <div class="form-group mb-0">
                 <select name="channel" class="form-control">
                     <option value="gcash">GCash</option>
-                    <option value="gcash">Paymaya</option>
-                    <option value="gcash">Bank</option>
+                    <option value="paymaya">Paymaya</option>
+                    <option value="bank">Bank</option>
                 </select>
             </div>
-                <label for="amount" class="col-form-label">@lang('Details')</label>
+            <label for="amount" class="col-form-label">@lang('Account number')</label>
             <div class="form-group mb-0">
-                    <textarea class="form-control" name="details"></textarea>
+                <input type="string" class="form-control" name="account_number">
+            </div>
+            <label for="amount" class="col-form-label">@lang('Note')</label>
+            <div class="form-group mb-0">
+                <textarea class="form-control" name="Note"></textarea>
             </div>
                 <label for="password" class="col-form-label">@lang('Enter Password')</label>
             <div class="form-group mb-0">
-                    <input type="password" class="form-control" name="password" >
+                <input type="password" class="form-control" name="password" >
             </div>
         </div>
     </x-utils.modal>

@@ -4,12 +4,14 @@
 namespace App\Domains\Player\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Requests\DepositRequest;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
+use App\Http\Controllers\Controller;
 
-class PlayerController extends \App\Http\Controllers\Controller
+class PlayerController extends Controller
 {
     public function index()
     {
@@ -65,20 +67,13 @@ class PlayerController extends \App\Http\Controllers\Controller
 
     public function transactions()
     {
-        $query = Transaction::query();
-        $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
-            $query->whereHas('roles', function ($query) {
-                return $query->where('name', 'Player');
-            });
-        });
         if (auth()->user()->hasRole('Master Agent')) {
-            $pendingTransactions = $query->where("payable_type", User::class)->where('confirmed', false)
-                ->whereIn('payable_id', auth()->user()->referrals->pluck('id'));
+            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
         } else {
-            $pendingTransactions = $query->where("payable_type", User::class)->where('confirmed', false)->get();
+            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
         }
 
         return view('backend.player.all-transactions')
-            ->with('pendingTransactions', $pendingTransactions);
+            ->with('pendingWithdrawals', $pendingWithdrawals);
     }
 }

@@ -20,6 +20,16 @@
             <td>{{ $logged_in_user->email }}</td>
         </tr>
 
+        <tr>
+            <th>@lang('Master Agent')</th>
+            <td>{{ $logged_in_user->masterAgent->name ?? 'N/A' }}</td>
+        </tr>
+
+        <tr>
+            <th>@lang('Hub')</th>
+            <td>{{ $logged_in_user->hub->name ?? 'N/A' }}</td>
+        </tr>
+
         @if ($logged_in_user->isSocial())
             <tr>
                 <th>@lang('Social Provider')</th>
