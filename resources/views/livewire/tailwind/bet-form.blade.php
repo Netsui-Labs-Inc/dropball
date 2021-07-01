@@ -15,9 +15,9 @@
         <p class="text-red text-xs italic">{{ session('error') }}</p>
     @endif
     <div class="flex flex-wrap content-start text-sm">
-        <div class="flex-auto w-1/2">
+        <div class="flex-auto w-1/3">
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
-                Available Balance
+                Balance
             </p>
             <p class="text-center text-yellow-500">{{number_format($balance)}}
                 @if($userBet)
@@ -31,9 +31,9 @@
                 @endif
             </p>
         </div>
-        <div class="flex-auto w-1/2">
+        <div class="flex-auto w-1/3">
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
-                Your Bet
+                 Bet
             </p>
             <p class="text-center text-yellow-500 font-semibold">
                 @if($userBet)
@@ -48,16 +48,24 @@
                 {{number_format((float) $amount)}}
             </p>
         </div>
+        <div class="flex-auto w-1/3">
+            <p class="uppercase text-center font-semibold leading-normal text-gray-50">
+                Win Streak
+            </p>
+            <p class="text-center text-yellow-500 font-semibold">
+                {{auth()->user()->winning_streak ?? 0}}
+            </p>
+        </div>
     </div>
     <div class="flex flex-wrap my-2 xl:my-3 md:my-3">
         <div class="flex-auto w-1/2">
-            <div class="py-2 bg-red-600 text-center rounded-sm">
+            <div class="py-2 bg-red-500 text-center rounded-sm">
                 <p class="font-semibold leading-5 text-white">@if ($bettingRound) {{ number_format($bettingRound->totalBetType(1) ?? 0)}}  @endif</p>
                 <p class="leading-none text-xs text-white pt-1">PULA</p>
             </div>
         </div>
         <div class="flex-auto w-1/2">
-            <div class="py-2 bg-white rounded-sm text-center">
+            <div class="py-2 bg-gray-100 rounded-sm text-center">
                 <p class="font-semibold leading-5 text-gray-500">@if ($bettingRound){{ number_format($bettingRound->totalBetType(2) ?? 0)}} @endif</p>
                 <p class="leading-none text-xs text-gray-500 pt-1">PUTI</p>
             </div>

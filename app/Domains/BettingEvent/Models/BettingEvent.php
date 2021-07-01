@@ -13,41 +13,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Domains\BettingEvent\Models\BettingEvent
- *
- * @property int $id
- * @property string $uuid
- * @property string $name
- * @property string|null $description
- * @property string $schedule
- * @property int|null $bet_admin_id
- * @property string|null $stream_url
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read User|null $admin
- * @property-read \Illuminate\Database\Eloquent\Collection|BettingRound[] $bettingRounds
- * @property-read int|null $betting_rounds_count
- * @method static \Database\Factories\BettingEventFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent onDate($date)
- * @method static \Illuminate\Database\Query\Builder|BettingEvent onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent query()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent today($timezone = null)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent uuid($uuid)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereBetAdminId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereSchedule($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereStreamUrl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingEvent whereUuid($value)
- * @method static \Illuminate\Database\Query\Builder|BettingEvent withTrashed()
- * @method static \Illuminate\Database\Query\Builder|BettingEvent withoutTrashed()
- * @mixin \Eloquent
  */
 class BettingEvent extends Model
 {

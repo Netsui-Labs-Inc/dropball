@@ -16,6 +16,7 @@ use App\Jobs\ProcessBetBalanceJob;
 use App\Jobs\ProcessBetRefundJob;
 use App\Jobs\ProcessBetStatusJob;
 use App\Jobs\ProcessPlayerWinningsJob;
+use App\Jobs\SetPlayerWinningStreakJob;
 use App\Jobs\Traits\WalletAndCommission;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
@@ -34,7 +35,7 @@ class BettingRoundResultListener
         /** @var BettingRound $bettingRound */
         $bettingRound = $event->bettingRound;
 
-        if ($bettingRound->status == 'cancelled') {
+        if ($bettingRound->status === 'cancelled') {
             logger("BettingRound#{$bettingRound->id} was Cancelled");
             activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
             return $this->refund($bettingRound);
@@ -61,6 +62,7 @@ class BettingRoundResultListener
             logger("BettingRoundResultListener.processWinners :: BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatchSync($bet);
+                SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
             }
         });
     }

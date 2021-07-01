@@ -43,6 +43,15 @@ class BetFactory extends Factory
         });
     }
 
+    public function noJackpot()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'bet' => $this->faker->randomElement([1,2]),
+            ];
+        });
+    }
+
     public function configure()
     {
         return $this->afterCreating(function (Bet $bet) {
