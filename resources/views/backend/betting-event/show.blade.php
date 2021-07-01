@@ -51,6 +51,29 @@
         </x-slot>
     </x-backend.card>
 
+    <x-backend.card headerClass="bg-primary">
+        <x-slot name="header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h3 class="h3 text-white mb-0"> @lang("Event Jackpot Rounds")</h3>
+                </div>
+                <div class="col text-right">
+                    @can('admin.access.betting-rounds.create')
+                        <x-utils.link
+                            class="btn btn-info text-white"
+                            dataTarget="#createJackpot"
+                            :text="__('Create Jackpot')"
+                        />
+                    @endcan
+                </div>
+            </div>
+        </x-slot>
+
+        <x-slot name="body">
+            Jackpot Rounds Table goes here
+        </x-slot>
+    </x-backend.card>
+
     <x-utils.modal
         :title="'Create Betting Rounds for '. $bettingEvent->name"
         type="form"
@@ -60,9 +83,25 @@
     >
         <div>
             <div class="form-group row">
-                <label for="name" class="col-md-3 col-form-label">@lang('Number of Betting Rounds')</label>
-                <div class="col-md-9">
+                <label for="name" class="col-md-4 col-form-label">@lang('Number of Betting Rounds')</label>
+                <div class="col-md-8">
                     <input type="number" class="form-control" name="quantity" min="1" step="1">
+                </div>
+            </div>
+        </div>
+    </x-utils.modal>
+
+    <x-utils.modal
+        :title="'Create Jackpot Round for '. $bettingEvent->name"
+        type="form"
+        targetId="createJackpot"
+        submitBtn="Create Jackpot"
+    >
+        <div>
+            <div class="form-group row">
+                <label for="betting_round_id" class="col-md-4 col-form-label">@lang('Betting Round ID')</label>
+                <div class="col-md-8">
+                    <input type="number" class="form-control" name="betting_round_id" min="1" step="1">
                 </div>
             </div>
         </div>

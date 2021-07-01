@@ -62,7 +62,6 @@ class BettingRoundResultListener
             logger("BettingRoundResultListener.processWinners :: BettingRound#{$bettingRound->id} Processing Winners Payout Batch #$batch");
             foreach ($bets as $bet) {
                 ProcessPlayerWinningsJob::dispatchSync($bet);
-                SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
             }
         });
     }
@@ -71,6 +70,9 @@ class BettingRoundResultListener
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
         foreach ($bettingRound->bets as $bet) {
+
+            SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
+
             Bus::batch([
                 new ProcessMasterAgentCommissionJob($bet),
                 new ProcessMasterAgentCommissionJob($bet, true),

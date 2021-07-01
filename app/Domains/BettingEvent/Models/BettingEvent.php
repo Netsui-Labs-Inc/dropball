@@ -39,6 +39,11 @@ class BettingEvent extends Model
         return $this->hasMany(BettingRound::class);
     }
 
+    public function jackpots()
+    {
+        return $this->hasMany(Jackpot::class);
+    }
+
     public function latestBettingRound($status = 'upcoming')
     {
         return $this->bettingRounds()->latest()->where('status', $status)->first();

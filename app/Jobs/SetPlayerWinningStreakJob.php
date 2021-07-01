@@ -36,7 +36,7 @@ class SetPlayerWinningStreakJob implements ShouldQueue
         /** @var User $player */
         $player = $this->bet->user;
         $winningStreak = (new GetWinningStreakAction)($player);
-        logger("SetPlayerWinningStreakJob.handle :: Player#{$player->name} winning streak is $winningStreak");
+        logger("SetPlayerWinningStreakJob.handle :: Player#{$player->id} {$player->name} winning streak is $winningStreak");
         $player->winning_streak = $winningStreak;
         $player->update();
     }

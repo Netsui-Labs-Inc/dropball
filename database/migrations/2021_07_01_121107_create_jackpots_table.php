@@ -15,6 +15,7 @@ class CreateJackpotsTable extends Migration
     {
         Schema::create('jackpots', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('betting_event_id')->constrained();
             $table->foreignId('betting_round_id')->constrained();
             $table->decimal('prize', 64, 0)->default(0);
             $table->enum('status', ['upcoming', 'ended']);
