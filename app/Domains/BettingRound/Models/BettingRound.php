@@ -5,6 +5,7 @@ namespace App\Domains\BettingRound\Models;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingEvent\Models\Jackpot;
 use App\Models\Traits\Uuid;
 use Database\Factories\BettingRoundFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,51 +15,6 @@ use Spatie\Activitylog\Models\Activity;
 
 /**
  * Class BettingRound
- *
- * @package App\Domains\BettingRound\Models
- * @property int $result;
- * @property string $uuid;
- * @property int $queue;
- * @property float $pool_money;
- * @property array $meta;
- * @property array $payouts;
- * @property string $status;
- * @property int $id
- * @property int $betting_event_id
- * @property int $is_betting_open
- * @property string|null $note
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection|Activity[] $activityLogs
- * @property-read int|null $activity_logs_count
- * @property-read BetOption|null $betOption
- * @property-read \Illuminate\Database\Eloquent\Collection|Bet[] $bets
- * @property-read int|null $bets_count
- * @property-read BettingEvent $bettingEvent
- * @method static \Database\Factories\BettingRoundFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound newQuery()
- * @method static \Illuminate\Database\Query\Builder|BettingRound onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound query()
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound uuid($uuid)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereBettingEventId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereDeletedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereIsBettingOpen($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereMeta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereNote($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound wherePayouts($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound wherePoolMoney($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereQueue($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereResult($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereStatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|BettingRound whereUuid($value)
- * @method static \Illuminate\Database\Query\Builder|BettingRound withTrashed()
- * @method static \Illuminate\Database\Query\Builder|BettingRound withoutTrashed()
- * @mixin \Eloquent
  */
 class BettingRound extends Model
 {
@@ -79,6 +35,7 @@ class BettingRound extends Model
         'meta',
         'note',
         'payouts',
+        'jackpot_id',
     ];
 
     protected $casts = [
@@ -89,6 +46,11 @@ class BettingRound extends Model
     public function bettingEvent()
     {
         return $this->belongsTo(BettingEvent::class, 'betting_event_id');
+    }
+
+    public function jackpot()
+    {
+        return $this->belongsTo(Jackpot::class);
     }
 
     public function bets()

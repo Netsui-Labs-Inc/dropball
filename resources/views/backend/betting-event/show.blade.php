@@ -70,7 +70,7 @@
         </x-slot>
 
         <x-slot name="body">
-            Jackpot Rounds Table goes here
+            <livewire:jackpots-table :betting-event="$bettingEvent"> </livewire:jackpots-table>
         </x-slot>
     </x-backend.card>
 
@@ -94,6 +94,7 @@
     <x-utils.modal
         :title="'Create Jackpot Round for '. $bettingEvent->name"
         type="form"
+        :action="route('admin.betting-events.jackpots.store', $bettingEvent)"
         targetId="createJackpot"
         submitBtn="Create Jackpot"
     >

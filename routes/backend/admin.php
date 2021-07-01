@@ -14,6 +14,8 @@ use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
 use App\Domains\Player\Http\Controllers\Backend\PlayerBetsController;
 use App\Domains\Wallet\Http\Controllers\Backend\WithdrawalController;
+use App\Domains\BettingEvent\Http\Controllers\Backend\JackpotController;
+
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
 Route::get('dashboard', [DashboardController::class, 'index'])
@@ -76,6 +78,8 @@ Route::get('betting-events/{bettingEvent}/betting-rounds/create', [BettingEventB
 
 Route::post('betting-events/{bettingEvent}/betting-rounds', [BettingEventBettingRoundController::class, 'store'])
     ->name('betting-events.betting-rounds.store');
+Route::post('betting-events/{bettingEvent}/jackpots', [JackpotController::class, 'store'])
+    ->name('betting-events.jackpots.store');
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}', [BettingEventBettingRoundController::class, 'show'])
     ->name('betting-events.betting-rounds.show')
