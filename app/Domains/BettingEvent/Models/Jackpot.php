@@ -26,4 +26,9 @@ class Jackpot extends Model
     {
         return $this->belongsTo(BettingRound::class, 'betting_round_id');
     }
+
+    public function winners()
+    {
+        return $this->hasMany(JackpotWinner::class, 'jackpot_id');
+    }
 }

@@ -14,7 +14,7 @@
     icon="fas fa-eye"
     name="view-betting-event"
 >
-    @lang('View Betting Rounds')
+    @lang('View Event')
 </x-utils.form-button>
 
 

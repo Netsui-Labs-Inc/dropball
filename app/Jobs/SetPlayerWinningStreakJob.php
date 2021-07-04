@@ -39,5 +39,8 @@ class SetPlayerWinningStreakJob implements ShouldQueue
         logger("SetPlayerWinningStreakJob.handle :: Player#{$player->id} {$player->name} winning streak is $winningStreak");
         $player->winning_streak = $winningStreak;
         $player->update();
+        if($winningStreak === 5) {
+            AddEntryToJackpotRound::dispatch($this->bet);
+        }
     }
 }

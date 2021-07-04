@@ -3,6 +3,7 @@
 namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 use App\Domains\BettingEvent\Http\Requests\StoreJackpotRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingEvent\Models\Jackpot;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Http\Controllers\Controller;
 
@@ -22,6 +23,10 @@ class JackpotController extends Controller
         $bettingRound->save();
 
         return redirect()->back()->withFlashSuccess(__('Betting Rounds Jackpot created'));
+    }
 
+    public function show(BettingEvent $bettingEvent, Jackpot $jackpot)
+    {
+        return view('backend.betting-event.jackpot.show')->with('jackpot', $jackpot);
     }
 }

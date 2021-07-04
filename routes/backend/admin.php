@@ -111,6 +111,15 @@ Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/edit', [
         $trail->push("Edit BettingRound #".$bettingRound->id, route('admin.betting-events.betting-rounds.edit', [$bettingEvent, $bettingRound]));
     });
 
+
+Route::get('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'show'])
+    ->name('betting-events.jackpots.show')
+    ->middleware('can:admin.access.betting-rounds.edit')
+    ->breadcrumbs(function (Trail $trail, $bettingEvent, $jackpot) {
+        $trail->parent('admin.betting-events.index');
+        $trail->push("Betting Event Jackpot", route('admin.betting-events.jackpots.show', [$bettingEvent, $jackpot]));
+    });
+
 /** End Betting Events */
 
 /** BettingRounds */

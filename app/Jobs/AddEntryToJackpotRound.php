@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Domains\Auth\Models\User;
-use App\Domains\Bet\Actions\GetWinningStreakAction;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\BettingEvent\Models\BettingEvent;
+use App\Domains\BettingEvent\Models\Jackpot;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -35,6 +35,18 @@ class AddEntryToJackpotRound implements ShouldQueue
      */
     public function handle()
     {
-
+        $player = $this->bet->user;
+        $bettingRound = $this->bet->bettingRound;
+        /** @var BettingEvent $bettingEvent */
+        $bettingEvent = $bettingRound->bettingEvent;
+        /** @var Jackpot $activeJackpot */
+        $activeJackpot = $bettingEvent->activeJackpot();
+        if(!$activeJackpot) {
+            return;
+        }
+        logger("AddEntryToJackpotRound.handle Player#{$player->id} won the jackpot");
+        $activeJackpot->winners()->create([
+           'user_id' => $player->id,
+        ]);
     }
 }

@@ -62,11 +62,18 @@ class JackpotsTable extends DataTableComponent
                 ->format(function ($value, $column, Jackpot $row) {
                     return '#'.$row->betting_round_id;
                 })->asHtml(),
+            Column::make(__('Status'), 'status')
+                ->searchable()
+                ->sortable(),
              Column::make(__('Prize'), 'prize')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Jackpot $row) {
                     return number_format($row->prize);
+                })->asHtml(),
+            Column::make(__('Action'))
+                ->format(function ($value, $column, Jackpot $row) {
+                    return view('backend.betting-event.jackpot.actions', ['jackpot' => $row]);
                 })->asHtml(),
         ];
     }
