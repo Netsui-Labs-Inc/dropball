@@ -53,7 +53,7 @@
                 Win Streak
             </p>
             <p class="text-center text-yellow-500 font-semibold">
-                {{auth()->user()->winning_streak ?? 0}}
+                {{$winStreak ?? 0}}
             </p>
         </div>
     </div>

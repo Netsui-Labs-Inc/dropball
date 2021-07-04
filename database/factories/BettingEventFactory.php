@@ -16,6 +16,7 @@ class BettingEventFactory extends Factory
             'name' => $this->faker->dayOfWeek. " Event",
             'description' => $this->faker->text,
             'schedule' => $this->faker->date('Y-m-d'),
+            'stream_url' => config('dropball.stream_url_default'),
             'bet_admin_id' => User::factory()->betAdmin()
         ];
     }
