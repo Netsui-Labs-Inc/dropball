@@ -19,6 +19,8 @@ class JackpotsTable extends DataTableComponent
 
     public $sortDirection = 'desc';
 
+    protected string $tableName = 'jackpots';
+
     public int $perPage = 10;
 
     protected $options = [

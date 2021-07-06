@@ -59,7 +59,7 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $operator = $this->operator;
 
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
-        $commissions = BigDecimal::of($bettingRound->pool_money * .10)->toFloat();
+        $commissions = BigDecimal::of($bettingRound->pool_money * .095)->toFloat();
         $remainingMoney = $bettingRound->pool_money - $bettingRound->meta['winningPayout'] - $commissions;
         logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Remaining Money: $remainingMoney, Winning Payouts: {$bettingRound->meta['winningPayout']}, Commission: $commissions ");
         try {

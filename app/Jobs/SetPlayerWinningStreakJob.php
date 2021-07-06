@@ -40,7 +40,7 @@ class SetPlayerWinningStreakJob implements ShouldQueue
         $player->winning_streak = $winningStreak;
         $player->update();
         if($winningStreak === 5) {
-            AddEntryToJackpotRound::dispatch($this->bet);
+            AddEntryToJackpotRoundJob::dispatch($this->bet);
         }
     }
 }

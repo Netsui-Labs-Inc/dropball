@@ -12,6 +12,7 @@ use App\Jobs\Commissions\ProcessMasterAgentCommissionJob;
 use App\Jobs\Commissions\ProcessOperatorCommissionJob;
 use App\Jobs\Commissions\ProcessOtherCommissionsJob;
 use App\Jobs\Commissions\ProcessSubAgentCommissionJob;
+use App\Jobs\IncreaseJackpotPoolMoneyJob;
 use App\Jobs\ProcessBetBalanceJob;
 use App\Jobs\ProcessBetRefundJob;
 use App\Jobs\ProcessBetStatusJob;
@@ -54,6 +55,8 @@ class BettingRoundResultListener
         $this->processCommissions($bettingRound);
 
         ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
+
+        IncreaseJackpotPoolMoneyJob::dispatch($bettingRound);
     }
 
     public function processWinners(BettingRound $bettingRound)
@@ -72,6 +75,7 @@ class BettingRoundResultListener
         foreach ($bettingRound->bets as $bet) {
 
             SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
+
 
             Bus::batch([
                 new ProcessMasterAgentCommissionJob($bet),
