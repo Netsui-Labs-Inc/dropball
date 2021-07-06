@@ -16,6 +16,7 @@ use App\Jobs\IncreaseJackpotPoolMoneyJob;
 use App\Jobs\ProcessBetBalanceJob;
 use App\Jobs\ProcessBetRefundJob;
 use App\Jobs\ProcessBetStatusJob;
+use App\Jobs\ProcessJackpotWinnersJob;
 use App\Jobs\ProcessPlayerWinningsJob;
 use App\Jobs\SetPlayerWinningStreakJob;
 use App\Jobs\Traits\WalletAndCommission;
@@ -56,7 +57,12 @@ class BettingRoundResultListener
 
         ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
 
-        IncreaseJackpotPoolMoneyJob::dispatch($bettingRound);
+        $activeJackpot = $bettingRound->bettingEvent->activeJackpot();
+        if($activeJackpot && $activeJackpot->betting_round_id === $bettingRound->id) {
+            ProcessJackpotWinnersJob::dispatch($bettingRound);
+        } else {
+            IncreaseJackpotPoolMoneyJob::dispatch($bettingRound);
+        }
     }
 
     public function processWinners(BettingRound $bettingRound)
