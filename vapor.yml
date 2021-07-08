@@ -19,3 +19,22 @@ environments:
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
+  staging:
+      memory: 1024
+      warm: 10
+      database: kingpindb
+      queue-concurrency: 1
+      domain: peryapinoy.com
+      cli-memory: 512
+      runtime: 'php-8.0:al2'
+      queues:
+        - winners
+        - commissions
+        - other-commissions
+      build:
+        - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
+        - 'php artisan event:cache'
+      deploy:
+        - 'php artisan migrate --force'
+        - 'php artisan queue:restart'
+
