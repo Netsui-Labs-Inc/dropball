@@ -22,7 +22,7 @@ environments:
   staging:
       memory: 1024
       warm: 10
-      database: kingpindb
+      database: kingpinstagingdb
       queue-concurrency: 1
       domain: peryapinoy.com
       cli-memory: 512
