@@ -79,11 +79,8 @@ class BettingRoundResultListener
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
         foreach ($bettingRound->bets as $bet) {
-
-            SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
-
-
             Bus::batch([
+                new SetPlayerWinningStreakJob($bet),
                 new ProcessMasterAgentCommissionJob($bet),
                 new ProcessMasterAgentCommissionJob($bet, true),
                 new ProcessDeveloperCommissionJob($bet),

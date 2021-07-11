@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\GetWinningStreakAction;
 use App\Domains\Bet\Models\Bet;
 use Illuminate\Bus\Queueable;
