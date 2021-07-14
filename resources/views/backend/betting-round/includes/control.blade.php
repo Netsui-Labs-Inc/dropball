@@ -68,21 +68,7 @@
     @if($bettingRound->status == 'ongoing')
         @foreach ($bettingOptions as $option)
             <div class="col-12 col-md-3 p-2">
-            <x-utils.form-button
-                :action="route('admin.betting-rounds.results', $bettingRound)"
-                method="post"
-                button-class="btn btn-lg btn-block border-gray-50"
-                name="open-betting"
-                :bgColor="$option->color"
-                :attr="
-                $bettingRound->status == 'ended' ||
-                $bettingRound->status == 'upcoming' ||
-                $bettingRound->status == 'placing_bets' ? 'disabled' : ''"
-                :confirm='["title" => "Are you sure you want to set the result to {$option->name}?"]'
-            >
-                <input type="hidden" name="result" value="{{$option->id}}">
-                @lang($option->name)
-            </x-utils.form-button>
+                <livewire:front-end.select-color theme="tailwind" :option="$option" :bettingEventId="$bettingEvent->id" />
             </div>
         @endforeach
             <div class="col-12 col-md-3 p-2">

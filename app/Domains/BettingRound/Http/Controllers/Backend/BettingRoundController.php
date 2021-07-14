@@ -197,4 +197,10 @@ class BettingRoundController extends Controller
         $bettingRound->meta = $meta;
         $bettingRound->save();
     }
+
+    public function askForConfirmation(BettingRound $bettingRound)
+    {
+        dd($bettingRound);
+    }
+
 }
