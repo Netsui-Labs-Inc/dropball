@@ -9479,7 +9479,7 @@ __webpack_require__(/*! ./alert */ "./resources/js/backend/alert.js");
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
 window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__.default({
   broadcaster: 'pusher',
-  key: "2fe77bbfa3777ff3eb11",
+  key: "b21d12109fa0a1e22fdc",
   cluster: "ap1",
   encrypted: true
 });
