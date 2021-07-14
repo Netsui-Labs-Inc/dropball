@@ -68,7 +68,8 @@ class UserFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'type' => User::TYPE_USER,
+                'type'   => User::TYPE_USER,
+                'hub_id' => \App\Domains\Hub\Models\Hub::first()->id
             ];
         })->afterCreating(function (User $user) {
             $user->assignRole('Player');
@@ -170,11 +171,24 @@ class UserFactory extends Factory
         return $this->state(function (array $attributes) {
             return [
                 'type' => User::TYPE_ADMIN,
+                'hub_id' => \App\Domains\Hub\Models\Hub::first()->id,
             ];
         })->afterCreating(function (User $user) {
             $user->assignRole('Bet Admin');
         });
-    } /**
+    }
+    public function dealerAdmin()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type'   => User::TYPE_ADMIN,
+                'hub_id' => \App\Domains\Hub\Models\Hub::first()->id
+            ];
+        })->afterCreating(function (User $user) {
+            $user->assignRole('Dealer Admin');
+        });
+    }
+    /**
      * @return UserFactory
      */
     public function superAdmin()
