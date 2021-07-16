@@ -74,6 +74,4 @@ trait libStrings
         $this->MESSAGE_PARAMS['BET_ADMIN']['confirm']['title'] .= $sOption;
         $this->MESSAGE_PARAMS['DEALER_ADMIN']['approval']['title'] .= $sOption;
     }
-
-
 }

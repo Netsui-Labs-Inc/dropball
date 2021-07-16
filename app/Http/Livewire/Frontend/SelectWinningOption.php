@@ -44,6 +44,8 @@ class SelectWinningOption extends Component
     {
         return [
             "echo-private:event.{$this->bettingEvent->id}_PULA.play,confirmWinningSelection" => 'doNotifPula',
+            "echo-private:event.{$this->bettingEvent->id}_PUTI.play,confirmWinningSelection" => 'doNotifPuti',
+            "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,confirmWinningSelection" => 'doNotifJackpot',
             "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,confirmWinningSelection" => 'showCancelled',
             "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,confirmWinningSelection" => 'showApproved',
             'confirmSelection'         => 'confirmSelection',
@@ -63,10 +65,18 @@ class SelectWinningOption extends Component
     }
 
     public function doNotifPuti() {
-        $this->confirmWinningSelection('PUTI');
+        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
+            ->setOption('PUTI')
+            ->setRole($this->user)
+            ->setMessage( 'approval', 'approved', 'PUTI', "cancelled", true)
+            ->exec();
     }
     public function doNotifJackpot() {
-        $this->confirmWinningSelection('JACKPOT');
+        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
+            ->setOption('JACKPOT')
+            ->setRole($this->user)
+            ->setMessage( 'approval', 'approved', 'JACKPOT', "cancelled", true)
+            ->exec();
     }
 
     public function approved($selectedOption)
@@ -106,8 +116,6 @@ class SelectWinningOption extends Component
     {
         $selectedOption = session('selected_option');
         session()->forget('selected_option');
-        $latestBettingRount = $this->bettingRound['id'];
-        $this->bettingRound->payout = '1.3';
         redirect()->action([BettingRoundController::class, 'setResult'], ['result' => $selectedOption, 'bettingRound' => $this->bettingRound]);
     }
 
@@ -129,14 +137,15 @@ class SelectWinningOption extends Component
         return $this->bettingEvent->activeBettingRound()->first();
     }
 
-    public function confirmSelection($selectedOption)
+    public function confirmSelection($selectedOptionId)
     {
-        session()->put('selected_option', $selectedOption);
-        $this->selectedOption = $selectedOption;
+        $selectedOption = BetOption::find($selectedOptionId);
+        session()->put('selected_option', $selectedOptionId);
+        $this->selectedOption = $selectedOption->name;
         $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
-            ->setOption($selectedOption)
+            ->setOption($this->selectedOption)
             ->setRole($this->user)
-            ->setMessage( 'confirm', 'sendSelectionRequest', $selectedOption , '')
+            ->setMessage( 'confirm', 'sendSelectionRequest', $this->selectedOption , '')
             ->exec();
     }
 

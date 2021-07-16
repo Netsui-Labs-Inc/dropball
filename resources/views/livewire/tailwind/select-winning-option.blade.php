@@ -4,5 +4,5 @@
 
 @endphp
 <button class="btn-lg btn-block btn {{ $buttonType }}" style="background-color:{{$option->color}}; {{$borderColor}}"
-        wire:click="$emit('confirmSelection', '{{$option->name}}')">
+        wire:click="$emit('confirmSelection', '{{$option->id}}')">
     {{$option->name}}</button>

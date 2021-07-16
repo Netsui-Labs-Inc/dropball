@@ -43,9 +43,10 @@ class BettingEventController extends Controller
     public function create()
     {
         $admins = User::onlyActive()->admins()->role('Bet Admin')->get();
-
+        $dealerAdmins = User::onlyActive()->admins()->role('Dealer Admin')->get();
         return view('backend.betting-event.create')
-            ->with('admins', $admins);
+            ->with('admins', $admins)
+            ->with('dealerAdmins', $dealerAdmins);
     }
     public function edit(BettingEvent $bettingEvent)
     {
@@ -59,7 +60,6 @@ class BettingEventController extends Controller
     public function store(StoreBettingEventRequest $request)
     {
         $bettingEvent = $this->bettingEventService->store($request->validated());
-
         return redirect()->route('admin.betting-events.show', $bettingEvent)->withFlashSuccess(__('The stag event was successfully created.'));
     }
 

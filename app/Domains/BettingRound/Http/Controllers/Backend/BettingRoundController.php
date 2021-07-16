@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -25,8 +26,11 @@ class BettingRoundController extends Controller
 
     public function show(BettingRound $bettingRound)
     {
+
+        $isDealerAdmin = (auth()->user()->hasRole('Dealer Admin') === true) ? 'none' : '';
         return view('backend.betting-round.show')
-            ->with('bettingRound', $bettingRound);
+            ->with('bettingRound', $bettingRound)
+            ->with('isDealerAdmin', $isDealerAdmin);
     }
 
     public function openBetting(BettingRound $bettingRound)
@@ -150,11 +154,10 @@ class BettingRoundController extends Controller
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
         $bettingRound->save();
-
         logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
 
         $bettingRound->refresh();
-        dd($bettingRound);
+
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
