@@ -9,6 +9,7 @@ use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
 use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
+use App\Events\confirmWinningSelection;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use Faker\Factory;
@@ -149,9 +150,11 @@ class BettingRoundController extends Controller
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
         $bettingRound->save();
+
         logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
 
         $bettingRound->refresh();
+        dd($bettingRound);
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");

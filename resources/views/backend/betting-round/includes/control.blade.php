@@ -68,7 +68,7 @@
     @if($bettingRound->status == 'ongoing')
         @foreach ($bettingOptions as $option)
             <div class="col-12 col-md-3 p-2">
-                <livewire:front-end.select-color theme="tailwind" :option="$option" :bettingEventId="$bettingEvent->id" />
+                <livewire:front-end.select-winning-option theme="tailwind" :option="$option" :bettingEventId="$bettingEvent->id" />
             </div>
         @endforeach
             <div class="col-12 col-md-3 p-2">
