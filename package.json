@@ -21,11 +21,13 @@
         "bootstrap": "^4.6.0",
         "cross-env": "^7.0.3",
         "jquery": "^3.6.0",
+        "laravel-echo": "^1.11.0",
         "laravel-mix": "^6.0.25",
         "lodash": "^4.17.21",
         "perfect-scrollbar": "^1.5.1",
         "popper.js": "^1.16.1",
         "postcss": "^8.3.5",
+        "pusher-js": "^7.0.3",
         "resolve-url-loader": "^4.0.0",
         "sass": "^1.35.2",
         "sass-loader": "^8.0.0",
@@ -40,8 +42,6 @@
         "@videojs/http-streaming": "^2.9.2",
         "animate.css": "^4.1.1",
         "argon-design-system-free": "^1.2.0",
-        "flatpickr": "^4.6.9",
-        "laravel-echo": "^1.11.0",
-        "pusher-js": "^7.0.3"
+        "flatpickr": "^4.6.9"
     }
 }
