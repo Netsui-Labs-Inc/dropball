@@ -27,7 +27,7 @@ environments:
       warm: 10
       database: kingpinstagingdb
       queue-concurrency: 1
-      domain: test.peryapinoy.com
+      domain: staging.peryapinoy.com
       cli-memory: 512
       runtime: 'php-8.0:al2'
       queues:
