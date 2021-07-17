@@ -19,6 +19,7 @@ environments:
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
+        - 'php artisan optimize:clear'
   staging:
       memory: 1024
       warm: 10
@@ -37,4 +38,5 @@ environments:
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
+        - 'php artisan optimize:clear'
 
