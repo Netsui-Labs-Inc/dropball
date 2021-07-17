@@ -2,6 +2,7 @@ id: 22230
 name: peryapinoy
 environments:
   production:
+      gateway-version: 2
       memory: 1024
       warm: 10
       database: kingpindb
@@ -21,6 +22,7 @@ environments:
         - 'php artisan queue:restart'
         - 'php artisan optimize:clear'
   staging:
+      gateway-version: 2
       memory: 1024
       warm: 10
       database: kingpinstagingdb
