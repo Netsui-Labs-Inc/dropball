@@ -42,7 +42,8 @@
 
             </x-slot>
             <x-slot name="body">
-                @include('backend.betting-round.includes.control')
+
+                <livewire:front-end.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
                 @can('admin.access.betting-rounds.report')
                     @if ($bettingRound->status == 'ended')
                         <div class="row">

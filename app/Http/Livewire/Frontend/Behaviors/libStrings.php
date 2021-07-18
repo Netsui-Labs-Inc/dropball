@@ -64,11 +64,23 @@ trait libStrings
                     'params' => '',
                     'callback' => '',
                     'callbackParams' => '',
+                ],
+                'notify' => [
+                    'title' => 'This round has ended',
+                    'confirmText' => 'OK',
+                    'showConfirmButton' => true,
+                    'showCancelButton' => false,
+                    'allowOutsideClick' => false,
+                    'method' => '',
+                    'params' => '',
+                    'callback' => '',
+                    'callbackParams' => '',
                 ]
             ]
         ];
     public $BET_ADMIN = 'BET_ADMIN';
     public $DEALER_ADMIN = 'DEALER_ADMIN';
+
     public function  appendOptionToTitle($sOption)
     {
         $this->MESSAGE_PARAMS['BET_ADMIN']['confirm']['title'] .= $sOption;

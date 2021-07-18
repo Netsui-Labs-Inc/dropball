@@ -14,11 +14,12 @@ use App\Http\Livewire\Frontend\Behaviors\PopUpMessage;
 use App\Http\Livewire\Frontend\Behaviors\setMessageAndAction;
 use Livewire\Component;
 use Livewire\Event;
+use function Symfony\Component\Translation\t;
 
 class SelectWinningOption extends Component
 {
     use setMessageAndAction;
-    public $option;
+    public $bettingOptions;
     public $theme;
     public $bettingEvent;
     public $bettingRound;
@@ -27,17 +28,18 @@ class SelectWinningOption extends Component
     private $setMessageAndAction;
     private $selectedOption;
 
-    public function mount($option,
-                          $bettingEventId,
+    public function mount($bettingEventId,
+                          BettingRound $bettingRound,
                           $theme = 'default',
-                          BettingRound $bettingRound
+                          $bettingOptions
     ){
         $this->theme = $theme;
-        $this->option = $option;
+        $this->bettingOptions = $bettingOptions;
         $this->modelBettingRound = $bettingRound;
         $this->user = auth()->user();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
         $this->bettingRound = $this->getLatestBettingRound();
+
     }
 
     public function getListeners()
@@ -48,12 +50,33 @@ class SelectWinningOption extends Component
             "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,confirmWinningSelection" => 'doNotifJackpot',
             "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,confirmWinningSelection" => 'showCancelled',
             "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,confirmWinningSelection" => 'showApproved',
+            "echo-private:event.{$this->bettingEvent->id}_NOTIFYDEALERADMIN.play,confirmWinningSelection" => 'showNotifToDealerAdmin',
+            "echo-private:event.{$this->bettingEvent->id}_BETTINGROUNDSTARTDEALERADMIN.play,confirmWinningSelection" => 'informDealerAdminBettingRoundStart',
             'confirmSelection'         => 'confirmSelection',
             'sendSelectionRequest'         => 'sendSelectionRequest',
             'cancelled' => 'cancelled',
             'approved' => 'approved',
-            'showResult' => 'showResult'
+            'showResult' => 'showResult',
+            'pageReload' => 'pageReload'
         ];
+    }
+
+    public function showNotifToDealerAdmin()
+    {
+        $nextRount = $this->bettingRound->queue + 1;
+        $this->initialize([$this->DEALER_ADMIN => 'confirm'])
+            ->setOption('')
+            ->setRole($this->user)
+            ->setMessage(
+                'notify',
+                'pageReload',
+                '')
+            ->exec();
+    }
+
+    public function pageReload()
+    {
+        $this->redirect('/admin/reload');
     }
 
     public function doNotifPula() {

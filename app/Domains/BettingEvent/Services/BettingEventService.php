@@ -33,12 +33,12 @@ class BettingEventService extends BaseService
     public function update(BettingEvent $bettingEvent, array $data = [])
     {
         DB::beginTransaction();
-
         try {
             $bettingEvent = $bettingEvent->update([
                 'name' => $data['name'],
                 'description' => $data['description'],
                 'bet_admin_id' => $data['bet_admin_id'],
+                'dealer_admin_id' => $data['dealer_admin_id'],
                 'stream_url' => $data['stream_url'] ?? null,
                 'schedule' => $data['schedule'],
             ]);

@@ -32,7 +32,10 @@ class BettingRoundController extends Controller
             ->with('bettingRound', $bettingRound)
             ->with('isDealerAdmin', $isDealerAdmin);
     }
-
+    public function reloadPage()
+    {
+        return redirect()->back()->withFlashSuccess(__('Betting round has ended'));
+    }
     public function openBetting(BettingRound $bettingRound)
     {
         $activeBettingRoundId = $bettingRound->bettingEvent->activeBettingRound()->first()->id ?? null;
@@ -55,7 +58,6 @@ class BettingRoundController extends Controller
         event(new BettingRoundBettingWindowUpdated($bettingRound));
 
         $this->setMixer($bettingRound);
-
         return redirect()->back()->withFlashSuccess(__('Betting window was opened'));
     }
 
@@ -161,7 +163,7 @@ class BettingRoundController extends Controller
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-
+        event(new confirmWinningSelection($bettingRound, 'NOTIFYDEALERADMIN'));
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 
@@ -202,11 +204,6 @@ class BettingRoundController extends Controller
 
         $bettingRound->meta = $meta;
         $bettingRound->save();
-    }
-
-    public function askForConfirmation(BettingRound $bettingRound)
-    {
-        dd($bettingRound);
     }
 
 }

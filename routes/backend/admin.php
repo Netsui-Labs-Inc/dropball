@@ -110,7 +110,8 @@ Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/edit', [
         $trail->parent('admin.betting-events.show', $bettingEvent);
         $trail->push("Edit BettingRound #".$bettingRound->id, route('admin.betting-events.betting-rounds.edit', [$bettingEvent, $bettingRound]));
     });
-
+Route::get('reload',[BettingRoundController::class, 'reloadPage'])
+    ->name('admin.reload');
 
 Route::get('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'show'])
     ->name('betting-events.jackpots.show')

@@ -2,8 +2,6 @@
 
 namespace App\Http\Livewire\Frontend\Behaviors;
 
-use Livewire\Component;
-
 trait PopUpMessage
 {
 

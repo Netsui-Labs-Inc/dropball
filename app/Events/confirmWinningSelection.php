@@ -20,17 +20,17 @@ class confirmWinningSelection implements ShouldBroadcast, ShouldQueue
 
     public BettingRound $bettingRound;
     public BettingEvent $bettingEvent;
-    private $selectedOption;
+    private  $eventId;
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
      * @return void
      */
-    public function __construct(BettingRound $bettingRound, $selectedOption)
+    public function __construct(BettingRound $bettingRound, $eventId)
     {
         $this->bettingRound = $bettingRound;
         $this->bettingEvent = $bettingRound->bettingEvent;
-        $this->selectedOption = $selectedOption;
+        $this->eventId =  $eventId;
 
     }
 
@@ -41,6 +41,6 @@ class confirmWinningSelection implements ShouldBroadcast, ShouldQueue
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'_'.$this->selectedOption.'.play');
+        return new PrivateChannel('event.'.$this->bettingEvent->id.'_'.$this->eventId.'.play');
     }
 }
