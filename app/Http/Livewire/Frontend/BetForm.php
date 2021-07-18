@@ -4,11 +4,13 @@ namespace App\Http\Livewire\Frontend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
+use App\Domains\Bet\Actions\GetWinningStreakAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Jobs\SetPlayerWinningStreakJob;
 use Livewire\Component;
 
 class BetForm extends Component
@@ -173,7 +175,10 @@ class BetForm extends Component
         $userBet = $this->bettingRound->userBets($user->id)->first();
         if($userBet) {
             if($userBet->bet === $this->bettingRound->result) {
-                $this->winStreak = $user->winning_streak + 1;
+                $winningStreak = (new GetWinningStreakAction)($user);
+                $user->winning_streak = $winningStreak;
+                $user->update();
+                $this->winStreak = $winningStreak;
                 $this->balance += $this->payouts['betPayout'];
             } else {
                $this->winStreak = 0;
