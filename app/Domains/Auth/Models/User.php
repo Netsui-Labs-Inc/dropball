@@ -60,6 +60,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'MASTER_AGENT' => 2,
         'BET_ADMIN' => 3,
         'PLAYER' => 4,
+        'DEALER_ADMIN' => 5
     ];
     /**
      * The attributes that are mass assignable.
