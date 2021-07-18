@@ -28,19 +28,22 @@
             </x-slot>
         </x-backend.card>
     </div>
-    <div class="col-12">
+    <div class="col-12" style="display: {{$isDealerAdmin}}">
         <x-backend.card headerClass="bg-primary">
             <x-slot name="header">
-                <div class="row align-items-center">
-                    <div class="col">
-                        <h3 class="h3 text-white mb-0">
-                            @lang('Betting Round Control')
-                        </h3>
+
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h3 class="h3 text-white mb-0">
+                                @lang('Betting Round Control')
+                            </h3>
+                        </div>
                     </div>
-                </div>
+
             </x-slot>
             <x-slot name="body">
-                @include('backend.betting-round.includes.control')
+
+                <livewire:front-end.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
                 @can('admin.access.betting-rounds.report')
                     @if ($bettingRound->status == 'ended')
                         <div class="row">

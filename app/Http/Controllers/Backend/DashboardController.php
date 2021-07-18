@@ -64,8 +64,10 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        $bettingEvent = BettingEvent::today($user->timezone)->where('dealer_admin_id', $user->id)->first() ?? null;
         return view('backend.dashboard.dealer-admin')
-            ->with('user', $user);
+            ->with('user', $user)
+            ->with('bettingEvent', $bettingEvent);
     }
 
     public function superAdmin()
