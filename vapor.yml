@@ -20,7 +20,6 @@ environments:
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
-        - 'php artisan optimize:clear'
   staging:
       gateway-version: 2
       memory: 1024
@@ -40,5 +39,4 @@ environments:
       deploy:
         - 'php artisan migrate --force'
         - 'php artisan queue:restart'
-        - 'php artisan optimize:clear'
 
