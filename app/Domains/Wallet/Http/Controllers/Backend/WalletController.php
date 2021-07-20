@@ -75,7 +75,9 @@ class WalletController extends \App\Http\Controllers\Controller
 
         if ($request->user()->hasRole('Virtual Hub')) {
             $hub = Hub::where('admin_id',  $request->user()->id)->first();
-
+            if ($hub === null) {
+                return redirect()->back()->withErrors("Wallet is unavailable. please contact the account administrator");
+            }
             if (! $hub->hasWallet('income-wallet')) {
                 $hubWallet = $hub->createWallet([
                     'name' => 'Income Wallet',
