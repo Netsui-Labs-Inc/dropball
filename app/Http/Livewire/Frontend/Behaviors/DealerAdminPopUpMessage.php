@@ -4,30 +4,30 @@ namespace App\Http\Livewire\Frontend\Behaviors;
 
 class DealerAdminPopUpMessage
 {
-    private $oPopUpMessage;
-    public function __construct(PopUpMessage $oPopUpMessage)
+    private $popUpMessage;
+    public function __construct(PopUpMessage $popUpMessage)
     {
-        $this->oPopUpMessage = $oPopUpMessage;
+        $this->popUpMessage = $popUpMessage;
     }
 
-    public function confirmSelection($sAppendToTitle)
+    public function confirmSelection($selectedWinningBet)
     {
-       return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeConfirm())
+       return $this->popUpMessage->setType($this->popUpMessage->getTypeConfirm())
            ->setIcon('warning')
-           ->setTitle('Bet Admin Selected ' . $sAppendToTitle)
+           ->setTitle('Bet Admin Selected ' . $selectedWinningBet)
            ->setConfirmText('PROCEED')
            ->setConfirmButtonVisibility(true)
            ->setCancelButtonVisibility(true)
            ->setAllowOutsideClick(false)
            ->setMethodToExecUponConfirm('approved')
            ->setMethodToExecUponCancel('cancelled')
-           ->setConfirmMethodParameters($sAppendToTitle)
+           ->setConfirmMethodParameters($selectedWinningBet)
            ->getPopUp();
     }
 
-    public function RoundEndedNotification()
+    public function roundEndedNotification()
     {
-        return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeConfirm())
+        return $this->popUpMessage->setType($this->popUpMessage->getTypeConfirm())
             ->setTitle('This round has ended')
             ->setConfirmText('OK')
             ->setConfirmButtonVisibility(true)
@@ -37,11 +37,11 @@ class DealerAdminPopUpMessage
             ->getPopUp();
     }
 
-    public function showConfirmationResult($sResult, $callback = '')
+    public function showConfirmationResult($result, $callback = '')
     {
-        return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeAlert())
+        return $this->popUpMessage->setType($this->popUpMessage->getTypeAlert())
             ->setIcon('info')
-            ->setTitle('Selection was ' . $sResult)
+            ->setTitle('Selection was ' . $result)
             ->setMethodToExecUponConfirm($callback)
             ->getPopUp();
     }

@@ -10,7 +10,7 @@ use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
 use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
-use App\Events\ConfirmBetResult;
+use App\Events\ConfirmBetBettingResult;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use Faker\Factory;
@@ -164,7 +164,7 @@ class BettingRoundController extends Controller
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-        event(new ConfirmBetResult($bettingRound, 'NOTIFYDEALERADMIN'));
+        event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 
