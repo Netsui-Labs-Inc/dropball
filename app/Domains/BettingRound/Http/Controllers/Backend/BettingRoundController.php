@@ -10,7 +10,7 @@ use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
 use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
-use App\Events\confirmWinningSelection;
+use App\Events\ConfirmBetResult;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use Faker\Factory;
@@ -27,11 +27,12 @@ class BettingRoundController extends Controller
     public function show(BettingRound $bettingRound)
     {
 
-        $isDealerAdmin = (auth()->user()->hasRole('Dealer Admin') === true) ? 'none' : '';
+        $sVisible = (auth()->user()->hasRole('Dealer Admin') === true) ? 'none' : '';
         return view('backend.betting-round.show')
             ->with('bettingRound', $bettingRound)
-            ->with('isDealerAdmin', $isDealerAdmin);
+            ->with('sVisible', $sVisible);
     }
+
     public function reloadPage()
     {
         return redirect()->back()->withFlashSuccess(__('Betting round has ended'));
@@ -163,7 +164,7 @@ class BettingRoundController extends Controller
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-        event(new confirmWinningSelection($bettingRound, 'NOTIFYDEALERADMIN'));
+        event(new ConfirmBetResult($bettingRound, 'NOTIFYDEALERADMIN'));
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 

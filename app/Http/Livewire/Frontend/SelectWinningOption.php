@@ -7,31 +7,24 @@ use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Http\Controllers\Backend\BettingRoundController;
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Events\BettingRoundBettingWindowUpdated;
-use App\Events\confirmWinningSelection;
-use App\Http\Livewire\Frontend\Behaviors\libStrings;
-use App\Http\Livewire\Frontend\Behaviors\PopUpMessage;
-use App\Http\Livewire\Frontend\Behaviors\setMessageAndAction;
+use App\Events\ConfirmBetResult;
+use App\Http\Livewire\Frontend\Behaviors\BetAdminPopUpMessage;
+use App\Http\Livewire\Frontend\Behaviors\DealerAdminPopUpMessage;
 use Livewire\Component;
-use Livewire\Event;
-use function Symfony\Component\Translation\t;
 
 class SelectWinningOption extends Component
 {
-    use setMessageAndAction;
     public $bettingOptions;
     public $theme;
     public $bettingEvent;
     public $bettingRound;
     public ?User $user;
     public $modelBettingRound;
-    private $setMessageAndAction;
-    private $selectedOption;
 
     public function mount($bettingEventId,
                           BettingRound $bettingRound,
-                          $theme = 'default',
-                          $bettingOptions
+                          $bettingOptions,
+                          $theme = 'default'
     ){
         $this->theme = $theme;
         $this->bettingOptions = $bettingOptions;
@@ -42,16 +35,25 @@ class SelectWinningOption extends Component
 
     }
 
+    public function setMesssagePopUp($oBetAdmin, $oDealerAdmin)
+    {
+        if ($this->user->hasRole('Bet Admin')) {
+            return $oBetAdmin;
+        }
+        return $oDealerAdmin;
+
+    }
+
     public function getListeners()
     {
         return [
-            "echo-private:event.{$this->bettingEvent->id}_PULA.play,confirmWinningSelection" => 'doNotifPula',
-            "echo-private:event.{$this->bettingEvent->id}_PUTI.play,confirmWinningSelection" => 'doNotifPuti',
-            "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,confirmWinningSelection" => 'doNotifJackpot',
-            "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,confirmWinningSelection" => 'showCancelled',
-            "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,confirmWinningSelection" => 'showApproved',
-            "echo-private:event.{$this->bettingEvent->id}_NOTIFYDEALERADMIN.play,confirmWinningSelection" => 'showNotifToDealerAdmin',
-            "echo-private:event.{$this->bettingEvent->id}_BETTINGROUNDSTARTDEALERADMIN.play,confirmWinningSelection" => 'informDealerAdminBettingRoundStart',
+            "echo-private:event.{$this->bettingEvent->id}_PULA.play,ConfirmBetResult" => 'doNotifPula',
+            "echo-private:event.{$this->bettingEvent->id}_PUTI.play,ConfirmBetResult" => 'doNotifPuti',
+            "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,ConfirmBetResult" => 'doNotifJackpot',
+            "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,ConfirmBetResult" => 'showCancelled',
+            "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,ConfirmBetResult" => 'showApproved',
+            "echo-private:event.{$this->bettingEvent->id}_NOTIFYDEALERADMIN.play,ConfirmBetResult" => 'showNotifToDealerAdmin',
+            "echo-private:event.{$this->bettingEvent->id}_BETTINGROUNDSTARTDEALERADMIN.play,ConfirmBetResult" => 'informDealerAdminBettingRoundStart',
             'confirmSelection'         => 'confirmSelection',
             'sendSelectionRequest'         => 'sendSelectionRequest',
             'cancelled' => 'cancelled',
@@ -59,80 +61,84 @@ class SelectWinningOption extends Component
             'showResult' => 'showResult',
             'pageReload' => 'pageReload'
         ];
+
     }
 
-    public function showNotifToDealerAdmin()
-    {
-        $nextRount = $this->bettingRound->queue + 1;
-        $this->initialize([$this->DEALER_ADMIN => 'confirm'])
-            ->setOption('')
-            ->setRole($this->user)
-            ->setMessage(
-                'notify',
-                'pageReload',
-                '')
-            ->exec();
+    public function showNotifToDealerAdmin(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->RoundEndedNotification();
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
 
     public function pageReload()
     {
         $this->redirect('/admin/reload');
+
     }
 
-    public function doNotifPula() {
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
-            ->setOption('PULA')
-            ->setRole($this->user)
-            ->setMessage( 'approval', 'approved', 'PULA', "cancelled", true)
-            ->exec();
+    public function doNotifPula(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->confirmSelection('PULA');
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
 
-    public function doNotifPuti() {
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
-            ->setOption('PUTI')
-            ->setRole($this->user)
-            ->setMessage( 'approval', 'approved', 'PUTI', "cancelled", true)
-            ->exec();
+    public function doNotifPuti(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->confirmSelection('PUTI');
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
-    public function doNotifJackpot() {
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
-            ->setOption('JACKPOT')
-            ->setRole($this->user)
-            ->setMessage( 'approval', 'approved', 'JACKPOT', "cancelled", true)
-            ->exec();
+    public function doNotifJackpot(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->confirmSelection('JACKPOT');
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
 
     public function approved($selectedOption)
     {
-        event(new confirmWinningSelection($this->bettingRound,'APPROVED'));
+        event(new ConfirmBetResult($this->bettingRound,'APPROVED'));
+
     }
 
     public function cancelled($params)
     {
-        event(new confirmWinningSelection($this->bettingRound,'CANCELLED'));
+        event(new ConfirmBetResult($this->bettingRound,'CANCELLED'));
+
     }
 
-    public function showCancelled()
-    {
-        if ($this->user->hasRole('Dealer Admin')) {
-            return;
-        }
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => ''])
-            ->setRole($this->user)
-            ->setMessage( 'alert_cancelled', '', '', '')
-            ->exec();
+    public function showCancelled(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->showConfirmationResult('cancelled');
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
 
-    public function showApproved()
-    {
-        if ($this->user->hasRole('Dealer Admin')) {
-            return;
-        }
+    public function showApproved(
+        BetAdminPopUpMessage $oBetAdminPopUpMessage,
+        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    ){
+        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
+        $aPopUp = $oMessagePopUp->showConfirmationResult('approved', 'showResult');
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
 
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => ''])
-            ->setRole($this->user)
-            ->setMessage( 'approved', 'showResult', '', '')
-            ->exec();
     }
 
     public function showResult()
@@ -140,12 +146,9 @@ class SelectWinningOption extends Component
         $selectedOption = session('selected_option');
         session()->forget('selected_option');
         redirect()->action([BettingRoundController::class, 'setResult'], ['result' => $selectedOption, 'bettingRound' => $this->bettingRound]);
+
     }
 
-    public function execute($aParams)
-    {
-        $this->emit($aParams['type'], $aParams['params']);
-    }
     public function getLatestBettingRound()
     {
         if (is_array($this->bettingEvent)) {
@@ -158,28 +161,28 @@ class SelectWinningOption extends Component
         }
 
         return $this->bettingEvent->activeBettingRound()->first();
+
     }
 
-    public function confirmSelection($selectedOptionId)
+    public function confirmSelection($selectedOptionId, BetAdminPopUpMessage $oBetAdminPopUpMessage)
     {
         $selectedOption = BetOption::find($selectedOptionId);
         session()->put('selected_option', $selectedOptionId);
-        $this->selectedOption = $selectedOption->name;
-        $this->initialize([$this->BET_ADMIN => 'confirm', $this->DEALER_ADMIN => 'confirm'])
-            ->setOption($this->selectedOption)
-            ->setRole($this->user)
-            ->setMessage( 'confirm', 'sendSelectionRequest', $this->selectedOption , '')
-            ->exec();
+        $aPopUp = $oBetAdminPopUpMessage->selectBet($selectedOption->name);
+        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+
     }
 
     public function sendSelectionRequest($params)
     {
-        event(new confirmWinningSelection($this->bettingRound, $params));
+        event(new ConfirmBetResult($this->bettingRound, $params));
+
     }
 
     public function render()
     {
         return view('livewire.'. $this->theme .'.select-winning-option')
             ->with('bettingRound', $this->bettingRound);
+
     }
 }
