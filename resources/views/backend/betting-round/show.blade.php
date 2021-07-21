@@ -28,7 +28,8 @@
             </x-slot>
         </x-backend.card>
     </div>
-    <div class="col-12" style="display: {{$isDealerAdmin}}">
+
+    <div class="col-12" style="display: {{ $sVisible }}">
         <x-backend.card headerClass="bg-primary">
             <x-slot name="header">
 

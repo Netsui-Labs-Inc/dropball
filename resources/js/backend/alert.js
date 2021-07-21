@@ -23,7 +23,7 @@ const SwalConfirm = (
     params,
     callback,
     callback_params,
-    show_cancel_button = false,
+    show_cancel_button = true,
     show_confirm_button = true,
     allow_outside_click= true,
 ) => {
