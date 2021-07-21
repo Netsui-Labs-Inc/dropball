@@ -295,7 +295,6 @@ class PermissionRoleSeeder extends Seeder
         //
         $this->masterAgent();
         $this->betAdmin();
-        $this->dealerAdmin();
         $this->virtualHub();
         $this->satoshi();
         $this->operator();
@@ -351,23 +350,6 @@ class PermissionRoleSeeder extends Seeder
         $role = Role::create([
             'type' => User::TYPE_ADMIN,
             'name' => 'Bet Admin',
-        ]);
-
-        $role->givePermissionTo([
-            'admin.access.betting-events.list',
-            'admin.access.betting-events.show',
-            'admin.access.betting-rounds.list',
-            'admin.access.betting-rounds.edit',
-            'admin.access.betting-rounds.moderate',
-            'admin.access.betting-rounds.bets',
-        ]);
-    }
-
-    public function dealerAdmin()
-    {
-        $role = Role::create([
-            'type' => User::TYPE_ADMIN,
-            'name' => 'Dealer Admin',
         ]);
 
         $role->givePermissionTo([

@@ -20,7 +20,6 @@ class CreateBettingEventsTable extends Migration
             $table->text('description')->nullable();
             $table->date('schedule');
             $table->bigInteger('bet_admin_id')->unsigned()->nullable();
-            $table->bigInteger('dealer_admin_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
 

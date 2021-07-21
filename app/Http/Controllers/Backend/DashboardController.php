@@ -30,9 +30,7 @@ class DashboardController extends Controller
             return $this->masterAgent();
         } elseif ($user->hasRole('Bet Admin')) {
             return $this->betAdmin();
-        } elseif ($user->hasRole('Dealer Admin')) {
-            return $this->dealerAdmin();
-        }elseif ($user->hasRole('Virtual Hub')) {
+        } elseif ($user->hasRole('Virtual Hub')) {
             return $this->virtualHub();
         } elseif ($user->hasRole('Operator')) {
             return $this->operator();
@@ -57,15 +55,6 @@ class DashboardController extends Controller
         $bettingEvent = BettingEvent::today($user->timezone)->where('bet_admin_id', $user->id)->first() ?? null;
 
         return view('backend.dashboard.bet-admin')
-            ->with('user', $user)
-            ->with('bettingEvent', $bettingEvent);
-    }
-    public function dealerAdmin()
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $bettingEvent = BettingEvent::today($user->timezone)->where('dealer_admin_id', $user->id)->first() ?? null;
-        return view('backend.dashboard.dealer-admin')
             ->with('user', $user)
             ->with('bettingEvent', $bettingEvent);
     }

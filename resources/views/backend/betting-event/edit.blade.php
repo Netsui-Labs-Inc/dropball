@@ -46,15 +46,6 @@
                         <label for="name" class="col-md-2 col-form-label">@lang('Bet Admin')</label>
                         <div class="col-md-10">
                             {{Form::select('bet_admin_id', $admins, $bettingEvent->bet_admin_id,['class' => 'form-control', 'required'])}}
-
-                        </div>
-                    </div>
-                </div>
-                <div x-data="{dealerAdmin : ''}">
-                    <div class="form-group row">
-                        <label for="name" class="col-md-2 col-form-label">@lang('Dealer Admin')</label>
-                        <div class="col-md-10">
-                            {{Form::select('dealer_admin_id', $dealerAdmins, $bettingEvent->dealer_admin_id,['class' => 'form-control', 'required'])}}
                         </div>
                     </div>
                 </div>

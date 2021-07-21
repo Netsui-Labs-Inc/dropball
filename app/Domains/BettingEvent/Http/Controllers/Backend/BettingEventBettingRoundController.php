@@ -2,7 +2,6 @@
 
 namespace App\Domains\BettingEvent\Http\Controllers\Backend;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Http\Requests\StoreBettingEventBettingRoundRequest;
 use App\Domains\BettingEvent\Models\BettingEvent;
@@ -21,12 +20,11 @@ class BettingEventBettingRoundController extends Controller
             $activeBettingRoundLink = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $activeBettingRoundId]);
             throw new GeneralException("Cannot Open Betting Round Yet. <a href='$activeBettingRoundLink'>Betting Round #$activeBettingRoundId</a> is still ongoing");
         }
-        $sVisible = (auth()->user()->hasRole('Dealer Admin') === true) ? 'none' : '';
+
         return view('backend.betting-round.show')
             ->with('bettingEvent', $bettingEvent)
             ->with('bettingRound', $bettingRound)
             ->with('bettingOptions', BetOption::where('hidden', 0)->get())
-            ->with('sVisible', $sVisible)
             ->with('nextBettingRound', $nextBettingRound);
     }
 

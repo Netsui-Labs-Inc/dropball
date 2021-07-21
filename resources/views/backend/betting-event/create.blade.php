@@ -54,20 +54,6 @@
                         </div>
                     </div>
                 </div>
-                <div x-data="{dealerAdmin : ''}">
-                    <div class="form-group row">
-                        <label for="name" class="col-md-2 col-form-label">@lang('Dealer Admin')</label>
-                        <div class="col-md-10">
-                            <select name="dealer_admin_id" class="form-control" required x-on:change="dealerAdmin = $event.target.value">
-                                <option value="">Select Dealer Admin</option>
-                                @foreach($dealerAdmins as $dealerAdmin)
-                                    <option value="{{$dealerAdmin->id}}">{{$dealerAdmin->name}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </x-slot>
             </x-slot>
             <x-slot name="footer">
                 <button class="btn btn-sm btn-primary float-right" type="submit">@lang('Create Betting Event')</button>

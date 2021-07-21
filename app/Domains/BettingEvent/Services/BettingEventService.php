@@ -17,6 +17,7 @@ class BettingEventService extends BaseService
     public function store(array $data = [])
     {
         DB::beginTransaction();
+
         try {
             $bettingEvent = $this->createBettingEvent($data);
         } catch (\Exception $e) {
@@ -33,12 +34,12 @@ class BettingEventService extends BaseService
     public function update(BettingEvent $bettingEvent, array $data = [])
     {
         DB::beginTransaction();
+
         try {
             $bettingEvent = $bettingEvent->update([
                 'name' => $data['name'],
                 'description' => $data['description'],
                 'bet_admin_id' => $data['bet_admin_id'],
-                'dealer_admin_id' => $data['dealer_admin_id'],
                 'stream_url' => $data['stream_url'] ?? null,
                 'schedule' => $data['schedule'],
             ]);
@@ -59,7 +60,6 @@ class BettingEventService extends BaseService
             'name' => $data['name'],
             'description' => $data['description'],
             'bet_admin_id' => $data['bet_admin_id'],
-            'dealer_admin_id' => $data['dealer_admin_id'],
             'stream_url' => $data['stream_url'] ?? config('dropball.stream_url_default'),
             'schedule' => $data['schedule'],
         ]);

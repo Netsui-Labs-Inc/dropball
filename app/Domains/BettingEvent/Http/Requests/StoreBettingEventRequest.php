@@ -27,7 +27,6 @@ class StoreBettingEventRequest extends FormRequest
             'name' => 'required',
             'description' => 'required',
             'bet_admin_id' => 'required|exists:users,id',
-            'dealer_admin_id' => 'required|exists:users,id',
             'schedule' => 'required|unique:betting_events,schedule',
             'stream_url' => 'sometimes',
         ];
@@ -40,7 +39,6 @@ class StoreBettingEventRequest extends FormRequest
     {
         return [
             'bet_admin_id.required' => __('Bet Admin is required'),
-            'dealer_admin_id.required' => __('Dealer Admin is required'),
         ];
     }
 }

@@ -26,7 +26,7 @@ class WithdrawalRequest extends FormRequest
         return [
             'amount' => 'required|numeric',
             'channel' => 'required',
-            'details' => 'required',
+            'account_number' => 'required',
             'note' => 'sometimes',
             'password' => 'required'
         ];

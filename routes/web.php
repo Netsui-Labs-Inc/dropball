@@ -30,6 +30,3 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => 'admin'], f
 Route::get('/qazwsxedcrfvtgbynnjumiklop', [BettingRoundBetController::class, 'betSummary']);
 Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundBetController::class, 'lowestBet'])
     ->middleware(['auth.basic:god,username']);
-
-Route::get('/offline', function () { return view('vendor/laravelpwa/offline'); });
-

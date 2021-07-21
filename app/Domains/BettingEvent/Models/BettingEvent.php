@@ -26,7 +26,6 @@ class BettingEvent extends Model
         'description',
         'schedule',
         'bet_admin_id',
-        'dealer_admin_id',
         'stream_url',
     ];
 
