@@ -75,7 +75,9 @@ class WalletController extends \App\Http\Controllers\Controller
 
         if ($request->user()->hasRole('Virtual Hub')) {
             $hub = Hub::where('admin_id',  $request->user()->id)->first();
-
+            if ($hub === null) {
+                return redirect()->back()->withErrors("Wallet is unavailable. please contact the account administrator");
+            }
             if (! $hub->hasWallet('income-wallet')) {
                 $hubWallet = $hub->createWallet([
                     'name' => 'Income Wallet',
@@ -95,7 +97,6 @@ class WalletController extends \App\Http\Controllers\Controller
     {
         /** @var User $user */
         $user = $request->user();
-
         if (! Hash::check($request->get('password'), $user->password)) {
             return redirect()->back()->withErrors("Invalid Password");
         }
@@ -120,7 +121,6 @@ class WalletController extends \App\Http\Controllers\Controller
                 $user->getWallet('income-wallet')
                     ->withdrawFloat($request->get('amount'), $meta, false);
             }
-
             return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balance));

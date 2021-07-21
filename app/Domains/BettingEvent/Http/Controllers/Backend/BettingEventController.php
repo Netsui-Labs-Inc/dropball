@@ -43,30 +43,30 @@ class BettingEventController extends Controller
     public function create()
     {
         $admins = User::onlyActive()->admins()->role('Bet Admin')->get();
-
+        $dealerAdmins = User::onlyActive()->admins()->role('Dealer Admin')->get();
         return view('backend.betting-event.create')
-            ->with('admins', $admins);
+            ->with('admins', $admins)
+            ->with('dealerAdmins', $dealerAdmins);
     }
     public function edit(BettingEvent $bettingEvent)
     {
         $admins = User::onlyActive()->admins()->role('Bet Admin')->pluck('name', 'id');
-
+        $dealerAdmins = User::onlyActive()->admins()->role('Dealer Admin')->pluck('name', 'id');
         return view('backend.betting-event.edit')
             ->with('bettingEvent', $bettingEvent)
-            ->with('admins', $admins);
+            ->with('admins', $admins)
+            ->with('dealerAdmins', $dealerAdmins);
     }
 
     public function store(StoreBettingEventRequest $request)
     {
         $bettingEvent = $this->bettingEventService->store($request->validated());
-
         return redirect()->route('admin.betting-events.show', $bettingEvent)->withFlashSuccess(__('The stag event was successfully created.'));
     }
 
     public function update(UpdateBettingEventRequest $request, BettingEvent $bettingEvent)
     {
         $bettingEvent = $this->bettingEventService->update($bettingEvent, $request->validated());
-
         return redirect()->route('admin.betting-events.index')->withFlashSuccess(__('The stag event was successfully updated.'));
     }
 
