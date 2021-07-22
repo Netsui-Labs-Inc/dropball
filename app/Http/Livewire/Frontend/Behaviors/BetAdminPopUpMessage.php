@@ -4,30 +4,30 @@ namespace App\Http\Livewire\Frontend\Behaviors;
 
 class BetAdminPopUpMessage
 {
-    private $oPopUpMessage;
+    private $popUpMessage;
 
-    public function __construct(PopUpMessage $oPopUpMessage)
+    public function __construct(PopUpMessage $popUpMessage)
     {
-        $this->oPopUpMessage = $oPopUpMessage;
+        $this->popUpMessage = $popUpMessage;
     }
 
-    public function selectBet($sAppendToTitle)
+    public function selectBet($selectedWinningBet)
     {
-        return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeConfirm())
+        return $this->popUpMessage->setType($this->popUpMessage->getTypeConfirm())
             ->setIcon('warning')
-            ->setTitle('Are you sure you want to select ' . $sAppendToTitle)
+            ->setTitle('Are you sure you want to select ' . $selectedWinningBet)
             ->setConfirmText('YES')
             ->setConfirmButtonVisibility(true)
             ->setCancelButtonVisibility(true)
             ->setAllowOutsideClick(false)
             ->setMethodToExecUponConfirm('sendSelectionRequest')
-            ->setConfirmMethodParameters($sAppendToTitle)
+            ->setConfirmMethodParameters($selectedWinningBet)
             ->getPopUp();
     }
 
-    public function confirmSelection($sSelectedBet)
+    public function confirmSelection($selectedBet)
     {
-        return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeConfirm())
+        return $this->popUpMessage->setType($this->popUpMessage->getTypeConfirm())
             ->setIcon('info')
             ->setTitle('Please wait for the Dealer Admin Confirmation')
             ->setConfirmText('OK')
@@ -35,15 +35,15 @@ class BetAdminPopUpMessage
             ->setCancelButtonVisibility(false)
             ->setAllowOutsideClick(false)
             ->setMethodToExecUponConfirm('approved')
-            ->setConfirmMethodParameters($sSelectedBet)
+            ->setConfirmMethodParameters($selectedBet)
             ->getPopUp();
     }
 
-    public function showConfirmationResult($sResult, $callback = '')
+    public function showConfirmationResult($result, $callback = '')
     {
-        return $this->oPopUpMessage->setType($this->oPopUpMessage->getTypeConfirm())
+        return $this->popUpMessage->setType($this->popUpMessage->getTypeConfirm())
             ->setIcon('info')
-            ->setTitle('Selection was ' . $sResult)
+            ->setTitle('Selection was ' . $result)
             ->setConfirmText('OK')
             ->setConfirmButtonVisibility(true)
             ->setCancelButtonVisibility(false)
