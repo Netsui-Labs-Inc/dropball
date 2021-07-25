@@ -26,16 +26,33 @@ class JackpotTab extends Component
 
     public $theme = 'default';
 
+    public $topPlayers = [];
+
     public function mount($bettingEventId, $theme = 'default')
     {
         $this->theme = $theme;
         $this->bettingEvent = BettingEvent::find($bettingEventId);
+        $this->setBettingEventAndJackpot();
+    }
+
+    public function setBettingEventAndJackpot()
+    {
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
         if($this->bettingEvent->activeJackpot) {
             $this->jackpot = $this->bettingEvent->activeJackpot;
             $this->prize = $this->jackpot->prize;
+            $this->topPlayers = $this->getTopPlayers($this->bettingEvent);
         }
+    }
+
+    public function getTopPlayers(BettingEvent $bettingEvent)
+    {
+        $minStreak = config('dropball.jackpot.minimum_streak');
+        return User::where('last_event_id', $bettingEvent->id)
+            ->where('winning_streak', '>=',$minStreak)
+            ->orderBy('winning_streak', 'desc')
+            ->get();
     }
 
     public function getListeners()
@@ -45,7 +62,7 @@ class JackpotTab extends Component
         }
 
         return [
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'updateResultHandler',
+            "echo-private:event.{$this->bettingEvent->id}.play,JackpotPoolMoneyUpdated" => 'updatePoolMoneyHandler',
         ];
     }
 
@@ -63,20 +80,19 @@ class JackpotTab extends Component
         return $this->bettingEvent->activeBettingRound()->first();
     }
 
-    public function updateResultHandler($data)
+    public function updatePoolMoneyHandler($data)
     {
-        if (!$data['bettingRound']) {
+        if (!$data['bettingRoundId']) {
             $this->bettingRound = null;
 
             return;
         }
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
-        if($this->bettingEvent->activeJackpot) {
-            $this->jackpot = $this->bettingEvent->activeJackpot;
-            $this->prize = $this->jackpot->prize;
-        }
+        $this->setBettingEventAndJackpot();
     }
+
 
     public function render()
     {

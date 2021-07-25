@@ -12,7 +12,7 @@ class GetWinningStreakAction
     {
         $bets = $user->bets()->whereHas('bettingRound', function($query) use($bettingEvent) {
             $query->where('betting_event_id', $bettingEvent->id);
-        })->whereNotNull('status')->where->get();
+        })->whereNotNull('status')->get();
 
         $winningStreak = 0;
 

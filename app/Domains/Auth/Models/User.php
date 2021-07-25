@@ -80,6 +80,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'timezone',
         'last_login_at',
         'last_login_ip',
+        'last_event_id',
         'to_be_logged_out',
         'provider',
         'provider_id',
