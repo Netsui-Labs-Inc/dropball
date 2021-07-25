@@ -46,9 +46,6 @@ class JackpotTab extends Component
 
         return [
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'updateResultHandler',
-            "amountUpdated" => 'setAmount',
-            "placeBet" => 'placeBet',
-            "confirmBet" => 'confirmBet',
         ];
     }
 
