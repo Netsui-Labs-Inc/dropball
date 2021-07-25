@@ -7,73 +7,73 @@ use function Clue\StreamFilter\prepend;
 
 class PopUpMessage
 {
-    private $sTypeModal = 'swal:modal';
-    private $sTypeConfirm = 'swal:confirm';
-    private $stypeAlert = 'swal:alert';
-    private $sType  = 'type';
-    private $sIcon = 'icon';
-    private $sTitle = 'title';
-    private $sConfirmText = 'confirmText';
-    private $sShowConfirmButton = 'show_confirm_button';
-    private $sShowCancelButton  = 'show_cancel_button';
-    private $sAllowOutsideClick = 'allow_outside_click';
-    private $sMethod = 'method';
-    private $sCallBack = 'callback';
-    private $sCallBackParams = 'callback_params';
-    private $sParams = 'params';
+    private $typeModal = 'swal:modal';
+    private $typeConfirm = 'swal:confirm';
+    private $typeAlert = 'swal:alert';
+    private $type  = 'type';
+    private $icon = 'icon';
+    private $title = 'title';
+    private $confirmText = 'confirmText';
+    private $showConfirmButton = 'show_confirm_button';
+    private $showCancelButton  = 'show_cancel_button';
+    private $allowOutsideClick = 'allow_outside_click';
+    private $method = 'method';
+    private $callBack = 'callback';
+    private $callBackParams = 'callback_params';
+    private $params = 'params';
 
-    private $aPopUp = [
+    private $popUp = [
         'type'   => '',
         'params' => []
     ];
 
-    public function setType($sType)
+    public function setType($type)
     {
-        $this->aPopUp[$this->sType] = $sType;
+        $this->popUp[$this->type] = $type;
         return $this;
     }
 
-    public function setIcon($sIcon)
+    public function setIcon($icon)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sIcon => $sIcon]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->icon => $icon]
         );
         return $this;
     }
 
-    public function setTitle($sTitle)
+    public function setTitle($title)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sTitle => $sTitle]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->title => $title]
         );
         return $this;
     }
 
-    public function setConfirmText($sConfirmText)
+    public function setConfirmText($confirmText)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sConfirmText => $sConfirmText]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->confirmText => $confirmText]
         );
         return $this;
     }
 
     public function setConfirmButtonVisibility($bVisibility)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sShowConfirmButton => $bVisibility]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->showConfirmButton => $bVisibility]
         );
         return $this;
     }
 
     public function setCancelButtonVisibility($bVisibility)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sShowCancelButton => $bVisibility]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->showCancelButton => $bVisibility]
         );
         return $this;
     }
@@ -81,67 +81,67 @@ class PopUpMessage
 
     public function setAllowOutsideClick($bAllowClick)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sAllowOutsideClick => $bAllowClick]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->allowOutsideClick => $bAllowClick]
         );
         return $this;
     }
 
     public function setMethodToExecUponConfirm($sMethodToExecute)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sMethod => $sMethodToExecute]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->method => $sMethodToExecute]
         );
         return $this;
     }
 
     public function setConfirmMethodParameters($sConfirmMethodParameters)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sParams => $sConfirmMethodParameters]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->params => $sConfirmMethodParameters]
         );
         return $this;
     }
 
     public function setMethodToExecUponCancel($sCancelMethod)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sCallBack => $sCancelMethod]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->callBack => $sCancelMethod]
         );
         return $this;
     }
 
     public function setCancelMethodParameters($sCancelMethodParameters)
     {
-        $this->aPopUp[$this->sParams] = array_merge(
-            $this->aPopUp[$this->sParams],
-            [$this->sCallBackParams => $sCancelMethodParameters]
+        $this->popUp[$this->params] = array_merge(
+            $this->popUp[$this->params],
+            [$this->callBackParams => $sCancelMethodParameters]
         );
         return $this;
     }
 
     public function getTypeModal()
     {
-        return $this->sTypeModal;
+        return $this->typeModal;
     }
 
     public function getTypeConfirm()
     {
-        return $this->sTypeConfirm;
+        return $this->typeConfirm;
     }
 
     public function getTypeAlert()
     {
-        return $this->stypeAlert;
+        return $this->typeAlert;
     }
 
     public function getPopUp()
     {
-        return $this->aPopUp;
+        return $this->popUp;
     }
 
 }

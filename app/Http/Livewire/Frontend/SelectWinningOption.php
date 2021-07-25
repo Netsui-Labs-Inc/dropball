@@ -7,7 +7,7 @@ use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Http\Controllers\Backend\BettingRoundController;
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Events\ConfirmBetResult;
+use App\Events\ConfirmBetBettingResult;
 use App\Http\Livewire\Frontend\Behaviors\BetAdminPopUpMessage;
 use App\Http\Livewire\Frontend\Behaviors\DealerAdminPopUpMessage;
 use Livewire\Component;
@@ -35,25 +35,24 @@ class SelectWinningOption extends Component
 
     }
 
-    public function setMesssagePopUp($oBetAdmin, $oDealerAdmin)
+    public function setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage)
     {
         if ($this->user->hasRole('Bet Admin')) {
-            return $oBetAdmin;
+            return $betAdminPopUpMessage;
         }
-        return $oDealerAdmin;
+        return $dealerAdminPopUpMessage;
 
     }
 
     public function getListeners()
     {
         return [
-            "echo-private:event.{$this->bettingEvent->id}_PULA.play,ConfirmBetResult" => 'doNotifPula',
-            "echo-private:event.{$this->bettingEvent->id}_PUTI.play,ConfirmBetResult" => 'doNotifPuti',
-            "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,ConfirmBetResult" => 'doNotifJackpot',
-            "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,ConfirmBetResult" => 'showCancelled',
-            "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,ConfirmBetResult" => 'showApproved',
-            "echo-private:event.{$this->bettingEvent->id}_NOTIFYDEALERADMIN.play,ConfirmBetResult" => 'showNotifToDealerAdmin',
-            "echo-private:event.{$this->bettingEvent->id}_BETTINGROUNDSTARTDEALERADMIN.play,ConfirmBetResult" => 'informDealerAdminBettingRoundStart',
+            "echo-private:event.{$this->bettingEvent->id}_PULA.play,ConfirmBetBettingResult" => 'showSelectedPulaNotification',
+            "echo-private:event.{$this->bettingEvent->id}_PUTI.play,ConfirmBetBettingResult" => 'showSelectedPutiNotification',
+            "echo-private:event.{$this->bettingEvent->id}_JACKPOT.play,ConfirmBetBettingResult" => 'showSelectedJackpotNotification',
+            "echo-private:event.{$this->bettingEvent->id}_CANCELLED.play,ConfirmBetBettingResult" => 'showCancelled',
+            "echo-private:event.{$this->bettingEvent->id}_APPROVED.play,ConfirmBetBettingResult" => 'showApproved',
+            "echo-private:event.{$this->bettingEvent->id}_NOTIFYDEALERADMIN.play,ConfirmBetBettingResult" => 'roundEndedNotification',
             'confirmSelection'         => 'confirmSelection',
             'sendSelectionRequest'         => 'sendSelectionRequest',
             'cancelled' => 'cancelled',
@@ -64,13 +63,13 @@ class SelectWinningOption extends Component
 
     }
 
-    public function showNotifToDealerAdmin(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    public function roundEndedNotification(
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->RoundEndedNotification();
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->roundEndedNotification();
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
@@ -80,64 +79,64 @@ class SelectWinningOption extends Component
 
     }
 
-    public function doNotifPula(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    public function showSelectedPulaNotification(
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->confirmSelection('PULA');
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->confirmSelection('PULA');
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
-    public function doNotifPuti(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    public function showSelectedPutiNotification(
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->confirmSelection('PUTI');
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->confirmSelection('PUTI');
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
-    public function doNotifJackpot(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+    public function showSelectedJackpotNotification(
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->confirmSelection('JACKPOT');
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->confirmSelection('JACKPOT');
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
     public function approved($selectedOption)
     {
-        event(new ConfirmBetResult($this->bettingRound,'APPROVED'));
+        event(new ConfirmBetBettingResult($this->bettingRound,'APPROVED'));
 
     }
 
     public function cancelled($params)
     {
-        event(new ConfirmBetResult($this->bettingRound,'CANCELLED'));
+        event(new ConfirmBetBettingResult($this->bettingRound,'CANCELLED'));
 
     }
 
     public function showCancelled(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->showConfirmationResult('cancelled');
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->showConfirmationResult('cancelled');
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
     public function showApproved(
-        BetAdminPopUpMessage $oBetAdminPopUpMessage,
-        DealerAdminPopUpMessage $oDealerAdminPopUpMessage
+        BetAdminPopUpMessage $betAdminPopUpMessage,
+        DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
-        $oMessagePopUp = $this->setMesssagePopUp($oBetAdminPopUpMessage, $oDealerAdminPopUpMessage);
-        $aPopUp = $oMessagePopUp->showConfirmationResult('approved', 'showResult');
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
+        $popUp = $messagePopUp->showConfirmationResult('approved', 'showResult');
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
@@ -164,18 +163,18 @@ class SelectWinningOption extends Component
 
     }
 
-    public function confirmSelection($selectedOptionId, BetAdminPopUpMessage $oBetAdminPopUpMessage)
+    public function confirmSelection($selectedOptionId, BetAdminPopUpMessage $betAdminPopUpMessage)
     {
         $selectedOption = BetOption::find($selectedOptionId);
         session()->put('selected_option', $selectedOptionId);
-        $aPopUp = $oBetAdminPopUpMessage->selectBet($selectedOption->name);
-        $this->emit(  $aPopUp['type'],   $aPopUp['params']);
+        $popUp = $betAdminPopUpMessage->selectBet($selectedOption->name);
+        $this->emit($popUp['type'], $popUp['params']);
 
     }
 
     public function sendSelectionRequest($params)
     {
-        event(new ConfirmBetResult($this->bettingRound, $params));
+        event(new ConfirmBetBettingResult($this->bettingRound, $params));
 
     }
 
