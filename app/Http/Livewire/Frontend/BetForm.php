@@ -169,6 +169,9 @@ class BetForm extends Component
 
         $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
+        if ($this->bettingRound->status === 'cancelled') {
+            return;
+        }
         /** @var User $user */
         $user = auth()->user();
         /** @var Bet $userBet */
