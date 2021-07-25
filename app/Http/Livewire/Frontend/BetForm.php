@@ -175,7 +175,7 @@ class BetForm extends Component
         $userBet = $this->bettingRound->userBets($user->id)->first();
         if($userBet) {
             if($userBet->bet === $this->bettingRound->result) {
-                $winningStreak = (new GetWinningStreakAction)($user);
+                $winningStreak = (new GetWinningStreakAction)($user, $this->bettingEvent);
                 $user->winning_streak = $winningStreak;
                 $user->update();
                 $this->winStreak = $winningStreak;

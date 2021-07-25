@@ -41,7 +41,7 @@ class SetPlayerWinningStreakJob implements ShouldQueue
         try {
             DB::beginTransaction();
             $player = $this->bet->user;
-            $winningStreak = (new GetWinningStreakAction)($player);
+            $winningStreak = (new GetWinningStreakAction)($player, $this->bet->bettingRound->bettingEvent);
             logger("SetPlayerWinningStreakJob.handle :: Player#{$player->id} {$player->name} winning streak is $winningStreak");
             $player->winning_streak = $winningStreak;
             $player->update();
