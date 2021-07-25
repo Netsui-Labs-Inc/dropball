@@ -24,16 +24,30 @@
                     </div>
                 </div>
             </div>
-            <div class="xl:w-2/5 w-full py-0 xl:pl-6 ">
-                <div class="w-full md:py-6 bg-gray-800 rounded">
-                    <div class="px-2 md:px-6 lg:px-8">
+            <div class="xl:w-2/5 w-full xl:pl-6" x-data="{ tab: 'play'}">
+
+                <div class="justify-between flex-wrap sm:block shadow rounded">
+                    <div class="xl:w-full xl:mx-0 px-4 bg-gray-500 h-12">
+                        <div class="flex items-center h-full">
+                            <button :class="{'bg-yellow-500 text-gray-700' : tab === 'play'}" @click.prevent="tab = 'play'" class="w-1/2 focus:outline-none focus:ring-2 focus:ring-offset-2 mr-2 focus:ring-indigo-800 rounded-md hover:bg-yellow-400 focus:bg-yellow-500 py-2 px-5 font-normal hover:text-gray-800 cursor-pointer text-sm"><i class="fas fa-dice"></i> BETTING ROUND</button>
+                            <button :class="{'bg-yellow-500 text-gray-700' : tab === 'jackpot'}" @click.prevent="tab = 'jackpot'" class="w-1/2 focus:outline-none focus:ring-2 focus:ring-offset-2 ml-2 focus:ring-indigo-800 rounded-md hover:bg-yellow-400 focus:bg-yellow-500 py-2 px-5 rounded-md font-normal cursor-pointer text-sm"><i class="fas fa-crown"></i> JACKPOT</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full md:py-6 bg-gray-800 rounded" x-show="tab === 'play'">
+                    <div class="px-4 py-2 md:px-6 lg:px-8">
                         <livewire:frontend.event-betting-round theme="tailwind" :bettingEventId="$bettingEvent->id" />
                         <livewire:frontend.bet-form theme="tailwind" :bettingEventId="$bettingEvent->id" />
                     </div>
                 </div>
+                <div class="w-full md:py-6 bg-gray-800 rounded" x-show="tab === 'jackpot'">
+                    <div class="px-4 py-2 md:px-6 lg:px-8">
+                        <livewire:frontend.jackpot-tab theme="tailwind" :bettingEventId="$bettingEvent->id" />
+                    </div>
+                </div>
             </div>
             <div class="w-full mt-6 bg-gray-800 rounded py-2 xl:hidden lg:hidden">
-                <div class="px-2 md:px-6 lg:px-8">
+                <div class="px-4 md:px-6 lg:px-8">
                     <livewire:frontend.event-trend theme="tailwind" :bettingEventId="$bettingEvent->id" />
                 </div>
             </div>

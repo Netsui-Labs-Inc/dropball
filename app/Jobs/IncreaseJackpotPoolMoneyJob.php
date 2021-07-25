@@ -40,12 +40,14 @@ class IncreaseJackpotPoolMoneyJob implements ShouldQueue
         /** @var BettingEvent $bettingEvent */
         $bettingEvent = $this->bettingRound->bettingEvent;
         /** @var Jackpot $activeJackpot */
-        $activeJackpot = $bettingEvent->activeJackpot();
+        $activeJackpot = $bettingEvent->activeJackpot;
+
         if(!$activeJackpot) {
             logger("IncreaseJackpotPoolMoney.handle NO ACTIVE JACKPOT" );
 
             return;
         }
+
         $poolMoney = BigDecimal::of($this->bettingRound->pool_money * .005)->toFloat();
 
         $activeJackpot->increment('prize', $poolMoney);

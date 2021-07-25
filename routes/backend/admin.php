@@ -80,6 +80,10 @@ Route::post('betting-events/{bettingEvent}/betting-rounds', [BettingEventBetting
     ->name('betting-events.betting-rounds.store');
 Route::post('betting-events/{bettingEvent}/jackpots', [JackpotController::class, 'store'])
     ->name('betting-events.jackpots.store');
+Route::post('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'setAsActive'])
+    ->name('betting-events.jackpots.activate');
+Route::delete('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'setInactive'])
+    ->name('betting-events.jackpots.deactivate');
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}', [BettingEventBettingRoundController::class, 'show'])
     ->name('betting-events.betting-rounds.show')
@@ -163,7 +167,7 @@ Route::group(['middleware' => 'can:admin.access.betting-rounds.moderate'], funct
     Route::post('betting-rounds/{bettingRound}/ends', [BettingRoundController::class, 'endBettingRound'])->name('betting-rounds.end');
     Route::post('betting-rounds/{bettingRound}/cancel', [BettingRoundController::class, 'cancelBettingRound'])->name('betting-rounds.cancel');
     Route::post('betting-rounds/{bettingRound}/draw', [BettingRoundController::class, 'drawBettingRound'])->name('betting-rounds.draw');
-    Route::get('betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
+    Route::match(['GET','POST'],'betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
 });
 
 

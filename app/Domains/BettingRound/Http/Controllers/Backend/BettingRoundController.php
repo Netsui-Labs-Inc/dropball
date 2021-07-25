@@ -58,7 +58,6 @@ class BettingRoundController extends Controller
         $bettingRound->refresh();
         event(new BettingRoundBettingWindowUpdated($bettingRound));
 
-        $this->setMixer($bettingRound);
         return redirect()->back()->withFlashSuccess(__('Betting window was opened'));
     }
 
@@ -187,24 +186,4 @@ class BettingRoundController extends Controller
         return true;
 
     }
-
-    public function setMixer(BettingRound $bettingRound)
-    {
-        $faker = Factory::create();
-        $max = 999999;
-        $diff = $faker->numberBetween(5, 35);
-        $winPool = $faker->numberBetween(400000, $max);
-        $winner = $faker->randomElement(['pula', 'puti']);
-
-        $meta = [
-            'winner' => $winner,
-            'win-pool' => $winPool,
-            'lose-pool' => $winPool - ($diff / 100 * $winPool),
-            'pula' => 0 , 'puti' => 0,
-        ];
-
-        $bettingRound->meta = $meta;
-        $bettingRound->save();
-    }
-
 }

@@ -57,7 +57,7 @@ class BettingRoundResultListener
 
         ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
 
-        $activeJackpot = $bettingRound->bettingEvent->activeJackpot();
+        $activeJackpot = $bettingRound->bettingEvent->activeJackpot;
         if($activeJackpot && $activeJackpot->betting_round_id === $bettingRound->id) {
             ProcessJackpotWinnersJob::dispatch($bettingRound);
         } else {
