@@ -85,12 +85,12 @@
     </div>
     <div class="flex space-x-2">
         <div class="flex-auto w-1/2">
-            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-10 py-4 text-sm" wire:click="$emit('confirmBet', 1)" {{$userCanBet ? '': 'disabled'}}>
+            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-5 py-4 text-sm" wire:click="$emit('confirmBet', 1)" {{$userCanBet ? '': 'disabled'}}>
                 <i class="fas fa-plus-circle"></i> BET PULA
             </button>
         </div>
         <div class="flex-auto w-1/2">
-            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-white hover:bg-gray-200 rounded text-gray-700 px-10 py-4 text-sm" wire:click="$emit('confirmBet', 2)" {{$userCanBet ? '': 'disabled'}}>
+            <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-white hover:bg-gray-200 rounded text-gray-700 px-5 py-4 text-sm" wire:click="$emit('confirmBet', 2)" {{$userCanBet ? '': 'disabled'}}>
                 <i class="fas fa-plus-circle"></i> BET PUTI
             </button>
         </div>
