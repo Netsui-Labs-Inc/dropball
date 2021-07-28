@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Factory;
 
 class WithdrawalRequest extends FormRequest
 {
@@ -23,12 +24,20 @@ class WithdrawalRequest extends FormRequest
      */
     public function rules()
     {
+
         return [
-            'amount' => 'required|numeric',
+            'amount' => 'required|numeric|gt:' . config('minimum_withdrawal'),
             'channel' => 'required',
             'details' => 'required',
             'note' => 'sometimes',
             'password' => 'required'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'gt:' . config('minimum_withdrawal') => 'Please enter minimum amount of ' . config('minimum_withdrawal') . 'Pesos.'
         ];
     }
 }
