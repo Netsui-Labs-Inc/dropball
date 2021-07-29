@@ -15,7 +15,6 @@ class BettingRoundBettingLastCall implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public BettingRound $bettingRound;
-    public BettingEvent $bettingEvent;
 
     /**
      * Create a new event instance.
@@ -25,7 +24,6 @@ class BettingRoundBettingLastCall implements ShouldBroadcast
     public function __construct(BettingRound $bettingRound)
     {
         $this->bettingRound = $bettingRound;
-        $this->bettingEvent = $bettingRound->bettingEvent;
     }
 
     /**
@@ -35,6 +33,6 @@ class BettingRoundBettingLastCall implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'.play');
+        return new PrivateChannel('event.'.$this->bettingRound->bettingEvent->id.'.play');
     }
 }

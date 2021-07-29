@@ -26,6 +26,7 @@ class BettingEvent extends Model
         'description',
         'schedule',
         'bet_admin_id',
+        'dealer_admin_id',
         'stream_url',
     ];
 
@@ -34,6 +35,11 @@ class BettingEvent extends Model
         return $this->belongsTo(User::class, 'bet_admin_id');
     }
 
+    public function dealer()
+    {
+        return $this->belongsTo(User::class, 'dealer_admin_id');
+
+    }
     public function bettingRounds()
     {
         return $this->hasMany(BettingRound::class);
@@ -46,7 +52,7 @@ class BettingEvent extends Model
 
     public function activeJackpot()
     {
-        return $this->jackpots()->where('status', 'active')->first();
+        return $this->belongsTo(Jackpot::class, 'jackpot_id');
     }
 
     public function latestBettingRound($status = 'upcoming')

@@ -4,6 +4,7 @@ namespace Database\Factories;
 use App\Domains\Auth\Models\User;
 
 use App\Domains\Bet\Models\Bet;
+use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,7 +22,8 @@ class BetFactory extends Factory
                 $masterAgent = User::role('Master Agent')->inRandomOrder()->first();
                 return User::factory()->player()->withWallet()->create([
                     'referred_by' => $masterAgent->id,
-                    'hub_id' => $masterAgent->hub_id
+                    'hub_id' => $masterAgent->hub_id,
+                    'last_event_id' => BettingEvent::first()->id,
                 ])->id;
             },
             'bet' => $this->faker->randomElement([1,2,4]),

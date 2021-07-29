@@ -39,7 +39,7 @@ class ProcessJackpotWinnersJob implements ShouldQueue
         /** @var BettingEvent $bettingEvent */
         $bettingEvent = $this->bettingRound->bettingEvent;
         /** @var Jackpot $activeJackpot */
-        $activeJackpot = $bettingEvent->activeJackpot();
+        $activeJackpot = $bettingEvent->activeJackpot;
         if($activeJackpot) {
             $activeJackpot->update(['status' => 'ended']);
         }

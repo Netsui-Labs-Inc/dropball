@@ -4,6 +4,7 @@
 namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Auth\Services\UserService;
 use App\Domains\Hub\Actions\CreateHubAction;
 use App\Domains\Hub\Actions\UpdateHubAction;
 use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
@@ -44,7 +45,6 @@ class HubController extends Controller
                     ->orWhere('id', $hub->admin_id);
             })
             ->get()->pluck('name', 'id');
-
         return view('backend.hub.edit')->with([
             'hubAdmins' => $hubAdmins,
             'hub' => $hub
@@ -62,11 +62,12 @@ class HubController extends Controller
         }
     }
 
-    public function update(StoreHubRequest $request, Hub $hub)
+    public function update(StoreHubRequest $request, Hub $hub, UserService $userService)
     {
         try {
             $data = $request->validated();
             (new UpdateHubAction)($hub, $data);
+            $userService->updateHubId(User::find($data['admin_id']), $hub->id);
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub updated Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());

@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -9,6 +10,7 @@ use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
 use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
+use App\Events\ConfirmBetBettingResult;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
 use Faker\Factory;
@@ -24,10 +26,17 @@ class BettingRoundController extends Controller
 
     public function show(BettingRound $bettingRound)
     {
+
+        $sVisible = (auth()->user()->hasRole('Dealer Admin') === true) ? 'none' : '';
         return view('backend.betting-round.show')
-            ->with('bettingRound', $bettingRound);
+            ->with('bettingRound', $bettingRound)
+            ->with('sVisible', $sVisible);
     }
 
+    public function reloadPage()
+    {
+        return redirect()->back()->withFlashSuccess(__('Betting round has ended'));
+    }
     public function openBetting(BettingRound $bettingRound)
     {
         $activeBettingRoundId = $bettingRound->bettingEvent->activeBettingRound()->first()->id ?? null;
@@ -48,8 +57,6 @@ class BettingRoundController extends Controller
         ]);
         $bettingRound->refresh();
         event(new BettingRoundBettingWindowUpdated($bettingRound));
-
-        $this->setMixer($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Betting window was opened'));
     }
@@ -152,10 +159,11 @@ class BettingRoundController extends Controller
         logger("BettingRound#{$bettingRound->id} Payouts :: ", $bettingRound->payouts);
 
         $bettingRound->refresh();
+
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-
+        event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 
@@ -177,24 +185,5 @@ class BettingRoundController extends Controller
 
         return true;
 
-    }
-
-    public function setMixer(BettingRound $bettingRound)
-    {
-        $faker = Factory::create();
-        $max = 999999;
-        $diff = $faker->numberBetween(5, 35);
-        $winPool = $faker->numberBetween(400000, $max);
-        $winner = $faker->randomElement(['pula', 'puti']);
-
-        $meta = [
-            'winner' => $winner,
-            'win-pool' => $winPool,
-            'lose-pool' => $winPool - ($diff / 100 * $winPool),
-            'pula' => 0 , 'puti' => 0,
-        ];
-
-        $bettingRound->meta = $meta;
-        $bettingRound->save();
     }
 }

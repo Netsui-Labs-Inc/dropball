@@ -95,6 +95,7 @@ class RoleController extends Controller
      */
     public function update(UpdateRoleRequest $request, Role $role)
     {
+
         $this->roleService->update($role, $request->validated());
 
         return redirect()->route('admin.auth.role.index')->withFlashSuccess(__('The role was successfully updated.'));

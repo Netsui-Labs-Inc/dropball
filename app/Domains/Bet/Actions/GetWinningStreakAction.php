@@ -3,13 +3,17 @@
 namespace App\Domains\Bet\Actions;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\BettingEvent\Models\BettingEvent;
 use Carbon\Carbon;
 
 class GetWinningStreakAction
 {
-    public function __invoke(User $user)
+    public function __invoke(User $user, BettingEvent $bettingEvent)
     {
-        $bets = $user->bets()->latest()->whereDate('created_at', Carbon::now()->format('Y-m-d'))->get();
+        $bets = $user->bets()->whereHas('bettingRound', function($query) use($bettingEvent) {
+            $query->where('betting_event_id', $bettingEvent->id);
+        })->whereNotNull('status')->get();
+
         $winningStreak = 0;
 
         foreach ($bets as $bet) {

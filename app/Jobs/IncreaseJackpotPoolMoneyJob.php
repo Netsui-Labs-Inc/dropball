@@ -6,6 +6,7 @@ use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingEvent\Models\Jackpot;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Events\JackpotPoolMoneyUpdated;
 use Brick\Math\BigDecimal;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -40,15 +41,20 @@ class IncreaseJackpotPoolMoneyJob implements ShouldQueue
         /** @var BettingEvent $bettingEvent */
         $bettingEvent = $this->bettingRound->bettingEvent;
         /** @var Jackpot $activeJackpot */
-        $activeJackpot = $bettingEvent->activeJackpot();
+        $activeJackpot = $bettingEvent->activeJackpot;
+
         if(!$activeJackpot) {
             logger("IncreaseJackpotPoolMoney.handle NO ACTIVE JACKPOT" );
 
             return;
         }
+
         $poolMoney = BigDecimal::of($this->bettingRound->pool_money * .005)->toFloat();
 
         $activeJackpot->increment('prize', $poolMoney);
+
+        event(new JackpotPoolMoneyUpdated($this->bettingRound));
+
         logger("IncreaseJackpotPoolMoney.handle New Pool Money for Jackpot#{$activeJackpot->id} {$activeJackpot->prize}" );
     }
 }

@@ -57,7 +57,7 @@ class BettingRoundResultListener
 
         ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
 
-        $activeJackpot = $bettingRound->bettingEvent->activeJackpot();
+        $activeJackpot = $bettingRound->bettingEvent->activeJackpot;
         if($activeJackpot && $activeJackpot->betting_round_id === $bettingRound->id) {
             ProcessJackpotWinnersJob::dispatch($bettingRound);
         } else {
@@ -79,16 +79,13 @@ class BettingRoundResultListener
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
         foreach ($bettingRound->bets as $bet) {
-
-            SetPlayerWinningStreakJob::dispatch($bet)->onQueue('winners');
-
-
             Bus::batch([
                 new ProcessMasterAgentCommissionJob($bet),
                 new ProcessMasterAgentCommissionJob($bet, true),
                 new ProcessDeveloperCommissionJob($bet),
                 new ProcessOperatorCommissionJob($bet),
                 new ProcessHubCommissionJob($bet),
+                new SetPlayerWinningStreakJob($bet),
             ])->then(function (Batch $batch) use ($bet) {
                 logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
             })->catch(function (Batch $batch, \Throwable $e) use ($bet) {

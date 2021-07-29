@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'name' => 'DropBall',
+    'name' => 'Perya Pinoy',
     'manifest' => [
-        'name' => env('APP_NAME', 'Dropball'),
-        'short_name' => 'DBPT',
+        'name' => env('APP_NAME', 'Perya Pinoy'),
+        'short_name' => 'PERYA',
         'start_url' => '/',
         'background_color' => '#111827',
         'theme_color' => '#1F2937',
