@@ -75,7 +75,10 @@
                 <span class="lead">{{number_format(auth()->user()->getWallet('income-wallet')->balanceFloat)}}</span>
             </p>
             <div class="row">
-                <label for="amount" class="col col-form-label">@lang('Amount')</label>
+                <label for="amount" class="col col-form-label">
+                    @lang('Amount')
+                    <span class="text-danger"> @lang('* Minimum amount is : ' ){{ Config::get('dropball.minimum_withdrawal') }}</span>
+                </label>
             </div>
             <div class="form-group row">
                 <div class="col">
