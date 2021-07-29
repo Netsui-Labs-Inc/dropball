@@ -58,7 +58,6 @@ class SubAgentController extends Controller
 
     public function create()
     {
-
         return view('backend.master-agent.sub-agent.create');
     }
 

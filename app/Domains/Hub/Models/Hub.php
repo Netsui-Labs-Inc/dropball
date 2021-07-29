@@ -12,6 +12,7 @@ use Bavix\Wallet\Traits\HasWallets;
 use Database\Factories\HubFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 /**
  * App\Domains\Hub\Models\Hub
@@ -64,5 +65,10 @@ class Hub extends Model implements WalletFloat, Wallet
     protected static function newFactory()
     {
         return HubFactory::new();
+    }
+
+    public function user()
+    {
+        return $this->hasMany(User::class);
     }
 }
