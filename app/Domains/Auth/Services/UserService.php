@@ -360,4 +360,11 @@ class UserService extends BaseService
             'active' => $data['active'] ?? false,
         ]);
     }
+
+    public function updateHubId(User $user, $hubId)
+    {
+        $user->hub_id = $hubId ?? null;
+        return tap($user)->save();
+    }
+
 }

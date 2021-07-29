@@ -8,6 +8,7 @@ use App\Domains\Auth\Models\Traits\Relationship\UserRelationship;
 use App\Domains\Auth\Models\Traits\Scope\UserScope;
 use App\Domains\Auth\Notifications\Frontend\ResetPasswordNotification;
 use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
+use App\Domains\Hub\Models\Hub;
 use App\Models\Traits\HasBetCommission;
 use App\Models\Traits\HasWithdrawal;
 use Bavix\Wallet\Interfaces\Confirmable;
@@ -184,5 +185,10 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     protected static function newFactory()
     {
         return UserFactory::new();
+    }
+
+    public function hub()
+    {
+        return $this->belongsTo(Hub::class);
     }
 }
