@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Factory;
 
@@ -26,7 +25,7 @@ class WithdrawalRequest extends FormRequest
     {
 
         return [
-            'amount' => 'required|numeric|gt:' . config('minimum_withdrawal'),
+            'amount' => 'required|numeric|gte:' . config('dropball.minimum_withdrawal'),
             'channel' => 'required',
             'details' => 'required',
             'note' => 'sometimes',
@@ -37,7 +36,7 @@ class WithdrawalRequest extends FormRequest
     public function messages()
     {
         return [
-            'gt:' . config('minimum_withdrawal') => 'Please enter minimum amount of ' . config('minimum_withdrawal') . 'Pesos.'
+            'gte' => 'Please enter minimum amount of ' . config('dropball.minimum_withdrawal') . ' Pesos.'
         ];
     }
 }

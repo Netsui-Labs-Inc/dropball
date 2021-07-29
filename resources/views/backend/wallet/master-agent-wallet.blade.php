@@ -61,7 +61,7 @@
             <div class="row">
                 <label for="amount" class="col col-form-label">
                     @lang('Amount')
-                    <span class="text-danger"> @lang('* Minimum Amount is :' ){{ Config::get('dropball.minimum_withdrawal') }}</span>
+                    <span class="text-danger"> @lang('* Minimum amount is : ' ){{ Config::get('dropball.minimum_withdrawal') }}</span>
                 </label>
             </div>
             <div class="form-group row">
