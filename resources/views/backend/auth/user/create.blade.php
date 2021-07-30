@@ -18,7 +18,7 @@
             <x-slot name="body">
                 <div x-data="{userType : '{{ $model::TYPE_USER }}'}">
                     <div class="form-group row">
-                        <label for="name" class="col-md-2 col-form-label">@lang('Type')</label>
+                        <label for="name" class="col-md-2 col-form-label">@lang('fType')</label>
 
                         <div class="col-md-10">
                             <select name="type" class="form-control" required x-on:change="userType = $event.target.value">

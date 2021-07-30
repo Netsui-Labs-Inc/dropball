@@ -12,6 +12,7 @@ use App\Domains\Auth\Services\UserService;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
+use Auth;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -39,7 +40,9 @@ class MasterAgentController extends Controller
      * @param  UserService  $userService
      * @param  RoleService  $roleService
      * @param  PermissionService  $permissionService
+
      */
+
     public function __construct(UserService $userService, RoleService $roleService, PermissionService $permissionService)
     {
         $this->userService = $userService;
@@ -64,7 +67,6 @@ class MasterAgentController extends Controller
     public function create()
     {
         $hubs = Hub::all()->pluck('name', 'id');
-
         return view('backend.master-agent.create')->with('hubs', $hubs);
     }
 
