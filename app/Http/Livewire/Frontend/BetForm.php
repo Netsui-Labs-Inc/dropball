@@ -10,7 +10,6 @@ use App\Domains\Bet\Models\BetOption;
 use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Jobs\SetPlayerWinningStreakJob;
 use Livewire\Component;
 
 class BetForm extends Component
@@ -179,6 +178,7 @@ class BetForm extends Component
         if($userBet) {
             if($userBet->bet === $this->bettingRound->result) {
                 $winningStreak = (new GetWinningStreakAction)($user, $this->bettingEvent);
+                logger("BetForm.updateResultHandler.User.{$user->id}. = $winningStreak");
                 $user->winning_streak = $winningStreak;
                 $user->update();
                 $this->winStreak = $winningStreak;

@@ -67,7 +67,7 @@ class BettingRoundController extends Controller
             throw new GeneralException("Cannot Send Last Call");
         }
         $bettingRound->refresh();
-        event(new BettingRoundBettingLastCall($bettingRound));
+        event(new BettingRoundBettingLastCall($bettingRound->betting_event_id));
 
         return redirect()->back()->withFlashSuccess(__('Betting last call was broadcast'));
     }
@@ -163,7 +163,11 @@ class BettingRoundController extends Controller
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-        event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
+
+        if($bettingRound->bettingEvent->dealer) {
+            event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
+        }
+
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
 
