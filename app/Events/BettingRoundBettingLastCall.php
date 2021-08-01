@@ -16,7 +16,6 @@ class BettingRoundBettingLastCall implements ShouldBroadcast
 
     public $bettingEventId;
 
-    public $queue = 'broadcast';
 
     /**
      * BettingRoundBettingLastCall constructor.

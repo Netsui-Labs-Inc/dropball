@@ -16,9 +16,7 @@ class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
     use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
     private int $eventId;
-
-    public $queue = 'broadcast';
-
+    
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
