@@ -182,7 +182,11 @@ class BetForm extends Component
                 $user->winning_streak = $winningStreak;
                 $user->update();
                 $this->winStreak = $winningStreak;
-                $this->balance += $this->payouts['betPayout'];
+                if(!$userBet->winnings_processed_at) {
+                    $this->balance += $this->payouts['betPayout'];
+                } else {
+                    $this->balance = $user->balanceFloat;
+                }
             } else {
                $this->winStreak = 0;
             }

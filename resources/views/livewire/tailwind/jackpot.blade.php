@@ -13,7 +13,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach($topPlayers as $player)
+            @foreach($topPlayers as $winner)
 
                 <tr class="md:text-base text-gray-100
                 @if($loop->first) text-yellow-500 font-weight-bold @endif
@@ -26,10 +26,10 @@
                         @else
                             <i class="fa fa-circle text-gray-500 text-xs mr-2"></i>
                         @endif
-                        {{$player->name}}
+                        {{$winner->player->name}}
                     </td>
                     <td class="text-center">
-                        {{$player->winning_streak}}
+                        {{$winner->winning_streak}}
                     </td>
                 </tr>
             @endforeach
