@@ -15,6 +15,7 @@ class Jackpot extends Model
         'betting_event_id',
         'prize',
         'status',
+        'jackpot_id'
     ];
 
     public function bettingEvent()

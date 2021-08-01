@@ -44,6 +44,7 @@ class ProcessJackpotWinnersJob implements ShouldQueue
         if($activeJackpot) {
             $activeJackpot->update(['status' => 'ended']);
         }
+        $bettingEvent->update(['jackpot_id' => null]);
 
         $numberOfWinners = $activeJackpot->winners()->count();
         if(!$numberOfWinners) {
