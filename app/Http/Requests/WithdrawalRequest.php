@@ -23,8 +23,9 @@ class WithdrawalRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
+            'account_number' => 'required',
+            'account_name' => 'required',
             'amount' => 'required|numeric|gte:' . config('dropball.minimum_withdrawal'),
             'channel' => 'required',
             'details' => 'required',

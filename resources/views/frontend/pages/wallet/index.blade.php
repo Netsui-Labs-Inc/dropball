@@ -28,7 +28,7 @@
             </div>
         </div>
     </div>
-    <x-utils.modal
+    {{-- <x-utils.modal
         title="Request Withdrawal"
         type="form"
         targetId="requestWithdrawal"
@@ -66,5 +66,9 @@
                 <input type="password" class="form-control" name="password" >
             </div>
         </div>
-    </x-utils.modal>
+    </x-utils.modal> --}}
+    @include('includes.partials.request-withdrawal-form', [
+    'walletBallance' => number_format(auth()->user()->balanceFloat),
+    'route' => '#'
+    ])
 @endsection
