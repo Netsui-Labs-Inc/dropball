@@ -28,45 +28,6 @@
             </div>
         </div>
     </div>
-    {{-- <x-utils.modal
-        title="Request Withdrawal"
-        type="form"
-        targetId="requestWithdrawal"
-        action="#"
-        submitBtn="Send Request"
-        bodyClass="pt-0"
-    >
-        <div>
-            <p class="text-center m-0">
-                Current Balance:
-                <span>{{number_format(auth()->user()->balanceFloat)}}</span>
-            </p>
-            <label for="amount" class="col-form-label">@lang('Amount')</label>
-            <div class="form-group mb-0">
-                <input type="number" class="form-control" name="amount" min="1" step="1">
-            </div>
-                <label for="amount" class=" col-form-label">@lang('Channel')</label>
-            <div class="form-group mb-0">
-                <select name="channel" class="form-control">
-                    <option value="gcash">GCash</option>
-                    <option value="paymaya">Paymaya</option>
-                    <option value="bank">Bank</option>
-                </select>
-            </div>
-            <label for="amount" class="col-form-label">@lang('Account number')</label>
-            <div class="form-group mb-0">
-                <input type="string" class="form-control" name="account_number">
-            </div>
-            <label for="amount" class="col-form-label">@lang('Note')</label>
-            <div class="form-group mb-0">
-                <textarea class="form-control" name="Note"></textarea>
-            </div>
-                <label for="password" class="col-form-label">@lang('Enter Password')</label>
-            <div class="form-group mb-0">
-                <input type="password" class="form-control" name="password" >
-            </div>
-        </div>
-    </x-utils.modal> --}}
     @include('includes.partials.request-withdrawal-form', [
     'walletBallance' => number_format(auth()->user()->balanceFloat),
     'route' => '#'
