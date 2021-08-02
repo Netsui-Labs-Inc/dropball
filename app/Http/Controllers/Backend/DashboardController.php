@@ -94,7 +94,9 @@ class DashboardController extends Controller
         $hub = Hub::where('admin_id', $user->id)->first();
         if (! $hub) {
             auth()->logout();
-            throw ValidationException::withMessages(['email' => "Something is wrong with your account"]);
+            throw ValidationException::withMessages(
+                ['email' => "Something is wrong with your account. Please contact the account administrator"]
+            );
         }
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
