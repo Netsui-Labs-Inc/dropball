@@ -40,28 +40,36 @@ class WalletController extends \App\Http\Controllers\Controller
         /** @var User $user */
         $user = auth()->user();
         $payable = $transaction->payable;
-        if ($transaction->payable_type == User::class) {
-            if ($payable->hasRole('Player')) {
-                $payable->confirm($transaction);
-            } else {
-                $payable->getWallet('income-wallet')->confirm($transaction);
-            }
+
+        $holder = $user;
+
+        if ($user->hasRole('Virtual Hub')) {
+            $hub = Hub::where('admin_id', $user->id)->first();
+            $holder = $hub;
         }
 
-        if ($transaction->payable_type == Hub::class) {
+        if ($this->checkSufficientBalance($holder, abs($transaction->amountFloat))){
+            return  redirect()->back()->withErrors("Insufficient Balance. Your Balance is $holder->balanceFloat");
+        }
+
+        if ($payable->hasRole('Player')) {
+            $payable->confirm($transaction);
+        } else {
             $payable->getWallet('income-wallet')->confirm($transaction);
         }
 
-        if ($user->hasRole('Master Agent')) {
-            $user->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
-        } elseif ($user->hasRole('Virtual Hub')) {
-            $hub = Hub::where('admin_id', $user->id)->first();
-            $hub->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
-        }
+        $holder->withdrawFloat(abs($transaction->amountFloat), ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
 
         return redirect()->back()->withFlashSuccess("Request confirmed");
     }
 
+    public function checkSufficientBalance($holder, $requestedAmount)
+    {
+        if ($holder->balanceFloat >= $requestedAmount) {
+            return false;
+        }
+        return true;
+    }
 
     public function myWallet(Request $request)
     {
@@ -121,9 +129,10 @@ class WalletController extends \App\Http\Controllers\Controller
                 $user->getWallet('income-wallet')
                     ->withdrawFloat($request->get('amount'), $meta, false);
             }
+
             return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balance));
+            return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->getWallet('income-wallet')->balanceFloat));
         }
     }
 }
