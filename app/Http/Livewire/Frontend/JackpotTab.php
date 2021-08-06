@@ -79,7 +79,7 @@ class JackpotTab extends Component
 
     public function updatePoolMoneyHandler($data)
     {
-        if (!$data['bettingRoundId']) {
+        if (!isset($data['bettingRoundId'])) {
             $this->bettingRound = null;
 
             return;
