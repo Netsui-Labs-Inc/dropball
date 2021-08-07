@@ -44,7 +44,7 @@
             </x-slot>
             <x-slot name="body">
                 @if($bettingRound->bettingEvent->dealer)
-                    <livewire:front-end.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
+                    <livewire:frontend.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
                 @else
                     @include('backend.betting-round.includes.control')
                 @endif
