@@ -16,8 +16,10 @@ class BettingRoundStarting implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public BettingRound $bettingRound;
-    public BettingEvent $bettingEvent;
+    public int $bettingRoundId;
+    public int $bettingEventId;
+
+    public $queue = 'broadcast';
 
     /**
      * Create a new event instance.
@@ -26,8 +28,8 @@ class BettingRoundStarting implements ShouldBroadcast
      */
     public function __construct(BettingRound $bettingRound)
     {
-        $this->bettingRound = $bettingRound;
-        $this->bettingEvent = $bettingRound->bettingEvent;
+        $this->bettingRoundId = $bettingRound->id;
+        $this->bettingEventId = $bettingRound->bettingEvent->id;
     }
 
     /**
@@ -37,6 +39,6 @@ class BettingRoundStarting implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'.play');
+        return new PrivateChannel('event.'.$this->bettingEventId.'.play');
     }
 }

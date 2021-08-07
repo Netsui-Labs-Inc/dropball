@@ -34,8 +34,8 @@ class BettingRoundResultListener
      */
     public function handle($event)
     {
-        /** @var BettingRound $bettingRound */
-        $bettingRound = $event->bettingRound;
+        /** $bettingRound */
+        $bettingRound = BettingRound::find($event->bettingRoundId);
 
         if ($bettingRound->status === 'cancelled') {
             logger("BettingRound#{$bettingRound->id} was Cancelled");

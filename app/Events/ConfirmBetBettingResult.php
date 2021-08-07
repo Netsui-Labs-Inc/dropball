@@ -17,6 +17,9 @@ class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
 
     private int $eventId;
 
+    public $queue = 'broadcast';
+
+
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound

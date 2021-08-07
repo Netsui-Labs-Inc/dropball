@@ -11,6 +11,7 @@ environments:
       cli-memory: 512
       runtime: 'php-8.0:al2'
       queues:
+        - broadcast
         - winners
         - commissions
         - other-commissions
@@ -30,6 +31,7 @@ environments:
       cli-memory: 512
       runtime: 'php-8.0:al2'
       queues:
+        - broadcast
         - winners
         - commissions
         - other-commissions
