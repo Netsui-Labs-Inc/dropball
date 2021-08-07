@@ -52,31 +52,7 @@
                         @endforelse
                     </td>
                 </tr>
-
             </table>
-        </x-slot>
-
-        <x-slot name="footer">
-            <small class="float-right">
-                @if(!$transaction->confirmed)
-                    @if(auth()->user()->hasRole('Operator') && $transaction->payable instanceof \App\Domains\Hub\Models\Hub)
-                        <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-                    @endif
-                    @if(auth()->user()->hasRole('Master Agent') && $transaction->payable instanceof \App\Domains\Auth\Models\User)
-                        @if($transaction->payable->hasRole('Player'))
-                            <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-                        @endif
-                    @endif
-                    @if(auth()->user()->hasRole('Virtual Hub') && $transaction->payable instanceof \App\Domains\Auth\Models\User)
-                        @if($transaction->payable->hasRole('Master Agent'))
-                            <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-                        @endif
-                    @endif
-                    @role('Administrator')
-                        <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-                    @endrole
-                @endif
-            </small>
         </x-slot>
     </x-backend.card>
 @endsection
