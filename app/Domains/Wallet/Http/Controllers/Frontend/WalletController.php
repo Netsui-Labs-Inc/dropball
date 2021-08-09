@@ -4,55 +4,41 @@
 namespace App\Domains\Wallet\Http\Controllers\Frontend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Http\Service\WalletHolderFactory;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WithdrawalRequest;
-use Bavix\Wallet\Models\Transaction;
 use Illuminate\Http\Request;
-use DB;
+use Illuminate\Support\Facades\Hash;
 
 class WalletController extends Controller
 {
+    private $holder;
+    private $holderFactory;
+
+    public function __construct(WalletHolderFactory $holderFactory)
+    {
+        $this->holderFactory = $holderFactory;
+    }
+
     public function index(Request $request)
     {
-        $user = $request->user();
-        return view('frontend.pages.wallet.index')
-            ->with('user', $user);
+        $this->holder = $this->holderFactory->createWalletHolder($request->user());
+        return $this->holder->getWallet();
     }
 
     public function withdraw(WithdrawalRequest $request)
     {
         /** @var User $user */
         $user = $request->user();
-
-        try {
-            DB::beginTransaction();
-            $withdrawalTransaction = $user->withdrawFloat($request->get('amount'), ['withdrawal' => true], false);
-            $withdrawal = $user->withdrawals()->create([
-                'uuid' => $withdrawalTransaction->uuid,
-                'amount' => $request->get('amount') * 100,
-                'reviewer_id' => $user->referred_by,
-                'channel' => $request->get('channel'),
-                'account_number' => $request->get('account_number'),
-                'note' => $request->get('note'),
-                'meta' => [
-                    'transactionId' => $withdrawalTransaction->id
-                ]
-            ]);
-            $user->masterAgent->depositFloat($request->get('amount'), [
-                'withdrawal' => true,
-                'user' => $user->name,
-                'transaction' => $withdrawal->uuid,
-            ]);
-            DB::commit();
-
-            return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balanceFloat). $e->getMessage());
+        if (! Hash::check($request->get('password'), $user->password)) {
+            return redirect()->back()->withErrors("Invalid Password");
         }
-    }
 
-    public function deposit()
-    {
+        $this->holder = $this->holderFactory->createWalletHolder($request->user());
+        $result = $this->holder->withdraw($request->all(), $request->get('amount'));
+        if ($result['result']) {
+            return redirect()->back()->withFlashSuccess("Withdrawal request of ". $result['amount']. " submitted.");
+        }
+        return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". $result['amount']);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Models\Withdrawal;
 use Bavix\Wallet\Interfaces\Mathable;
 use Bavix\Wallet\Models\Wallet;
@@ -12,7 +13,7 @@ use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Filter;
 
-class PlayerWithdrawalsTable extends DataTableComponent
+class MasterAgentWithdrawalsTable extends DataTableComponent
 {
     /**
      * @var string
@@ -53,13 +54,13 @@ class PlayerWithdrawalsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = Withdrawal::query();
+        $authUser = auth()->user();
         if($this->status) {
             $query->where('status', $this->status);
         }
         $query->where('status', 'pending');
-        if($this->reviewer) {
-            $query->where('reviewer_id', $this->reviewer);
-        }
+        $hub = $authUser->hub;
+        $query->where('reviewer_id', $hub->admin_id);
 
         $query->when($this->getFilter('status'), fn ($query, $status) => $query->where('status', $status));
 
@@ -123,8 +124,8 @@ class PlayerWithdrawalsTable extends DataTableComponent
                 ->format(function ($value, $column, Withdrawal $row) {
                     return view('backend.wallet.withdrawal.action', [
                         'withdrawal' => $row,
-                        'route' => 'admin.players.withdrawals.show'
-                        ]);
+                        'route'      => 'admin.master-agents.withdrawals.show'
+                    ]);
                 })->asHtml()
         ];
 

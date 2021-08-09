@@ -67,6 +67,7 @@ class PlayerController extends Controller
 
     public function transactions()
     {
+
         if (auth()->user()->hasRole('Master Agent')) {
             $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
         } else {

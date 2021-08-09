@@ -273,6 +273,12 @@ Route::get('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 
 
 Route::post('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 'deposit'])->name('master-agents.wallet.deposit');
 
+Route::get('master-agents-withdrawals/{withdrawal}', [WithdrawalController::class, 'show'])
+    ->name('master-agents.withdrawals.show')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $withdrawal) {
+        $trail->push("Master-Agent's Withdrawal", route('admin.master-agents.withdrawals.show', $withdrawal));
+    });
 
 Route::get('master-agent-transactions', [MasterAgentController::class, 'transactions'])->name('master-agents.transactions')
     ->middleware('can:admin.access.master-agents.transactions')

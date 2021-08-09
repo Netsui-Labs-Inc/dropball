@@ -36,7 +36,7 @@ class PlayersTransactionsTable extends DataTableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active', $confirmed = true, $user = null, $action = false, $withUser = false, $wallet = 'default'): void
+    public function mount($status = 'active', $confirmed = false, $user = null, $action = false, $withUser = false, $wallet = 'default'): void
     {
         $this->status = $status;
         $this->user = $user;
@@ -51,12 +51,12 @@ class PlayersTransactionsTable extends DataTableComponent
      */
     public function query(): Builder
     {
+
         $query = Transaction::query();
-
-        if (! $this->confirmed) {
-            $query->where('confirmed', false);
+        if ($this->confirmed) {
+            $query->where('confirmed', true);
         }
-
+        $query->orderBy('created_at', 'desc');
         $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
         $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
             $query->whereHas('roles', function ($query) {
@@ -106,7 +106,6 @@ class PlayersTransactionsTable extends DataTableComponent
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->confirmed ? 'badge-success': 'badge-warning';
                     $confirmed = $row->confirmed ? 'confirmed': 'pending';
-
                     return "<span class='badge $class'>$confirmed</span>";
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')

@@ -55,6 +55,7 @@ class MasterAgentTransactionsTable extends DataTableComponent
         $query = Transaction::query();
         $authUser = auth()->user();
         $user = $this->user;
+        $query->where('confirmed', true);
         $query = $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) use ($authUser, $user) {
             if ($authUser->hasRole('Virtual Hub')) {
                 $hub = Hub::where('admin_id', $authUser->id)->first();
@@ -78,101 +79,19 @@ class MasterAgentTransactionsTable extends DataTableComponent
 
         return $query;
     }
-
     /**
      * @return array
      */
     public function columns(): array
     {
-        $authUser = auth()->user();
-        if ($authUser->hasRole('Administrator')) {
-            $columns = $this->defaultColumns();
-        }
-
-        if ($this->user) {
-            $columns = $this->userWalletColumns();
-        }
-
-        if ($this->wallet === 'income-wallet' && $this->confirmed) {
-            $transactionIdCol = array_shift($columns);
-            array_unshift(
-                $columns,
-                Column::make(__('Betting Round'))
-                    ->format(function ($value, $column, Transaction $row) {
-                        if (! isset($row->meta['betting_round_id'])) {
-                            return "N/A";
-                        }
-                        $bettingRound = BettingRound::find($row->meta['betting_round_id']);
-
-                        $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
-
-                        return "<a href='$linkToBettingRound'> #".$row->meta['betting_round_id']."</a>";
-                    })->asHtml(),
-            );
-            array_unshift($columns, $transactionIdCol);
-        }
-
-        if ($this->action) {
-            $columns[] = Column::make(__('Action'))
-                ->format(function ($value, $column, Transaction $row) {
-                    return view('backend.wallet.action', ['transaction' => $row]);
-                });
-        }
-
-        return $columns;
-    }
-
-    public function userWalletColumns()
-    {
-        return [
+        $columns = [
             Column::make(__('Transaction ID'), 'uuid')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return "#".$row->id;
                 })->asHtml(),
-            Column::make(__('Type'), 'type')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
-
-                    return "<span class='badge $class'> {$row->type}</span>";
-                })->asHtml(),
-            Column::make(__('Amount'), 'amount')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
-                    $sign = $row->amountFloat > 0 ? '+' : null;
-
-                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
-                })->asHtml(),
-            Column::make(__('Confirmed'), 'confirmed')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->confirmed ? 'badge-success': 'badge-warning';
-                    $confirmed = $row->confirmed ? 'confirmed': 'pending';
-
-                    return "<span class='badge $class'>$confirmed</span>";
-                })->asHtml(),
-            Column::make(__('Created at'), 'created_at')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                })->asHtml()
-        ];
-    }
-
-
-    public function defaultColumns()
-    {
-        return [
-            Column::make(__('Transaction ID'), 'uuid')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    return "#".$row->id;
-                })->asHtml(),
-            Column::make(__('Agent'), 'payable')
+            Column::make(__('Player'), 'payable')
                 ->format(function ($value, $column, Transaction $row) {
                     return $row->payable->name;
                 })->asHtml(),
@@ -196,11 +115,41 @@ class MasterAgentTransactionsTable extends DataTableComponent
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->confirmed ? 'badge-success': 'badge-warning';
                     $confirmed = $row->confirmed ? 'confirmed': 'pending';
-
                     return "<span class='badge $class'>$confirmed</span>";
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, Transaction $row) {
+                    return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml()
         ];
+
+        if ($this->action) {
+            $columns[] = Column::make(__('Action'))
+                ->format(function ($value, $column, Transaction $row) {
+                    return view('backend.wallet.action', ['transaction' => $row]);
+                });
+        }
+        if ($this->wallet === 'income-wallet') {
+            $transactionIdCol = array_shift($columns);
+            array_unshift(
+                $columns,
+                Column::make(__('Betting Round'))
+                    ->format(function ($value, $column, Transaction $row) {
+                        if (! isset($row->meta['betting_round_id'])) {
+                            return "N/A";
+                        }
+                        $bettingRound = BettingRound::find($row->meta['betting_round_id']);
+
+                        $linkToBettingRound = route('admin.betting-events.betting-rounds.show', [$bettingRound->bettingEvent, $bettingRound]);
+
+                        return "<a href='$linkToBettingRound'> #".$row->meta['betting_round_id']."</a>";
+                    })->asHtml(),
+            );
+            array_unshift($columns, $transactionIdCol);
+        }
+
+        return $columns;
     }
+
 }
