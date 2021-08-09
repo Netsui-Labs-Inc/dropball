@@ -91,7 +91,7 @@ class PlaceBetService
 
             $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
 
-            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
+            event(new BettingRoundBetPlaced($bet));
 
             logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
             activity('player')
@@ -110,30 +110,5 @@ class PlaceBetService
         //$this->setPoolMoney($bet);
 
         return $this->bettingRound;
-    }
-
-    private function setPoolMoney(Bet $userBet)
-    {
-        $faker = Factory::create();
-
-        $bet = $faker->randomElement(['pula', 'puti']);
-
-        $meta = $this->bettingRound->meta;
-
-        $multiplier = $faker->randomNumber(1);
-        $choice = $faker->randomElement([ 50, 100, 300, 500, 1000, 5000, 10000]);
-
-        $betAmount = $choice * $multiplier;
-        $userBetColor = strtolower($userBet->option->name);
-
-        if (($meta[$bet] + $betAmount) <= $meta['win-pool'] && $faker->boolean && $userBetColor != $bet) {
-            $meta[$bet] = $meta[$bet] + $betAmount;
-
-            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $bet));
-        }
-        $meta[$userBetColor] = $meta[$userBetColor] + $userBet->bet_amount;
-        $this->bettingRound->update(['meta' => $meta]);
-
-        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $userBetColor));
     }
 }

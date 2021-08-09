@@ -18,6 +18,8 @@ Route::get('terms', [TermsController::class, 'index'])
 
 Route::get('test' , function () {
      $user = \App\Domains\Auth\Models\User::find(8);
+     $bettingEvent =  \App\Domains\BettingEvent\Models\BettingEvent::first();
      $winning =  (new \App\Domains\Bet\Actions\GetWinningStreakAction)($user, \App\Domains\BettingEvent\Models\BettingEvent::first());
-     dd($winning);
+
+     dd($bettingEvent->activeJackpot->winners()->create(['user_id' => 8]));
 });

@@ -123,6 +123,7 @@ class BettingRoundController extends Controller
 
         $bettingRound->status = 'cancelled';
         $bettingRound->result = null;
+        $bettingRound->is_betting_open = false;
 
         $bettingRound->save();
         $bettingRound->refresh();
@@ -140,6 +141,7 @@ class BettingRoundController extends Controller
 
         $bettingRound->status = 'ended';
         $bettingRound->result = null;
+        $bettingRound->is_betting_open = false;
 
         $bettingRound->save();
         $bettingRound->refresh();
