@@ -27,7 +27,7 @@ const SwalConfirm = (icon, title, html, confirmButtonText, method, params, callb
     })
 }
 
-const SwalAlert = (icon, title, timeout = 7000) => {
+const SwalAlert = (icon, title, timeout = 4000, method, params) => {
     const Toast = Swal.mixin({
         toast: true,
         position: 'top-end',
@@ -42,7 +42,12 @@ const SwalAlert = (icon, title, timeout = 7000) => {
     Toast.fire({
         icon,
         title
+    }).then(result => {
+        if(method) {
+            return window.livewire.emit(method, params)
+        }
     })
+
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -55,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.livewire.on('swal:alert', data => {
-        SwalAlert(data.icon, data.title, data.timeout)
+        SwalAlert(data.icon, data.title, data.timeout, data.method, data.params)
     });
 
     window.livewire.on('place-bets-puti', data => {

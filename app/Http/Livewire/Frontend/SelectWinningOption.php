@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\FrontEnd;
+namespace App\Http\Livewire\Frontend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\BetOption;
@@ -75,7 +75,7 @@ class SelectWinningOption extends Component
 
     public function pageReload()
     {
-        $this->redirect('/admin/reload');
+        $this->redirect('admin.reload');
 
     }
 

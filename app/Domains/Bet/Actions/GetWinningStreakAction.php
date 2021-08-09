@@ -12,17 +12,16 @@ class GetWinningStreakAction
     {
         $bets = $user->bets()->whereHas('bettingRound', function($query) use($bettingEvent) {
             $query->where('betting_event_id', $bettingEvent->id);
-        })->whereNotNull('status')->get();
-
+        })->whereNotNull('status')->latest()->get();
         $winningStreak = 0;
-
         foreach ($bets as $bet) {
             if($bet->status === 'win') { $winningStreak++; }
             else {
+                logger("GetWinningStreakAction.User.{$user->id}. = $winningStreak");
                 return $winningStreak;
             }
         }
-
+        logger("GetWinningStreakAction.User.{$user->id}. = $winningStreak");
         return $winningStreak;
     }
 }
