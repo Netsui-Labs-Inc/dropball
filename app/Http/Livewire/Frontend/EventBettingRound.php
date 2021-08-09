@@ -115,11 +115,11 @@ class EventBettingRound extends Component
 
     public function startingBettingRound($data)
     {
-
         $nextBettingRound = $this->bettingEvent->bettingRounds()->where('queue', $this->bettingRound->queue + 1)->first();
         $title = "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>";
         if (! isset($data['bettingRoundId'])) {
             $title = "<span>No Betting Round Available</span>";
+
             $this->bettingRound = null;
         }
 
