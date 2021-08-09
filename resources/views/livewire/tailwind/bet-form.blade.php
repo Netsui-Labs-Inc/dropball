@@ -20,7 +20,7 @@
                 Balance
             </p>
             <p class="text-center text-yellow-500">{{number_format($balance)}}
-                @if($userBet)
+                @if($userBet && in_array($bettingRound->status, ['placing_bets', 'ongoing']))
                     <span class="text-green-400 opacity-50">
                     @if($userBet->bet == 4)
                         +{{number_format($userBet->bet_amount * 5)}}

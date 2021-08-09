@@ -62,7 +62,7 @@ class BetForm extends Component
         $this->bettingRound = $this->getLatestBettingRound();
         $this->user = auth()->user();
         $this->balance = $this->user->balanceFloat;
-        $this->winStreak = $this->user->winning_streak;
+        $this->winStreak = (new GetWinningStreakAction)($this->user, $this->bettingEvent);
         $this->checkUserBetAndAmount();
         $this->setPayouts();
     }
@@ -85,7 +85,7 @@ class BetForm extends Component
 
         return [
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBetPlaced" => 'bettingRoundBetPlaced',
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingWindowUpdated" => 'updateBettingRound',
+            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingWindowUpdated" => 'updateBettingWindow',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'updateBettingRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'startNewRound',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'updateResultHandler',
@@ -119,14 +119,24 @@ class BetForm extends Component
         }
     }
 
+    public function updateBettingWindow($data)
+    {
+        if (! $data['bettingRoundId']) {
+            $this->bettingRound = null;
+            return;
+        }
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
+        $this->userCanBet = $this->canBetToBettingRound();
+    }
+
     public function updateBettingRound($data)
     {
-        if (! $data['bettingRound']) {
+        if (! isset($data['bettingRoundId'])) {
             $this->bettingRound = null;
 
             return;
         }
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->userBet = $this->bettingRound->userBet(auth()->user()->id);
         $this->amount = $this->userBet->bet_amount ?? null;
@@ -151,12 +161,12 @@ class BetForm extends Component
 
     public function startNewRound($data)
     {
-        if (! $data['bettingRound']) {
+        if (! isset($data['bettingRoundId'])) {
             $this->bettingRound = null;
 
             return;
         }
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->balance = auth()->user()->balanceFloat;
         $this->resetBets();
@@ -166,8 +176,9 @@ class BetForm extends Component
     {
         $this->updateBalance($data);
 
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
+        $this->userCanBet = $this->canBetToBettingRound();
         if ($this->bettingRound->status === 'cancelled') {
             return;
         }
@@ -182,7 +193,11 @@ class BetForm extends Component
                 $user->winning_streak = $winningStreak;
                 $user->update();
                 $this->winStreak = $winningStreak;
-                $this->balance += $this->payouts['betPayout'];
+                if(!$userBet->winnings_processed_at) {
+                    $this->balance += $this->payouts['betPayout'];
+                } else {
+                    $this->balance = $user->balanceFloat;
+                }
             } else {
                $this->winStreak = 0;
             }
@@ -191,7 +206,7 @@ class BetForm extends Component
 
     public function updateBalance($data)
     {
-        if (! $data['bettingRound']) {
+        if (! $data['bettingRoundId']) {
             $this->bettingRound = null;
 
             return;

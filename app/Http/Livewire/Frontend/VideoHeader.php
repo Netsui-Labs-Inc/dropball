@@ -38,8 +38,6 @@ class VideoHeader extends Component
         }
 
         return [
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBetPlaced" => 'updateStatus',
-            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingWindowUpdated" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'updateStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundBettingLastCall" => 'lastCall',
@@ -48,17 +46,17 @@ class VideoHeader extends Component
 
     public function updateStatus($data)
     {
-        if (! isset($data['bettingRound']['id'])) {
+        if (! isset($data['bettingRoundId'])) {
             return;
         }
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->userBets = $this->bettingRound ? $this->bettingRound->userBets(auth()->user()->id)->get() : null;
     }
 
     public function showResult($data)
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
 
         /** @var Collection $userBets */

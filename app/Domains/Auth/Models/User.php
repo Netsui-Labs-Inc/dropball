@@ -88,6 +88,7 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'referral_id',
         'referred_by',
         'hub_id',
+        'winning_streak',
         'commission_rate',
     ];
 

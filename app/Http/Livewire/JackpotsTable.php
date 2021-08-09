@@ -23,6 +23,8 @@ class JackpotsTable extends DataTableComponent
 
     public int $perPage = 10;
 
+    protected string $pageName = 'jackpots';
+
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];

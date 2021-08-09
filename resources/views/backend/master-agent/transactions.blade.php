@@ -37,7 +37,7 @@
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:master-agent-transactions-table :confirmed="false" :action="true" :wallet="'income-wallet'" />
+                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" :wallet="'income-wallet'" />
                 </x-slot>
             </x-backend.card>
         </div>

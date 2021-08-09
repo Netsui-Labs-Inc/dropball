@@ -41,7 +41,7 @@ class EventBettingRound extends Component
 
     public function showStatus($data)
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
 
         $this->emit('swal:alert', [
             'icon' => 'info',
@@ -57,7 +57,7 @@ class EventBettingRound extends Component
 
     public function showResult($data)
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
 
@@ -95,7 +95,7 @@ class EventBettingRound extends Component
             'confirmText' => 'View next round',
             'text' => "<h1 class='animate__animated animate__pulse animate__infinite infinite'>$result</h1>",
             'method' => "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting",
-            'params' => ['bettingRound' => $nextBettingRound ? $nextBettingRound->toArray() : null],
+            'params' => ['bettingRoundId' => $nextBettingRound ? $nextBettingRound->id : null],
         ]);
     }
 
@@ -115,14 +115,15 @@ class EventBettingRound extends Component
 
     public function startingBettingRound($data)
     {
+
         $nextBettingRound = $this->bettingEvent->bettingRounds()->where('queue', $this->bettingRound->queue + 1)->first();
         $title = "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>";
-        if (! $data['bettingRound']) {
+        if (! isset($data['bettingRoundId'])) {
             $title = "<span>No Betting Round Available</span>";
             $this->bettingRound = null;
         }
 
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->emit('swal:alert', [
             'icon' => 'info',
             'title' => $title,
@@ -138,7 +139,7 @@ class EventBettingRound extends Component
 
     public function updatedBettingWindow($data)
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $status = $this->bettingRound->is_betting_open ? "<strong class='text-success'>OPEN</strong>" : "<strong class='text-danger'>CLOSED</strong>";
         $this->emit('swal:alert', [

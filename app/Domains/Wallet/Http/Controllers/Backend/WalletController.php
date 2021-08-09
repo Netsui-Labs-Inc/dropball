@@ -4,7 +4,7 @@
 namespace App\Domains\Wallet\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
-use App\Domains\Hub\Models\Hub;
+use App\Domains\Wallet\Http\Service\WalletHolderFactory;
 use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Http\Request;
@@ -12,10 +12,16 @@ use Illuminate\Support\Facades\Hash;
 
 class WalletController extends \App\Http\Controllers\Controller
 {
+    private $holder;
+    private $holderFactory;
+    public function __construct(WalletHolderFactory $holderFactory)
+    {
+        $this->holderFactory = $holderFactory;
+    }
+
     public function index()
     {
         $query = Transaction::query();
-
         if (auth()->user()->hasRole('Administrator')) {
             $query = Transaction::query();
         }
@@ -35,95 +41,26 @@ class WalletController extends \App\Http\Controllers\Controller
             ->with('transaction', $transaction);
     }
 
-    public function confirm(Transaction $transaction)
-    {
-        /** @var User $user */
-        $user = auth()->user();
-        $payable = $transaction->payable;
-        if ($transaction->payable_type == User::class) {
-            if ($payable->hasRole('Player')) {
-                $payable->confirm($transaction);
-            } else {
-                $payable->getWallet('income-wallet')->confirm($transaction);
-            }
-        }
-
-        if ($transaction->payable_type == Hub::class) {
-            $payable->getWallet('income-wallet')->confirm($transaction);
-        }
-
-        if ($user->hasRole('Master Agent')) {
-            $user->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
-        } elseif ($user->hasRole('Virtual Hub')) {
-            $hub = Hub::where('admin_id', $user->id)->first();
-            $hub->withdrawFloat($transaction->amountFloat, ['withdrawal' => true, 'from_transaction' => $transaction->uuid, 'payable' => $payable->id]);
-        }
-
-        return redirect()->back()->withFlashSuccess("Request confirmed");
-    }
-
-
     public function myWallet(Request $request)
     {
-        $user = $request->user();
-        if (! $user->hasWallet('income-wallet')) {
-            $user = $user->createWallet([
-               'name' => 'Income Wallet',
-               'slug' => 'income-wallet',
-            ]);
-        }
-
-        if ($request->user()->hasRole('Virtual Hub')) {
-            $hub = Hub::where('admin_id',  $request->user()->id)->first();
-            if ($hub === null) {
-                return redirect()->back()->withErrors("Wallet is unavailable. please contact the account administrator");
-            }
-            if (! $hub->hasWallet('income-wallet')) {
-                $hubWallet = $hub->createWallet([
-                    'name' => 'Income Wallet',
-                    'slug' => 'income-wallet',
-                ]);
-            } else {
-                $hubWallet = $hub->getWallet('income-wallet');
-            }
-
-            return view('backend.wallet.hub-wallet')->with('hub', $hub)->with('hubWallet', $hubWallet);
-        } elseif ($request->user()->hasRole('Master Agent')) {
-            return view('backend.wallet.master-agent-wallet')->with('user',  $request->user());
-        }
+        $this->holder = $this->holderFactory->createWalletHolder($request->user());
+        return $this->holder->getWallet();
     }
 
     public function withdraw(WithdrawalRequest $request)
     {
+
         /** @var User $user */
         $user = $request->user();
         if (! Hash::check($request->get('password'), $user->password)) {
             return redirect()->back()->withErrors("Invalid Password");
         }
 
-        try {
-            $meta = [
-                'channel' => $request->get('channel'),
-                'details' => $request->get('details'),
-            ];
-            if ($request->user()->hasRole('Virtual Hub')) {
-                $hub = Hub::where('admin_id',  $request->user()->id)->first();
-                if (! $hub->hasWallet('income-wallet')) {
-                    $hubWallet = $hub->createWallet([
-                        'name' => 'Income Wallet',
-                        'slug' => 'income-wallet',
-                    ]);
-                } else {
-                    $hubWallet = $hub->getWallet('income-wallet');
-                }
-                $hubWallet->withdrawFloat($request->get('amount'), $meta, false);
-            } else {
-                $user->getWallet('income-wallet')
-                    ->withdrawFloat($request->get('amount'), $meta, false);
-            }
-            return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($request->get('amount')). " submitted.");
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". number_format($user->balance));
+        $this->holder = $this->holderFactory->createWalletHolder($request->user());
+        $result = $this->holder->withdraw($request->all(), $request->get('amount'));
+        if ($result['result']) {
+            return redirect()->back()->withFlashSuccess("Withdrawal request of ". $result['amount']. " submitted.");
         }
+        return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". $result['amount']);
     }
 }

@@ -48,11 +48,7 @@ class JackpotTab extends Component
 
     public function getTopPlayers(BettingEvent $bettingEvent)
     {
-        $minStreak = config('dropball.jackpot.minimum_streak');
-        return User::where('last_event_id', $bettingEvent->id)
-            ->where('winning_streak', '>=',$minStreak)
-            ->orderBy('winning_streak', 'desc')
-            ->get();
+        return $bettingEvent->activeJackpot->winners()->orderBy('winning_streak', 'desc')->get();
     }
 
     public function getListeners()
@@ -63,6 +59,7 @@ class JackpotTab extends Component
 
         return [
             "echo-private:event.{$this->bettingEvent->id}.play,JackpotPoolMoneyUpdated" => 'updatePoolMoneyHandler',
+            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'updatePoolMoneyHandler',
         ];
     }
 
@@ -82,7 +79,7 @@ class JackpotTab extends Component
 
     public function updatePoolMoneyHandler($data)
     {
-        if (!$data['bettingRoundId']) {
+        if (!isset($data['bettingRoundId'])) {
             $this->bettingRound = null;
 
             return;

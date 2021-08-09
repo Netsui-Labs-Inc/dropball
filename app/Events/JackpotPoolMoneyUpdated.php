@@ -19,6 +19,8 @@ class JackpotPoolMoneyUpdated implements ShouldBroadcast
     public $bettingRoundId;
     public $bettingEventId;
 
+    public $queue = 'broadcast';
+
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
