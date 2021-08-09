@@ -75,7 +75,7 @@ class SelectWinningOption extends Component
 
     public function pageReload()
     {
-        $this->redirect('/admin/reload');
+        $this->redirect('admin.reload');
 
     }
 

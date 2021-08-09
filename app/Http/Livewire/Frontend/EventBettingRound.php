@@ -35,6 +35,7 @@ class EventBettingRound extends Component
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStatusUpdated" => 'showStatus',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundResultUpdated" => 'showResult',
             "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundStarting" => 'startingBettingRound',
+            "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundCancelled" => 'reload',
         ];
     }
 
@@ -114,21 +115,26 @@ class EventBettingRound extends Component
 
     public function startingBettingRound($data)
     {
-        if (! isset($data['bettingRoundId'])) {
-            $this->bettingRound = null;
-            $this->emit('swal:alert', [
-                'icon' => 'info',
-                'title' => "<span>No Betting Round Available</span>",
-            ]);
 
-            return;
+        $nextBettingRound = $this->bettingEvent->bettingRounds()->where('queue', $this->bettingRound->queue + 1)->first();
+        $title = "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>";
+        if (! isset($data['bettingRoundId'])) {
+            $title = "<span>No Betting Round Available</span>";
+            $this->bettingRound = null;
         }
 
         $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->emit('swal:alert', [
             'icon' => 'info',
-            'title' => "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>",
+            'title' => $title,
+            'method' => "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundCancelled",
+            'params' => ['bettingRound' => $nextBettingRound ? $nextBettingRound->toArray() : null]
         ]);
+    }
+
+    public function reload()
+    {
+        $this->redirect("\\");
     }
 
     public function updatedBettingWindow($data)
