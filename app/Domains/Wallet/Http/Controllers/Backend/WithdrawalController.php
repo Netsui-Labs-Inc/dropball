@@ -22,13 +22,9 @@ class WithdrawalController extends \App\Http\Controllers\Controller
             $withdrawal->save();
             $transaction = Transaction::find($withdrawal->meta['transactionId']);
             $holder = $holderFactory->createWalletHolder($withdrawal->user);
-            $walletType = $holder->getWalletType();
-            $withdrawal->user->getWallet($walletType['slug'])->confirm($transaction);
-            $withdrawal->reviewer->depositFloat($withdrawal->amountFloat, [
-                'withdrawal' => true,
-                'user' => $withdrawal->user->id,
-                'transaction' => $transaction->uuid,
-            ]);
+            $holder->confirm($transaction);
+            $reviewer = $holderFactory->createWalletHolder($withdrawal->reviewer);
+            $reviewer->deposit($withdrawal->amountFloat, $transaction, $withdrawal->user->id);
             DB::commit();
             return redirect()->back()->withFlashSuccess("Withdrawal request of ". number_format($withdrawal->amountFloat, 2). " was approved.");
         } catch (\Exception $e) {

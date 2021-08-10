@@ -56,7 +56,7 @@ class PlayersTransactionsTable extends DataTableComponent
         if ($this->confirmed) {
             $query->where('confirmed', true);
         }
-        $query->orderBy('created_at', 'desc');
+
         $query->whereHas('wallet', fn ($query) => $query->where('slug', $this->wallet));
         $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
             $query->whereHas('roles', function ($query) {
@@ -67,6 +67,7 @@ class PlayersTransactionsTable extends DataTableComponent
             }
             return $query;
         });
+        $query->latest('created_at');
         return $query;
     }
 

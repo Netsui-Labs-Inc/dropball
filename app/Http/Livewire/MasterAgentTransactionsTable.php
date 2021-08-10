@@ -76,7 +76,7 @@ class MasterAgentTransactionsTable extends DataTableComponent
         if (! $this->confirmed) {
             $query->where('confirmed', false);
         }
-
+        $query->latest('created_at');
         return $query;
     }
     /**

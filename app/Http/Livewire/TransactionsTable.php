@@ -74,7 +74,7 @@ class TransactionsTable extends DataTableComponent
             $query->whereNull('meta->bettingRound');
         }
 
-
+        $query->latest('created_at');
         return $query;
     }
 

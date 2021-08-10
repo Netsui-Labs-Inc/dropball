@@ -58,12 +58,12 @@ class MasterAgentWithdrawalsTable extends DataTableComponent
         if($this->status) {
             $query->where('status', $this->status);
         }
-        $query->where('status', 'pending');
         $hub = $authUser->hub;
-        $query->where('reviewer_id', $hub->admin_id);
-
+        if($this->reviewer) {
+            $query->where('reviewer_id', $hub->admin_id);
+        }
         $query->when($this->getFilter('status'), fn ($query, $status) => $query->where('status', $status));
-
+        $query->latest('created_at');
         return $query;
     }
 

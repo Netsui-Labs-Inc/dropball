@@ -51,6 +51,7 @@ class HubsTransactionsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = Transaction::query();
+        $query->latest('created_at');
         $query->where('payable_type', Hub::class);
 
         if (! $this->confirmed) {
