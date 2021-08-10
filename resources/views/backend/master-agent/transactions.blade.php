@@ -22,7 +22,7 @@
                 role="tab"
                 aria-controls="active"
                 aria-selected="true" >
-                @lang("Pending Withdrawal") @if($pendingTransactions->count()) <span class="badge badge-danger">{{$pendingTransactions->count()}}</span>@endif
+                @lang("Pending Withdrawal") @if($pendingWithdrawals) <span class="badge badge-danger">{{$pendingWithdrawals}}</span>@endif
             </x-utils.link>
         </div>
     </nav>

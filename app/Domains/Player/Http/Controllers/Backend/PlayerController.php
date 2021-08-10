@@ -67,13 +67,11 @@ class PlayerController extends Controller
 
     public function transactions()
     {
-
-        if (auth()->user()->hasRole('Master Agent')) {
-            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
-        } else {
+        if (auth()->user()->hasRole('Player')) {
             $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
+        } else {
+            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
         }
-
         return view('backend.player.all-transactions')
             ->with('pendingWithdrawals', $pendingWithdrawals);
     }

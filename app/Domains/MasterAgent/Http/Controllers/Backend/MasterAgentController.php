@@ -10,6 +10,7 @@ use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
 use App\Domains\Hub\Models\Hub;
+use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
 use Auth;
@@ -156,20 +157,11 @@ class MasterAgentController extends Controller
 
     public function transactions()
     {
-        $query = Transaction::query();
-        $query->whereHasMorph('payable', 'App\Domains\Auth\Models\User', function ($query) {
-            if (auth()->user()->hasRole('Virtual Hub')) {
-                $hub = Hub::where('admin_id', auth()->user()->id)->first();
-                $query->where('hub_id', $hub->id);
-            }
-            $query->whereHas('roles', function ($query) {
-                return $query->where('name', 'Master Agent');
-            });
-        });
-        $query->whereHas('wallet', fn ($query) => $query->where('slug', 'income-wallet'));
-
-        $pendingTransactions = $query->where('confirmed', false)->get();
-
-        return view('backend.master-agent.transactions')->with('pendingTransactions', $pendingTransactions);
+        if (auth()->user()->hasRole('Master Agent')) {
+            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
+        } else {
+            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
+        }
+        return view('backend.master-agent.transactions')->with('pendingWithdrawals',$pendingWithdrawals);
     }
 }
