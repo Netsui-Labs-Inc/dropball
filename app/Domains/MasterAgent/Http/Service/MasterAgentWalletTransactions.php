@@ -21,8 +21,4 @@ class MasterAgentWalletTransactions extends BaseWithdrawalTransaction
         return view('backend.wallet.master-agent-wallet')->with('user',   $this->holder);
     }
 
-    public function showPlayerWithdrawal()
-    {
-
-    }
 }

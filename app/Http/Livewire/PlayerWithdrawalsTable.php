@@ -62,7 +62,7 @@ class PlayerWithdrawalsTable extends DataTableComponent
         }
 
         $query->when($this->getFilter('status'), fn ($query, $status) => $query->where('status', $status));
-
+        $query->latest('created_at');
         return $query;
     }
 

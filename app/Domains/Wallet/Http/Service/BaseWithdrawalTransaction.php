@@ -53,4 +53,19 @@ class BaseWithdrawalTransaction
     {
         return $this->walletType;
     }
+
+    public function confirm($transaction)
+    {
+        $this->holder->getWallet($this->walletType['slug'])->confirm($transaction);
+    }
+
+    public function deposit($amount, $transaction, $userId)
+    {
+        $this->holder->depositFloat($amount, [
+            'withdrawal' => true,
+            'user' => $userId,
+            'transaction' => $transaction->uuid,
+        ]);
+    }
+
 }
