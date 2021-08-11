@@ -38,6 +38,11 @@
                 </tr>
 
                 <tr>
+                    <th>@lang('Account Name')</th>
+                    <td><span class='badge badge-info'> {{$withdrawal->account_name ?? 'N/A'}}</span></td>
+                </tr>
+
+                <tr>
                     <th>@lang('Amount')</th>
                     <td>{{ number_format($withdrawal->amountFloat, 2)}}</td>
                 </tr>

@@ -33,7 +33,11 @@
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:players-transactions-table :action="true"  />
+                    @hasrole("Master Agent")
+                    <livewire:players-transactions-table :action="true" :confirmed="true" />
+                    @else
+                        <livewire:players-transactions-table :action="true" />
+                        @endhasrole
                 </x-slot>
             </x-backend.card>
         </div>
@@ -41,7 +45,7 @@
             <x-backend.card>
                 <x-slot name="body">
                     @hasrole("Master Agent")
-                        <livewire:player-withdrawals-table :reviewer="auth()->user()->id" />
+                        <livewire:player-withdrawals-table status="pending" :reviewer="auth()->user()->id" />
                     @else
                         <livewire:player-withdrawals-table  />
                     @endhasrole
