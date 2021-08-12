@@ -71,20 +71,22 @@ class BettingRoundResultListener
     public function processCommissions(BettingRound $bettingRound)
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
-        foreach ($bettingRound->bets as $bet) {
-            Bus::batch([
-                new ProcessMasterAgentCommissionJob($bet),
-                new ProcessMasterAgentCommissionJob($bet, true),
-                new ProcessDeveloperCommissionJob($bet),
-                new ProcessOperatorCommissionJob($bet),
-                new ProcessHubCommissionJob($bet),
+        $bettingRound->bets()->chunk(500, function($bets) {
+            foreach ($bets as $bet) {
+                Bus::batch([
+                    new ProcessMasterAgentCommissionJob($bet),
+                    new ProcessMasterAgentCommissionJob($bet, true),
+                    new ProcessDeveloperCommissionJob($bet),
+                    new ProcessOperatorCommissionJob($bet),
+                    new ProcessHubCommissionJob($bet),
 //                new SetPlayerWinningStreakJob($bet), //Disable Jackpot
-            ])->then(function (Batch $batch) use ($bet) {
-                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
-            })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
-                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
-            })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
-        }
+                ])->then(function (Batch $batch) use ($bet) {
+                    logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
+                })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
+                    logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
+                })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
+            }
+        });
     }
 
     public function refund($bettingRound)
