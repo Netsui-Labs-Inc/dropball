@@ -60,6 +60,7 @@ trait WalletAndCommission
             DB::commit();
         } catch (\Exception $e) {
             \Sentry::captureLastError();
+            logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} ERROR ".$e->getMessage());
             DB::rollBack();
         }
     }

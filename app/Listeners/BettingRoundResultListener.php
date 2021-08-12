@@ -77,9 +77,8 @@ class BettingRoundResultListener
                     new ProcessMasterAgentCommissionJob($bet),
                     new ProcessMasterAgentCommissionJob($bet, true),
                     new ProcessDeveloperCommissionJob($bet),
-                    new ProcessOperatorCommissionJob($bet),
                     new ProcessHubCommissionJob($bet),
-//                new SetPlayerWinningStreakJob($bet), //Disable Jackpot
+                    new ProcessOperatorCommissionJob($bet),
                 ])->then(function (Batch $batch) use ($bet) {
                     logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
                 })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
