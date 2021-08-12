@@ -5,7 +5,6 @@ namespace App\Events;
 use App\Domains\BettingRound\Models\BettingRound;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -14,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 
 class BettingRoundResultUpdated implements ShouldBroadcast, ShouldQueue
 {
-    use Dispatchable, Queueable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
+    use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
     public int $bettingRoundId;
     public int $bettingEventId;
