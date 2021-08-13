@@ -15,7 +15,7 @@
         <p class="text-red text-xs italic">{{ session('error') }}</p>
     @endif
     <div class="flex flex-wrap content-start text-sm">
-        <div class="flex-auto w-1/3">
+        <div class="flex-auto w-1/2">
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
                 Balance
             </p>
@@ -31,7 +31,7 @@
                 @endif
             </p>
         </div>
-        <div class="flex-auto w-1/3">
+        <div class="flex-auto w-1/2">
             <p class="uppercase text-center font-semibold leading-normal text-gray-50">
                  Bet
             </p>
@@ -46,14 +46,6 @@
                     @endif
                 @endif
                 {{number_format((float) $amount)}}
-            </p>
-        </div>
-        <div class="flex-auto w-1/3">
-            <p class="uppercase text-center font-semibold leading-normal text-gray-50">
-                Win Streak
-            </p>
-            <p class="text-center text-yellow-500 font-semibold">
-                {{$winStreak ?? 0}}
             </p>
         </div>
     </div>

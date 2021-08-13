@@ -61,6 +61,13 @@ class MasterAgentWithdrawalsTable extends DataTableComponent
             $query->where('status', $this->status);
         }
 
+        $query->where('status', 'pending');
+
+        if($authUser->hasRole('Virtual Hub')) {
+            $hub = $authUser->hub;
+            $query->where('reviewer_id', $hub->admin_id);
+        }
+
         $hub = $authUser->hub;
         if($this->reviewer) {
             $query->where('reviewer_id', $hub->admin_id);

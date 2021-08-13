@@ -6,5 +6,5 @@ return [
     'jackpot' => [
         'minimum_streak' => 5,
     ],
-    'minimum_withdrawal' => 500
+    'minimum_withdrawal' => env('MINIMUM_WITHDRAWAL', 500)
 ];

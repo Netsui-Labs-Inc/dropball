@@ -4,21 +4,14 @@ namespace App\Listeners;
 
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
-use App\Domains\Bet\Models\BetOption;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Commissions\ProcessDeveloperCommissionJob;
 use App\Jobs\Commissions\ProcessHubCommissionJob;
 use App\Jobs\Commissions\ProcessMasterAgentCommissionJob;
 use App\Jobs\Commissions\ProcessOperatorCommissionJob;
 use App\Jobs\Commissions\ProcessOtherCommissionsJob;
-use App\Jobs\Commissions\ProcessSubAgentCommissionJob;
-use App\Jobs\IncreaseJackpotPoolMoneyJob;
-use App\Jobs\ProcessBetBalanceJob;
 use App\Jobs\ProcessBetRefundJob;
-use App\Jobs\ProcessBetStatusJob;
-use App\Jobs\ProcessJackpotWinnersJob;
 use App\Jobs\ProcessPlayerWinningsJob;
-use App\Jobs\SetPlayerWinningStreakJob;
 use App\Jobs\Traits\WalletAndCommission;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
@@ -57,12 +50,12 @@ class BettingRoundResultListener
 
         ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
 
-        $activeJackpot = $bettingRound->bettingEvent->activeJackpot;
-        if($activeJackpot && $activeJackpot->betting_round_id === $bettingRound->id) {
-            ProcessJackpotWinnersJob::dispatch($bettingRound);
-        } else {
-            IncreaseJackpotPoolMoneyJob::dispatch($bettingRound);
-        }
+//        $activeJackpot = $bettingRound->bettingEvent->activeJackpot;
+//        if($activeJackpot && $activeJackpot->betting_round_id === $bettingRound->id) {
+//            ProcessJackpotWinnersJob::dispatch($bettingRound);
+//        } else {
+//            IncreaseJackpotPoolMoneyJob::dispatch($bettingRound);
+//        }
     }
 
     public function processWinners(BettingRound $bettingRound)
@@ -78,20 +71,21 @@ class BettingRoundResultListener
     public function processCommissions(BettingRound $bettingRound)
     {
         logger("BettingRound#{$bettingRound->id} ".$bettingRound->bets()->count(). " bets to process");
-        foreach ($bettingRound->bets as $bet) {
-            Bus::batch([
-                new ProcessMasterAgentCommissionJob($bet),
-                new ProcessMasterAgentCommissionJob($bet, true),
-                new ProcessDeveloperCommissionJob($bet),
-                new ProcessOperatorCommissionJob($bet),
-                new ProcessHubCommissionJob($bet),
-                new SetPlayerWinningStreakJob($bet),
-            ])->then(function (Batch $batch) use ($bet) {
-                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
-            })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
-                logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
-            })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
-        }
+        $bettingRound->bets()->chunk(500, function($bets) {
+            foreach ($bets as $bet) {
+                Bus::batch([
+                    new ProcessMasterAgentCommissionJob($bet),
+                    new ProcessMasterAgentCommissionJob($bet, true),
+                    new ProcessDeveloperCommissionJob($bet),
+                    new ProcessHubCommissionJob($bet),
+                    new ProcessOperatorCommissionJob($bet),
+                ])->then(function (Batch $batch) use ($bet) {
+                    logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
+                })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
+                    logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
+                })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
+            }
+        });
     }
 
     public function refund($bettingRound)
