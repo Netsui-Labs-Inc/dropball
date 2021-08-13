@@ -32,6 +32,7 @@ class ProcessCommissionsAction
                 ])->then(function (Batch $batch) use ($bet) {
                     logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Successful");
                 })->catch(function (Batch $batch, \Throwable $e) use ($bet) {
+                    \Sentry::captureEvent($e);
                     logger("BettingRoundResultListener.processCommissions :: Bet#$bet->id Error - ".$e->getMessage());
                 })->name('BetId#'.$bet->id)->onQueue('commissions')->dispatch();
             }

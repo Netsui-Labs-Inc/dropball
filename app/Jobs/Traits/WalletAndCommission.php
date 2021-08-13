@@ -58,8 +58,9 @@ trait WalletAndCommission
                 ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $developerWallet->balanceFloat])
                 ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
             DB::commit();
-        } catch (\Exception $e) {
-            \Sentry::captureLastError();
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} ERROR ".$e->getMessage());
             DB::rollBack();
         }

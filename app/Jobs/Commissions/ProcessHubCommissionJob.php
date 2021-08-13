@@ -33,6 +33,16 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->bet = $bet;
     }
 
+    public function backoff()
+    {
+        return [1, 5, 10, 30];
+    }
+
+
+    public function middleware()
+    {
+        return [(new WithoutOverlapping("hub-".$this->bet->user->hub_id))->releaseAfter(30)];
+    }
 
     /**
      * The unique ID of the job.
@@ -79,8 +89,9 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
             DB::commit();
-        } catch (\Exception $e) {
-            \Sentry::captureLastError();
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} ERROR ".$e->getMessage());
             DB::rollBack();
         }

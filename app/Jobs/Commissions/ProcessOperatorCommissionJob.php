@@ -37,6 +37,10 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->operator = $this->getOperator();
     }
 
+    public function backoff()
+    {
+        return [1, 5, 10, 30];
+    }
     /**
      * The unique ID of the job.
      *
@@ -83,8 +87,9 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->withProperties($properties)
                 ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
-        } catch (\Exception $e) {
-            \Sentry::captureLastError();
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} .error ".$e->getMessage());
             DB::rollBack();
         }
