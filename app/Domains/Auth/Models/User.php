@@ -196,5 +196,4 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         return $this->belongsTo(Hub::class);
     }
 
-
 }

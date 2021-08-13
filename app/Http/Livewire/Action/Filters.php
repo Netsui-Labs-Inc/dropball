@@ -53,6 +53,5 @@ class Filters
     {
         return $this->filters;
     }
-
-
+    
 }
