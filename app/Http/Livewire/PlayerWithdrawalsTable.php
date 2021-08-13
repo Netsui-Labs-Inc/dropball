@@ -2,10 +2,8 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Models\Withdrawal;
-use Bavix\Wallet\Interfaces\Mathable;
-use Bavix\Wallet\Models\Wallet;
+use App\Http\Livewire\Action\Filters;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -53,6 +51,9 @@ class PlayerWithdrawalsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = Withdrawal::query();
+        $query->when($this->getFilter('channel'), fn ($query, $term) => $query->search($term));
+        $query->when($this->getFilter('type'), fn ($query, $term) => $query->search($term));
+
         if($this->status) {
             $query->where('status', $this->status);
         }
@@ -61,7 +62,6 @@ class PlayerWithdrawalsTable extends DataTableComponent
             $query->where('reviewer_id', $this->reviewer);
         }
 
-        $query->when($this->getFilter('status'), fn ($query, $status) => $query->where('status', $status));
         $query->latest('created_at');
         return $query;
     }
@@ -71,16 +71,8 @@ class PlayerWithdrawalsTable extends DataTableComponent
      */
     public function filters(): array
     {
-        return [
-            'status' => Filter::make('Type')
-                ->select([
-                    '' => 'All',
-                    'pending' => 'Pending',
-                    'completed' => 'Completed',
-                    'cancelled' => 'Cancelled',
-
-                ]),
-        ];
+        $filter = new Filters();
+        return $filter->channel()->getFilters();
     }
 
     /**
@@ -94,6 +86,18 @@ class PlayerWithdrawalsTable extends DataTableComponent
                 ->sortable()
                 ->format(function ($value, $column, Withdrawal $row) {
                     return "#".$row->id;
+                })->asHtml(),
+            Column::make(__('Account Number'), 'account_number')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_number;
+                })->asHtml(),
+            Column::make(__('Account Name'), 'account_name')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_name ?? "N/A";
                 })->asHtml(),
             Column::make(__('Channel'), 'channel')
                 ->sortable(),
