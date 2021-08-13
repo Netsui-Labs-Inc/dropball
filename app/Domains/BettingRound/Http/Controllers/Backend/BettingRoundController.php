@@ -2,7 +2,6 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Models\BettingRound;
@@ -13,9 +12,8 @@ use App\Events\BettingRoundStatusUpdated;
 use App\Events\ConfirmBetBettingResult;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
-use Faker\Factory;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use App\Domains\BettingRound\Actions\ProcessBettingRoundResultAction;
 
 class BettingRoundController extends Controller
 {
@@ -154,6 +152,7 @@ class BettingRoundController extends Controller
     public function setResult(BettingRound $bettingRound, Request $request)
     {
         $this->validateTreshold($bettingRound);
+
         $bettingRound->result = $request->get('result');
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
@@ -169,6 +168,8 @@ class BettingRoundController extends Controller
         if($bettingRound->bettingEvent->dealer) {
             event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
         }
+
+        (new ProcessBettingRoundResultAction)($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
