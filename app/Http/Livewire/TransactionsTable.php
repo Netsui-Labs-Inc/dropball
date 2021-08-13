@@ -2,11 +2,13 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Action\Filters;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Filter;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -29,7 +31,10 @@ class TransactionsTable extends DataTableComponent
     public $wallet;
     public $model;
     public $excludeBetTransactions;
-
+    private $transactionStatus = [
+            'pending'  => 0,
+            'complete' => 1
+        ];
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -60,9 +65,6 @@ class TransactionsTable extends DataTableComponent
         if ($this->user) {
             $query = $this->user->transactions()->getQuery();
         }
-        if (! $this->confirmed) {
-            $query->where('confirmed', false);
-        }
         if ($this->model) {
             $query = $this->model->transactions()->getQuery();
         }
@@ -74,10 +76,24 @@ class TransactionsTable extends DataTableComponent
             $query->whereNull('meta->bettingRound');
         }
 
+        $query->when($this->getFilter('status'),
+            fn ($query, $term) => $query->where('confirmed', $this->transactionStatus[$term])
+        );
+
+        $query->when($this->getFilter('type'),
+            fn ($query, $term) => $query->where('type', $term)
+        );
         $query->latest('created_at');
         return $query;
     }
-
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        $filters = new Filters();
+        return $filters->type()->status()->getFilters();
+    }
     /**
      * @return array
      */
@@ -86,25 +102,19 @@ class TransactionsTable extends DataTableComponent
         $user = auth()->user();
         $columns = [
             Column::make(__('Transaction ID'), 'id')
-                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return "#".$row->id;
                 })->asHtml(),
-            Column::make(__('Wallet'), 'wallet')
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->wallet->slug == 'default' ? 'badge-success' : 'badge-info';
-
-                    return "<span class='badge $class'> {$row->wallet->name}</span>";
-                })->asHtml(),
             Column::make(__('Type'), 'type')
+                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
-
                     return "<span class='badge $class'> {$row->type}</span>";
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
+                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
@@ -112,7 +122,7 @@ class TransactionsTable extends DataTableComponent
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
                 })->asHtml(),
-            Column::make(__('Confirmed'), 'confirmed')
+            Column::make(__('STATUS'), 'confirmed')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->confirmed ? 'badge-success': 'badge-warning';
