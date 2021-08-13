@@ -1,68 +1,21 @@
 <?php
 
-namespace App\Jobs\Commissions;
 
-use App\Domains\Auth\Models\User;
+namespace App\Domains\BettingRound\Actions\Commission;
+
+
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
-use App\Jobs\TransferToWalletJob;
-use App\Models\Company;
 use Brick\Math\BigDecimal;
-use Illuminate\Bus\Batchable;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Queue\SerializesModels;
 use DB;
-use Illuminate\Support\Facades\Bus;
-use Cache;
-class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
+class Operator
 {
-    use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     use WalletAndCommission;
 
-    public Bet $bet;
-    public Company $operator;
-
-    /**
-     * ProcessDeveloperCommissionJob constructor.
-     * @param Bet $bet
-     */
-    public function __construct(Bet $bet)
+    public function __invoke(Bet $bet)
     {
-        $this->bet = $bet;
-        $this->operator = $this->getOperator();
-    }
-
-    public function backoff()
-    {
-        return [1, 5, 10, 30];
-    }
-    /**
-     * The unique ID of the job.
-     *
-     * @return string
-     */
-    public function uniqueId()
-    {
-        return "company-1";
-    }
-
-
-    public function uniqueVia()
-    {
-        return Cache::driver('database');
-    }
-
-    public function handle()
-    {
-        $operator = $this->operator;
+        $operator = $this->getOperator();
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
-
-        $bet = $this->bet;
 
         $rate = $this->hasSubAgent($bet->user) ? .0675 : .07;
         $bettingRound = $bet->bettingRound;
@@ -87,14 +40,12 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->withProperties($properties)
                 ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
+            return true;
         } catch (\Throwable $e) {
             \Sentry::captureException($e);
-            $this->release(3);
             logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} .error ".$e->getMessage());
             DB::rollBack();
+            return false;
         }
-
-        return $operator;
     }
-
 }

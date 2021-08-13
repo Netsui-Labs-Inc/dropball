@@ -1,50 +1,18 @@
 <?php
 
-namespace App\Jobs\Traits;
+namespace App\Domains\BettingRound\Actions\Commission;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
-use App\Jobs\TransferToWalletJob;
+use App\Jobs\Traits\WalletAndCommission;
 use App\Models\Company;
 use Brick\Math\BigDecimal;
-use Str;
 use DB;
-trait WalletAndCommission
+
+class Developer
 {
-    /**
-     * @return Company
-     */
-    public function getOperator()
-    {
-        return Company::first();
-    }
+    use WalletAndCommission;
 
-    public function getDevelopers()
-    {
-        return Company::where('name', 'System')->first();
-    }
-
-    public function hasSubAgent(User $player)
-    {
-        $masterAgent = $player->masterAgent;
-
-        return $masterAgent->masterAgent;
-    }
-
-    public function getWallet($walletHolder, $walletName)
-    {
-        $walletSlug = Str::kebab($walletName);
-        if ($walletHolder->hasWallet($walletSlug)) {
-            return $walletHolder->getWallet($walletSlug);
-        }
-
-        return $walletHolder->createWallet([
-            'name' => $walletName,
-            'slug' => $walletSlug,
-        ]);
-    }
-
-    public function processDevelopersCommission(Bet $bet)
+    public function __invoke(Bet $bet)
     {
         /** @var Company $developer */
         $developer = $this->getDevelopers();
@@ -69,23 +37,12 @@ trait WalletAndCommission
                 ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $developerWallet->balanceFloat])
                 ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
             DB::commit();
+            return true;
         } catch (\Throwable $e) {
             \Sentry::captureException($e);
-            $this->release(3);
             logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} ERROR ".$e->getMessage());
             DB::rollBack();
+            return false;
         }
     }
-
-    public function createCommission(Bet $bet, $commissionable, $type, $amount, $rate, $meta = null)
-    {
-        $commissionable->commissions()->create([
-            'type' => $type,
-            'amount' => $amount,
-            'rate' => $rate,
-            'bet_id' => $bet->id,
-            'meta' => $meta,
-        ]);
-    }
-
 }

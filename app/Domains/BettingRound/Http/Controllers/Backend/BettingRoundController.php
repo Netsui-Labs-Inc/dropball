@@ -4,6 +4,11 @@ namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\BettingRound\Actions\Commission\Agent;
+use App\Domains\BettingRound\Actions\Commission\Developer;
+use App\Domains\BettingRound\Actions\Commission\Hub;
+use App\Domains\BettingRound\Actions\Commission\Operator;
+use App\Domains\BettingRound\Actions\Commission\SubAgent;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -172,6 +177,28 @@ class BettingRoundController extends Controller
         (new ProcessBettingRoundResultAction)($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
+    }
+
+    public function processCommissions(Bet $bet, $type)
+    {
+        $jobs = [
+            'master_agent' => Agent::class,
+            'developer' => Developer::class,
+            'hub' => Hub::class,
+            'operator' => Operator::class,
+            'sub_agent' => SubAgent::class,
+        ];
+
+        if(!isset($jobs[$type])) {
+            throw new GeneralException('Invalid commission type');
+        }
+
+        $job = (new $jobs[$type])($bet);
+
+        return response()->json([
+            'success' => $job,
+            'type' => $type
+        ], $job ? 200 : 400);
     }
 
     private function validateTreshold(BettingRound $bettingRound)
