@@ -22,11 +22,13 @@ class CommissionsStatusRow extends Component
     public $betProcessing = false;
 
     public $status;
+    public $errorMessage;
 
     public function mount($bet)
     {
         $this->bet = $bet;
         $this->getCommissionsStatuses();
+        $this->status = !$bet->commission_processed ? 'pending' : 'completed';
 
     }
 
@@ -37,14 +39,14 @@ class CommissionsStatusRow extends Component
         $this->hub = $bet->commissions()->where('type', 'hub')->first();
         $this->developer = $bet->commissions()->where('type', 'system')->first();
         $this->operator = $bet->commissions()->where('type', 'operator')->first();
-        $this->status = !$bet->commission_processed ? 'pending' : 'completed';
     }
 
     public function getListeners()
     {
         return [
             "echo-private:bet.{$this->bet->id}.status,BetCommissionsProcessingStarted" => 'started',
-            "echo-private:bet.{$this->bet->id}.status,BetCommissionsProcessingFinished" => 'finished'
+            "echo-private:bet.{$this->bet->id}.status,BetCommissionsProcessingFinished" => 'finished',
+            "echo-private:bet.{$this->bet->id}.status,BetCommissionsProcessingFailed" => 'failed'
         ];
     }
 
@@ -66,6 +68,14 @@ class CommissionsStatusRow extends Component
         $this->bet->refresh();
         $this->getCommissionsStatuses();
         $this->status = 'completed';
+    }
+
+    public function failed($data)
+    {
+        $this->bet->refresh();
+        $this->getCommissionsStatuses();
+        $this->status = 'failed';
+        $this->errorMessage = $data['errorMessage'];
     }
 
     public function render()

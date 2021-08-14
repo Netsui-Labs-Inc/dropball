@@ -28,27 +28,18 @@ class Operator
             return $operatorWallet;
         }
 
-        try {
-            DB::beginTransaction();
-            $currentBalance = $operatorWallet->balanceFloat;
-            $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
-            $rate = BigDecimal::of($rate * 100)->toFloat();
+        $currentBalance = $operatorWallet->balanceFloat;
+        $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
+        $rate = BigDecimal::of($rate * 100)->toFloat();
 
-            $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
-            $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat];
-            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}", $properties);
-            activity('operator commissions')
-                ->performedOn($operator)
-                ->causedBy($bet->bettingRound)
-                ->withProperties($properties)
-                ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
-            DB::commit();
-            return true;
-        } catch (\Throwable $e) {
-            \Sentry::captureException($e);
-            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} .error ".$e->getMessage());
-            DB::rollBack();
-            return false;
-        }
+        $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
+        $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat];
+        logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Operator Current balance is {$operatorWallet->balanceFloat}", $properties);
+        activity('operator commissions')
+            ->performedOn($operator)
+            ->causedBy($bet->bettingRound)
+            ->withProperties($properties)
+            ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
+
     }
 }

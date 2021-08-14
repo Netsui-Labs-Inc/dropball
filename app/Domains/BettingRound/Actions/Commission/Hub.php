@@ -25,29 +25,19 @@ class Hub
         $rate = ($percentage / 100) ?? 0.01;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
-        try {
-            DB::beginTransaction();;
-            $hubWallet = $this->getWallet($hub, 'Income Wallet');
-            $currentBalance = $hubWallet->balanceFloat;
-            $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
-            $rate = BigDecimal::of($rate * 100)->toFloat();
+        $hubWallet = $this->getWallet($hub, 'Income Wallet');
+        $currentBalance = $hubWallet->balanceFloat;
+        $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
+        $rate = BigDecimal::of($rate * 100)->toFloat();
 
-            $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
-            $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $hubWallet->balanceFloat];
-            logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name} will receive $percentage%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}", $properties);
-            activity('hub commissions')
-                ->performedOn($hub)
-                ->causedBy($bettingRound)
-                ->withProperties($properties)
-                ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
+        $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
+        $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $hubWallet->balanceFloat];
+        logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name} will receive $percentage%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}", $properties);
+        activity('hub commissions')
+            ->performedOn($hub)
+            ->causedBy($bettingRound)
+            ->withProperties($properties)
+            ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
-            DB::commit();
-            return true;
-        } catch (\Throwable $e) {
-            \Sentry::captureException($e);
-            logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} ERROR ".$e->getMessage());
-            DB::rollBack();
-            return false;
-        }
     }
 }

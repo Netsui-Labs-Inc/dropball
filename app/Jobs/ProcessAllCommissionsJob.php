@@ -8,6 +8,7 @@ use App\Domains\BettingRound\Actions\Commission\Developer;
 use App\Domains\BettingRound\Actions\Commission\Hub;
 use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
+use App\Events\BetCommissionsProcessingFailed;
 use App\Events\BetCommissionsProcessingFinished;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -15,6 +16,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
 {
@@ -57,14 +59,19 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
     {
         $bet = $this->bet;
 
-        $agent = (new Agent)($bet);
-        $operator = (new Operator)($bet);
-        $hub = (new Hub)($bet);
-        $developer = (new Developer)($bet);
-        $subAgent = (new SubAgent)($bet);
-        $bet->commission_processed = true;
-        $bet->update();
-
-        event(new BetCommissionsProcessingFinished($bet));
+        try {
+            DB::beginTransaction();
+            $agent = (new Agent)($bet);
+            $operator = (new Operator)($bet);
+            $hub = (new Hub)($bet);
+            $developer = (new Developer)($bet);
+            $subAgent = (new SubAgent)($bet);
+            DB::commit();
+            event(new BetCommissionsProcessingFinished($bet));
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            logger("ProcessAllCommissionsJob ERROR: ".$exception->getMessage());
+            event(new BetCommissionsProcessingFailed($bet, $exception->getMessage()));
+        }
     }
 }
