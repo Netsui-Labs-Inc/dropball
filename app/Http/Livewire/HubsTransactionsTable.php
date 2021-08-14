@@ -3,8 +3,10 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Hub\Models\Hub;
+use App\Http\Livewire\Action\Filters;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
+use PHPUnit\Util\Filter;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -51,14 +53,18 @@ class HubsTransactionsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = Transaction::query();
-        $query->latest('created_at');
-        $query->where('payable_type', Hub::class);
+        return $query->latest('created_at')
+            ->where('payable_type', Hub::class)
+            ->where('confirmed', $this->confirmed)
+            ->when($this->getFilter('type'),
+                fn ($query, $term) => $query->where('type', $term));
+    }
 
-        if (! $this->confirmed) {
-            $query->where('confirmed', false);
-        }
-
-        return $query;
+    public function Filters(): array
+    {
+        $filters = new Filters();
+        return $filters->type()
+            ->getFilters();
     }
 
     /**
@@ -68,13 +74,16 @@ class HubsTransactionsTable extends DataTableComponent
     {
         $columns = [
             Column::make(__('Transaction ID'), 'uuid')
-                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return "#".$row->id;
                 })->asHtml(),
             Column::make(__('Hub'), 'hub')
-                ->searchable()
+                ->searchable(function (Builder $query, $searchTerm) {
+                    $query->whereHasMorph('payable', Hub::class, function ($query) use($searchTerm) {
+                        return $query->where('name', 'like', '%'. $searchTerm . '%');
+                    });
+                })
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return $row->payable->name;

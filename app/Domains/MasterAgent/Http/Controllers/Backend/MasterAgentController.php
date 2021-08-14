@@ -157,10 +157,13 @@ class MasterAgentController extends Controller
 
     public function transactions()
     {
-        if (auth()->user()->hasRole('Master Agent')) {
-            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
+
+        if (auth()->user()->hasRole('Virtual Hub')) {
+            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)
+                ->where('status', Withdrawal::PENDING)
+                ->count();
         } else {
-            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
+            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
         }
         return view('backend.master-agent.transactions')->with('pendingWithdrawals',$pendingWithdrawals);
     }
