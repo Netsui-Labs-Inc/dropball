@@ -44,13 +44,9 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
      */
     public function uniqueId()
     {
-        return "company-".$this->operator->id;
+        return "company-1";
     }
 
-    public function middleware()
-    {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-operator-".$this->operator->id))->dontRelease()];
-    }
 
     public function uniqueVia()
     {
@@ -88,8 +84,8 @@ class ProcessOperatorCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
         } catch (\Exception $e) {
-            logger("ProcessOperatorCommissionJob.error ".$e->getMessage());
             \Sentry::captureLastError();
+            logger("ProcessOperatorCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} .error ".$e->getMessage());
             DB::rollBack();
         }
 

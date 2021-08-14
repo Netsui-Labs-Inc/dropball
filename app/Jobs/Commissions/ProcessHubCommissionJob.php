@@ -44,11 +44,6 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         return "hub-".$this->bet->user->hub_id;
     }
 
-    public function middleware()
-    {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->hub->id))->releaseAfter(2)];
-    }
-
     public function uniqueVia()
     {
         return Cache::driver('database');
@@ -86,6 +81,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::commit();
         } catch (\Exception $e) {
             \Sentry::captureLastError();
+            logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} ERROR ".$e->getMessage());
             DB::rollBack();
         }
 
