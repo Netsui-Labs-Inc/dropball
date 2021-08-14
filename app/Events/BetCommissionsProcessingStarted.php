@@ -11,25 +11,21 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class BettingRoundBetPlaced implements ShouldBroadcast, ShouldQueue
+class BetCommissionsProcessingStarted implements ShouldBroadcast, ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
-    public int $bettingEventId;
-    public int $bettingRoundId;
-    public string $bet;
-
     public $queue = 'broadcast';
 
+    public $betId;
     /**
-     * BettingRoundBetPlaced constructor.
-     * @param Bet $bet
+     * Create a new event instance.
+     *
+     * @return void
      */
     public function __construct(Bet $bet)
     {
-        $this->bettingEventId = $bet->bettingRound->bettingEvent->id;
-        $this->bettingRoundId = $bet->bettingRound->id;
-        $this->bet = $bet->bet;
+        $this->betId = $bet->id;
     }
 
     /**
@@ -39,6 +35,6 @@ class BettingRoundBetPlaced implements ShouldBroadcast, ShouldQueue
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEventId.'.play');
+        return new PrivateChannel('bet.'.$this->betId.'.status');
     }
 }

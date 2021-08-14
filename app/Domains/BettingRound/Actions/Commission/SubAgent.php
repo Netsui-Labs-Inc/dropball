@@ -15,6 +15,10 @@ class SubAgent
 
     public function __invoke(Bet $bet)
     {
+        if($bet->commissions()->where('type', 'referred_master_agent')->exists()) {
+            return true;
+        }
+
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
         if(!$masterAgent->masterAgent) {

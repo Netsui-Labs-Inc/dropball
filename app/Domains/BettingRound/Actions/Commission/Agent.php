@@ -13,10 +13,13 @@ class Agent
 
     public function __invoke(Bet $bet)
     {
+        if($bet->commissions()->where('type', 'master_agent')->exists()) {
+            return true;
+        }
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
         if (! $masterAgent) {
-            return;
+            return true;
         }
         $bettingRound = $bet->bettingRound;
         $rate = BigDecimal::of(($masterAgent->commission_rate / 100) ?? .01)->toFloat();

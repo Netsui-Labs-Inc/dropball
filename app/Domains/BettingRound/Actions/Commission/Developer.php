@@ -14,6 +14,9 @@ class Developer
 
     public function __invoke(Bet $bet)
     {
+        if($bet->commissions()->where('type', 'system')->exists()) {
+            return true;
+        }
         /** @var Company $developer */
         $developer = $this->getDevelopers();
         $bettingRound = $bet->bettingRound;

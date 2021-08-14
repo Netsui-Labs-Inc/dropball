@@ -14,6 +14,9 @@ class Operator
 
     public function __invoke(Bet $bet)
     {
+        if($bet->commissions()->where('type', 'operator')->exists()) {
+            return true;
+        }
         $operator = $this->getOperator();
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
 

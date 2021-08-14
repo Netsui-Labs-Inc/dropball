@@ -79,7 +79,7 @@ trait WalletAndCommission
 
     public function createCommission(Bet $bet, $commissionable, $type, $amount, $rate, $meta = null)
     {
-        $commissionable->commissions()->create([
+        return $commissionable->commissions()->create([
             'type' => $type,
             'amount' => $amount,
             'rate' => $rate,

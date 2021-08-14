@@ -18,3 +18,7 @@
 Broadcast::channel('event.{eventId}.play', function ($user, $eventId) {
     return true;
 });
+
+Broadcast::channel('bet.{betId}.status', function ($user, $betId) {
+    return true;
+});

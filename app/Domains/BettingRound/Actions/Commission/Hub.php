@@ -13,6 +13,9 @@ class Hub
 
     public function __invoke(Bet $bet)
     {
+        if($bet->commissions()->where('type', 'hub')->exists()) {
+            return true;
+        }
         $player = $bet->user;
         $masterAgent = $player->masterAgent;
         /** @var Hub $hub */

@@ -151,13 +151,13 @@
                 <div class="row align-items-center">
                     <div class="col">
                         <h3 class="h3 text-white mb-0">
-                            @lang('Commissions Progress')
+                            @lang('Commissions Status')
                         </h3>
                     </div>
                 </div>
             </x-slot>
             <x-slot name="body">
-                <livewire:commissions-progress :bettingRound="$bettingRound"></livewire:commissions-progress>
+                <livewire:commissions-status :bettingRound="$bettingRound"></livewire:commissions-status>
             </x-slot>
         </x-backend.card>
         </div>
