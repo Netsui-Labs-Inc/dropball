@@ -36,7 +36,7 @@ class SubAgent
         $parentAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
 
-        $commission = $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $masterAgent->id]);
+        $commissionModel = $this->createCommission($bet, $masterAgent, 'referred_master_agent', $commission, $rate,  ['sub_agent_id' => $masterAgent->id]);
 
         activity('agent referral commissions')
             ->performedOn($masterAgent)
@@ -44,6 +44,6 @@ class SubAgent
             ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $masterAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $parentAgentWallet->balanceFloat])
             ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
 
-        return $commission;
+        return $commissionModel;
 }
 }

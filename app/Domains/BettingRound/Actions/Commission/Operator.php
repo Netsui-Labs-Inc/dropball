@@ -32,7 +32,7 @@ class Operator
         $operatorWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'bet' => $bet->id, 'previous_balance' => $currentBalance, 'commission' => true]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
 
-        $commission = $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
+        $commissionModel = $this->createCommission($bet, $operator, 'operator', $commission, $rate,  []);
 
         $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $operatorWallet->balanceFloat];
 
@@ -44,7 +44,7 @@ class Operator
             ->withProperties($properties)
             ->log("Operator #{$operator->id} {$operator->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$operatorWallet->balanceFloat}");
 
-        return $commission;
+        return $commissionModel;
 
     }
 }
