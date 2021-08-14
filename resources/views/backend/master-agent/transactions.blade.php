@@ -38,9 +38,9 @@
             <x-backend.card>
                 <x-slot name="body">
                     @hasrole("Virtual Hub")
-                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" :wallet="'income-wallet'" status="pending" reviewer="auth()->user()->id" />
+                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" />
                     @else
-                        <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" :wallet="'income-wallet'" />
+                        <livewire:master-agent-withdrawals-table :action="false" />
                         @endhasrole
                 </x-slot>
             </x-backend.card>
