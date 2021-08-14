@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Console\Commands;
 
 use App\Domains\Bet\Models\Bet;
 use App\Domains\BettingRound\Actions\Commission\Agent;
@@ -10,62 +10,68 @@ use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
 use App\Events\BetCommissionsProcessingFailed;
 use App\Events\BetCommissionsProcessingFinished;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
+class ProcessCommissionsPerBetCommand extends Command
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    private Bet $bet;
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'commissions:process {betId?}';
 
     /**
-     * Create a new job instance.
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Process Commissions Per Bet';
+
+    /**
+     * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(Bet $bet)
+    public function __construct()
     {
-        $this->bet = $bet;
+        parent::__construct();
     }
 
     /**
-     * The unique ID of the job.
+     * Execute the console command.
      *
-     * @return string
-     */
-    public function uniqueId()
-    {
-        return "bet-".$this->bet->id;
-    }
-
-
-    public function uniqueVia()
-    {
-        return \Cache::driver('database');
-    }
-
-    /**
-     * Execute the job.
-     *
-     * @return void
+     * @return int
      */
     public function handle()
     {
-        $bet = $this->bet;
+        $betId = $this->argument('betId') ?? $this->ask("Enter BET ID");
+
+        $bet = Bet::find($betId);
+
+        if(!$betId) {
+            $this->error("BET ID not found");;
+            return false;
+        }
+
+        if($bet->commission_processed) {
+            $this->error("BET ID#$betId already processed");
+            return false;
+        }
 
         try {
             DB::beginTransaction();
             $agent = (new Agent)($bet);
+            $this->info("Agent Commissions Done");
             $operator = (new Operator)($bet);
+            $this->info("Operator Commissions Done");
             $hub = (new Hub)($bet);
+            $this->info("Hub Commissions Done");
             $developer = (new Developer)($bet);
+            $this->info("Developer Commissions Done");
             $subAgent = (new SubAgent)($bet);
+            $this->info("Sub agent Commissions Done");
 
             $bet->commission_processed = true;
             $bet->save();
@@ -76,6 +82,7 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
             DB::rollBack();
             logger("ProcessAllCommissionsJob ERROR: ".$exception->getMessage());
             event(new BetCommissionsProcessingFailed($bet, $exception->getMessage()));
+            $this->error($exception->getMessage());
         }
     }
 }

@@ -30,7 +30,7 @@ class Hub
         $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
 
-        $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
+        $commission = $this->createCommission($bet, $hub, 'hub', $commission, $rate,  []);
         $properties = ['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $hubWallet->balanceFloat];
         logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} {$hub->name} will receive $percentage%($commission) commission from Player#{$player->id} bet of {$bet->bet_amount}", $properties);
         activity('hub commissions')
@@ -39,5 +39,6 @@ class Hub
             ->withProperties($properties)
             ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
+        return $commission;
     }
 }

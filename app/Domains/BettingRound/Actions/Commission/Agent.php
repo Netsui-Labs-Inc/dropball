@@ -31,7 +31,7 @@ class Agent
         $currentBalance = $masterAgentWallet->balanceFloat;
         $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
-        $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
+        $commission = $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
 
         activity('agent commissions')
             ->performedOn($masterAgent)
@@ -39,5 +39,6 @@ class Agent
             ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $masterAgentWallet->balanceFloat])
             ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
+        return $commission;
     }
 }

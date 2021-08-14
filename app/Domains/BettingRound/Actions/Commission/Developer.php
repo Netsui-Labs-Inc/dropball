@@ -31,12 +31,14 @@ class Developer
 
         $rate = BigDecimal::of($rate * 100)->toFloat();
 
-        $this->createCommission($bet, $developer, 'system', $commission, $rate);
+        $commission = $this->createCommission($bet, $developer, 'system', $commission, $rate);
         activity('developer commissions')
             ->performedOn($developer)
             ->causedBy($bettingRound)
             ->withProperties(['bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'previous_balance' => $currentBalance, 'new_balance' => $developerWallet->balanceFloat])
             ->log("Developer #{$developer->id} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$developerWallet->balanceFloat}");
+
+        return $commission;
 
     }
 }
