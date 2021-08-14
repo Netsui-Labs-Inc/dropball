@@ -1,8 +1,6 @@
 <tr class="{{$bet->commission_processed ? 'completed-commission' : 'pending-commissions'}}">
     <td style="width: 80px;">#{{ $bet->id }}</td>
     @if($status === 'failed')
-
-        <td><span class='badge badge-danger text-white'>FAILED</span></td>
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
