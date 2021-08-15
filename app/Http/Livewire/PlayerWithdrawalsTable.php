@@ -2,10 +2,8 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Models\Withdrawal;
-use Bavix\Wallet\Interfaces\Mathable;
-use Bavix\Wallet\Models\Wallet;
+use App\Http\Livewire\Action\Filters;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -14,24 +12,7 @@ use Rappasoft\LaravelLivewireTables\Views\Filter;
 
 class PlayerWithdrawalsTable extends DataTableComponent
 {
-    /**
-     * @var string
-     */
-    public $sortField = 'created_at';
-    public int $perPage = 10;
-    /**
-     * @var string
-     */
-    public $status;
-    public $user;
     public $reviewer;
-    public $confirmed;
-    public $action;
-    public $withUser;
-    public $wallet;
-    public $model;
-    public $excludeBetTransactions;
-
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -39,12 +20,9 @@ class PlayerWithdrawalsTable extends DataTableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = null, $user = null, $reviewer = null, $action = false): void
+    public function mount($reviewer = null): void
     {
-        $this->status = $status;
-        $this->user = $user;
         $this->reviewer = $reviewer;
-        $this->action = $action;
     }
 
     /**
@@ -53,17 +31,14 @@ class PlayerWithdrawalsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = Withdrawal::query();
-        if($this->status) {
-            $query->where('status', $this->status);
-        }
-        $query->where('status', 'pending');
         if($this->reviewer) {
             $query->where('reviewer_id', $this->reviewer);
         }
 
-        $query->when($this->getFilter('status'), fn ($query, $status) => $query->where('status', $status));
-
-        return $query;
+       return $query->when($this->getFilter('channel'), fn ($query, $term) => $query->search($term))
+            ->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))
+            ->where('status', 'pending')
+            ->latest('created_at');
     }
 
     /**
@@ -71,16 +46,8 @@ class PlayerWithdrawalsTable extends DataTableComponent
      */
     public function filters(): array
     {
-        return [
-            'status' => Filter::make('Type')
-                ->select([
-                    '' => 'All',
-                    'pending' => 'Pending',
-                    'completed' => 'Completed',
-                    'cancelled' => 'Cancelled',
-
-                ]),
-        ];
+        $filter = new Filters();
+        return $filter->channel()->getFilters();
     }
 
     /**
@@ -95,24 +62,24 @@ class PlayerWithdrawalsTable extends DataTableComponent
                 ->format(function ($value, $column, Withdrawal $row) {
                     return "#".$row->id;
                 })->asHtml(),
+            Column::make(__('Account Number'), 'account_number')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_number;
+                })->asHtml(),
+            Column::make(__('Account Name'), 'account_name')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_name ?? "N/A";
+                })->asHtml(),
             Column::make(__('Channel'), 'channel')
                 ->sortable(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
                 ->format(function ($value, $column, Withdrawal $row) {
                     return "<div class='text-danger'>-".number_format($row->amountFloat, 2)."</div>";
-                })->asHtml(),
-            Column::make(__('Status'), 'status')
-                ->sortable()
-                ->format(function ($value, $column, Withdrawal $row) {
-                    if($row->status == Withdrawal::COMPLETED) {
-                        $class = 'badge-success';
-                    }elseif ($row->status == Withdrawal::CANCELLED) {
-                        $class = 'badge-danger';
-                    } else {
-                        $class = 'badge-warning';
-                    }
-                    return "<span class='badge $class'>$row->status</span>";
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()

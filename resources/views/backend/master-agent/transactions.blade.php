@@ -37,7 +37,11 @@
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" :wallet="'income-wallet'" />
+                    @hasrole("Virtual Hub")
+                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" />
+                    @else
+                        <livewire:master-agent-withdrawals-table :action="false" />
+                        @endhasrole
                 </x-slot>
             </x-backend.card>
         </div>

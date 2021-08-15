@@ -30,6 +30,7 @@ class RolesTable extends DataTableComponent
             Column::make(__('Type'))
                 ->sortable(),
             Column::make(__('Name'))
+                ->searchable()
                 ->sortable(),
             Column::make(__('Permissions')),
             Column::make(__('Number of Users'), 'users_count')
