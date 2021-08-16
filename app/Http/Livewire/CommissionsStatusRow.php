@@ -8,8 +8,11 @@ use App\Domains\BettingRound\Actions\Commission\Developer;
 use App\Domains\BettingRound\Actions\Commission\Hub;
 use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
+use App\Events\BetCommissionsProcessingFailed;
+use App\Events\BetCommissionsProcessingFinished;
 use App\Events\BetCommissionsProcessingStarted;
 use App\Jobs\ProcessAllCommissionsJob;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class CommissionsStatusRow extends Component
@@ -52,10 +55,27 @@ class CommissionsStatusRow extends Component
 
     public function processCommissions($betId)
     {
-        $bet = Bet::find($betId);
-        event(new BetCommissionsProcessingStarted($bet));
-        $this->started();
-        ProcessAllCommissionsJob::dispatch($bet)->onQueue('commissions');
+        try {
+            $bet = Bet::find($betId);
+            event(new BetCommissionsProcessingStarted($bet));
+            $this->started();
+            DB::beginTransaction();
+            $agent = (new Agent)($bet);
+            $operator = (new Operator)($bet);
+            $hub = (new Hub)($bet);
+            $developer = (new Developer)($bet);
+            $subAgent = (new SubAgent)($bet);
+
+            $bet->commission_processed = true;
+            $bet->save();
+
+            DB::commit();
+            event(new BetCommissionsProcessingFinished($bet));
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            logger("ProcessAllCommissionsJob ERROR: ".$exception->getMessage());
+            event(new BetCommissionsProcessingFailed($bet, $exception->getMessage()));
+        }
     }
 
     public function started()
