@@ -52,7 +52,7 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping("bet-".$this->bet->id))->releaseAfter(2)];
+        return [(new WithoutOverlapping("hub-".$this->bet->user->hub_id))->releaseAfter(2)];
     }
 
     public function uniqueVia()
