@@ -38,6 +38,6 @@ class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->eventId->id.'_'.$this->eventId.'.play');
+        return new PrivateChannel('event.'.$this->eventId.'_'.$this->eventId.'.play');
     }
 }
