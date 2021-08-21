@@ -26,6 +26,7 @@ class Hub
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         $hubWallet = $this->getWallet($hub, 'Income Wallet');
+        $hubWallet->refreshBalance();
         $currentBalance = $hubWallet->balanceFloat;
         $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         $rate = BigDecimal::of($rate * 100)->toFloat();

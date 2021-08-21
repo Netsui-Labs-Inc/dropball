@@ -25,6 +25,7 @@ class Developer
 
         $developer->refresh();
         $developerWallet = $this->getWallet($developer, 'Income Wallet');
+        $developerWallet->refreshBalance();
         logger("ProcessDevelopersCommission BettingRound#{$bettingRound->id} Bet#{$bet->id} Developers will receive 1%($commission) commission from Player#{$bet->user->id} bet of {$bet->bet_amount}");
         $currentBalance = $developerWallet->balanceFloat;
         $developerWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $bet->user->id, 'previous_balance' => $currentBalance]);
