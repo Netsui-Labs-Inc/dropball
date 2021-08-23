@@ -9,6 +9,7 @@ use App\Domains\BettingRound\Actions\Commission\Developer;
 use App\Domains\BettingRound\Actions\Commission\Hub;
 use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
+use App\Domains\BettingRound\Actions\ProcessRefundAction;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -166,15 +167,20 @@ class BettingRoundController extends Controller
 
         $bettingRound->refresh();
 
-        BettingRoundResultUpdated::dispatch($bettingRound);
+        //BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
         if($bettingRound->bettingEvent->dealer) {
             event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
         }
-
-        (new ProcessBettingRoundResultAction)($bettingRound);
+        if ($bettingRound->status === 'cancelled') {
+            logger("BettingRound#{$bettingRound->id} was Cancelled");
+            activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
+            (new ProcessRefundAction)($bettingRound);
+        } else {
+            (new ProcessBettingRoundResultAction)($bettingRound);
+        }
 
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
     }
