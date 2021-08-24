@@ -293,14 +293,28 @@ class PermissionRoleSeeder extends Seeder
 
         // Assign Permissions to other Roles
         //
+        $this->processor();
         $this->masterAgent();
         $this->betAdmin();
         $this->dealerAdmin();
         $this->virtualHub();
         $this->satoshi();
         $this->operator();
-
         $this->enableForeignKeys();
+    }
+
+    public function processor()
+    {
+        $role = Role::create([
+            'type' => User::TYPE_ADMIN,
+            'name' => 'Processor',
+        ]);
+
+        $role->givePermissionTo([
+            'admin.access.virtual.hub.wallet',
+            'admin.access.hubs.transactions',
+            'admin.access.hubs.wallet'
+        ]);
     }
 
     public function operator()
