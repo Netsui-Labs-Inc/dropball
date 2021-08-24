@@ -133,6 +133,9 @@ class BettingRoundController extends Controller
         $bettingRound->refresh();
         event(new BettingRoundStatusUpdated($bettingRound));
         event(new BettingRoundResultUpdated($bettingRound));
+        logger("BettingRound#{$bettingRound->id} was Cancelled");
+        activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
+        (new ProcessRefundAction)($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Betting Round Cancelled'));
     }

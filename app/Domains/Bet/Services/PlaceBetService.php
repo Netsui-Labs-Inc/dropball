@@ -79,33 +79,24 @@ class PlaceBetService
             throw new \Exception("Invalid bet amount");
         }
 
-        try {
-            DB::beginTransaction();
-            /** @var Bet $bet */
-            $bet = $this->bettingRound->bets()->create([
-                'user_id' => $this->bettor->id,
-                'bet_amount' => $this->amount,
-                'bet' => $this->bet->id,
-                'agent_id' => $this->bettor->masterAgent->id,
-            ]);
+        $bet = $this->bettingRound->bets()->create([
+            'user_id' => $this->bettor->id,
+            'bet_amount' => $this->amount,
+            'bet' => $this->bet->id,
+            'agent_id' => $this->bettor->masterAgent->id,
+        ]);
 
-            $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
+        $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
 
-            event(new BettingRoundBetPlaced($bet));
+        event(new BettingRoundBetPlaced($bet));
 
-            logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
-            activity('player')
-                ->causedBy($bet)
-                ->performedOn($this->bettor)
-                ->withProperties(['bet' => $bet->id])
-                ->log("Player#{$this->bettor->id} placed a bet to {$bet->option->name} worth {$bet->bet_amount} in betting round #{$this->bettingRound->id}");
-            DB::commit();
+        logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
+        activity('player')
+            ->causedBy($bet)
+            ->performedOn($this->bettor)
+            ->withProperties(['bet' => $bet->id])
+            ->log("Player#{$this->bettor->id} placed a bet to {$bet->option->name} worth {$bet->bet_amount} in betting round #{$this->bettingRound->id}");
 
-        } catch ( \Exception $e) {
-            logger($e->getMessage());
-            \Sentry::captureLastError();
-            DB::rollBack();
-        }
 
         //$this->setPoolMoney($bet);
 

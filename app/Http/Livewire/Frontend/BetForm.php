@@ -11,6 +11,7 @@ use App\Domains\Bet\Services\PlaceBetService;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
 use Livewire\Component;
+use DB;
 
 class BetForm extends Component
 {
@@ -238,6 +239,7 @@ class BetForm extends Component
         $bet = BetOption::find($betOption['id']);
 
         try {
+            DB::beginTransaction();
             $this->validateBalance();
             $placeBetService
                 ->setBettingRound($this->bettingRound)
@@ -250,7 +252,9 @@ class BetForm extends Component
             $this->userCanBet = $this->canBetToBettingRound();
             $this->alert($bet);
             $this->updateBetsTotal();
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             logger($e->getTraceAsString());
             $this->addError('amount', $e->getMessage());
             $this->checkUserBetAndAmount();
