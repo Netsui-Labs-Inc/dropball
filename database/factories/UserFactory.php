@@ -188,6 +188,22 @@ class UserFactory extends Factory
             $user->assignRole('Dealer Admin');
         });
     }
+
+    /**
+     * @return UserFactory
+     */
+
+    public function processor()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'type'   => User::TYPE_ADMIN,
+                'active' => true,
+            ];
+        })->afterCreating(function (User $user) {
+            $user->assignRole('Processor');
+        });
+    }
     /**
      * @return UserFactory
      */

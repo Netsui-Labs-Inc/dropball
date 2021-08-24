@@ -4,47 +4,28 @@ namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Models\Withdrawal;
+use App\Http\Livewire\Services\Filters;
+use App\Http\Livewire\Services\WithdrawalQueryFactory;
 use Bavix\Wallet\Interfaces\Mathable;
 use Bavix\Wallet\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class WithdrawalsTable extends DataTableComponent
 {
-    /**
-     * @var string
-     */
-    public $sortField = 'created_at';
-    public int $perPage = 10;
-    /**
-     * @var string
-     */
-    public $status;
-    /**
-     * @var
-     */
-    public $user;
-    public $confirmed;
-    public $action;
-    public $withUser;
-    public $wallet;
-    public $model;
-    public $excludeBetTransactions;
-
-
+    private $withdrawalRequest;
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
     /**
      * @param  string  $status
      */
-    public function mount($status = 'PENDING', $user = null, $action = false): void
+    public function mount(WithdrawalQueryFactory $tableQueryFactory): void
     {
-        $this->status = $status;
-        $this->user = $user;
-        $this->action = $action;
+        $this->withdrawalRequest = $tableQueryFactory->createWithdrawalRequestTable();
     }
 
     /**
@@ -52,11 +33,23 @@ class WithdrawalsTable extends DataTableComponent
      */
     public function query(): Builder
     {
-        /** @var User $user */
-        $user = auth()->user();
-        $query = $user::withdrawals();
-        $query->where('status', $this->status);
-        return $query;
+        $tableQueryFactory = new WithdrawalQueryFactory();
+        $query = $tableQueryFactory
+            ->createWithdrawalRequestTable()
+            ->getQuery();
+        return $query->when($this->getFilter('channel'), fn ($query, $term) => $query->search($term))
+            ->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))
+            ->where('status', 'pending')
+            ->latest('created_at');
+    }
+
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        $filter = new Filters();
+        return $filter->channel()->getFilters();
     }
 
     /**
@@ -64,47 +57,43 @@ class WithdrawalsTable extends DataTableComponent
      */
     public function columns(): array
     {
+        $withdrawalRequest = $this->withdrawalRequest;
         $columns = [
-            Column::make(__('Transaction ID'), 'id')
+            Column::make(__('Withdrawal ID'), 'id')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Withdrawal $row) {
                     return "#".$row->id;
+                })->asHtml(),
+            Column::make(__('Account Number'), 'account_number')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_number;
+                })->asHtml(),
+            Column::make(__('Account Name'), 'account_name')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Withdrawal $row) {
+                    return $row->account_name ?? "N/A";
                 })->asHtml(),
             Column::make(__('Channel'), 'channel')
                 ->sortable(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
                 ->format(function ($value, $column, Withdrawal $row) {
-                    $amount = app(Mathable::class)->div($row->amount, 2);
-                    return "<div class='text-dasnger'>+".number_format($amount, 2)."</div>";
+                    return "<div class='text-danger'>-".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
-            Column::make(__('Status'), 'status')
+            Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Withdrawal $row) {
-                    if($row->status == Withdrawal::COMPLETED) {
-                        $class = 'badge-success';
-                    }elseif ($row->status == Withdrawal::CANCELLED) {
-                        $class = 'badge-danger';
-                    } else {
-                        $class = 'badge-warning';
-                    }
-                    return "<span class='badge $class'>$row->status</span>";
-                })->asHtml(),
-            Column::make(__('Created at'), 'created_at')
-                ->sortable()
-                ->format(function ($value, $column, Wallet $row) {
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml(),
+            Column::make(__('Action'))
+                ->format(function ($value, $column, Withdrawal $row) use ($withdrawalRequest) {
+                    return $withdrawalRequest->getView($row);
                 })->asHtml()
         ];
-
-        if ($this->action) {
-            $columns[] = Column::make(__('Action'))
-                ->format(function ($value, $column, Wallet $row) {
-                    return view('backend.wallet.action', ['transaction' => $row]);
-                })->asHtml();
-        }
-
 
         return $columns;
     }

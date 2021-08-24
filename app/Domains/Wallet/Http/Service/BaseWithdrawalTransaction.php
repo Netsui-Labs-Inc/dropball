@@ -45,7 +45,8 @@ class BaseWithdrawalTransaction
             ]);
             return ['result' => true, 'amount' => number_format($amount)];
         } catch (\Exception $e) {
-            return ['result' => true, 'amount' => number_format($this->checkWallet()->balanceFloat)];
+            dd($e);
+            return ['result' => false, 'amount' => number_format($this->checkWallet()->balanceFloat)];
         }
     }
 

@@ -30,18 +30,14 @@
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:master-agent-transactions-table :action="true" />
+                    <livewire:reviewers-transaction-table :action="true" />
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    @hasrole("Virtual Hub")
-                    <livewire:master-agent-withdrawals-table :confirmed="false" :action="true" />
-                    @else
-                        <livewire:master-agent-withdrawals-table :action="false" />
-                        @endhasrole
+                    <livewire:withdrawals-table />
                 </x-slot>
             </x-backend.card>
         </div>
