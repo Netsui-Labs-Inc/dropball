@@ -83,7 +83,7 @@ class ReviewersTransactionTable extends DataTableComponent
             Column::make(__('Approved Date'), 'updated_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
-                    return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                    return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
             Column::make(__('Action'))
                 ->format(function ($value, $column, Transaction $row) {
