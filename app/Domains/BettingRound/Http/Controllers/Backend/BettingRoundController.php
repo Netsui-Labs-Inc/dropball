@@ -170,7 +170,7 @@ class BettingRoundController extends Controller
 
         $bettingRound->refresh();
 
-        //BettingRoundResultUpdated::dispatch($bettingRound);
+        BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
