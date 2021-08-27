@@ -313,7 +313,9 @@ class PermissionRoleSeeder extends Seeder
         $role->givePermissionTo([
             'admin.access.virtual.hub.wallet',
             'admin.access.hubs.transactions',
-            'admin.access.hubs.wallet'
+            'admin.access.hubs.wallet',
+            'admin.access.hubs.manage',
+            'admin.access.hubs.show'
         ]);
     }
 

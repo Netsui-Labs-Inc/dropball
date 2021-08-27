@@ -43,6 +43,18 @@
                     <td><span class='badge badge-info'> {{$transaction->confirmed ? 'confirmed': 'pending'}}</span></td>
                 </tr>
                 <tr>
+                    <th>@lang('Date Requested')</th>
+                    <td> {{$transaction->created_at }}</td>
+                </tr>
+                <tr>
+                    <th>@lang('Date Approved')</th>
+                    @php
+                        $approvedAt = ($transaction->created_at->format('Y-m-d H:i:s') === $transaction->updated_at->format('Y-m-d H:i:s')) ?
+                            'N/A' : $transaction->updated_at;
+                    @endphp
+                    <td> {{ $approvedAt }}</td>
+                </tr>
+                <tr>
                     <th>@lang('Meta')</th>
                     <td>
                         @forelse($transaction->meta ?? [] as $key => $meta)
