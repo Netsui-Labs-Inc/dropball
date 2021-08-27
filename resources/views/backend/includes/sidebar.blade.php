@@ -104,17 +104,6 @@
                     :text="__('Sub-agents Approval')" />
             </li>
         @endcan
-        @can('admin.access.hubs.transactions')
-            <li class="c-sidebar-nav-title">@lang('Hubs')</li>
-            <li class="c-sidebar-nav-item">
-                <x-utils.link
-                    class="c-sidebar-nav-link"
-                    :href="route('admin.hubs.transactions', ['sorts' => ['id' => 'desc']])"
-                    :active="activeClass(Request::is('admin/hubs-transactions*'), 'c-active')"
-                    icon="c-sidebar-nav-icon cil-wallet"
-                    :text="__('Hubs Wallet')" />
-            </li>
-        @endcan
         @can('admin.access.hubs.manage')
             <li class="c-sidebar-nav-title">@lang('Hubs')</li>
             <li class="c-sidebar-nav-item">
