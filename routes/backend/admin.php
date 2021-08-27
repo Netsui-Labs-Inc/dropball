@@ -351,6 +351,13 @@ Route::get('hubs/{hub}/wallet', [HubController::class, 'cashBalance'])
         $trail->push("Hub Wallet", route('admin.hubs.wallet', $hub));
     });
 
+Route::get('hubs-withdrawal/{withdrawal}', [WithdrawalController::class, 'show'])
+    ->name('hubs.withdrawals.show')
+    ->middleware('can:admin.access.hubs.wallet')
+    ->breadcrumbs(function (Trail $trail, $withdrawal) {
+        $trail->push("Hub's Withdrawal", route('admin.hubs.withdrawals.show', $withdrawal));
+    });
+
 Route::post('hubs/{hub}/wallet', [HubController::class, 'deposit'])->name('hubs.wallet.deposit');
 Route::post('hubs', [HubController::class, 'store'])->name('hubs.store');
 Route::put('hubs/{hub}', [HubController::class, 'update'])->name('hubs.update');

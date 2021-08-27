@@ -36,19 +36,18 @@
                         aria-selected="true"/>
                 </div>
             </nav>
-
             <div class="tab-content" id="tabsContent">
                 <div class="tab-pane fade show active" id="credit-wallet" role="tabpanel" aria-labelledby="credit-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :wallet="'default'" :action="true" />
+                            <livewire:transactions-table :model="$user" :wallet="'default'" :action="true" />
                         </x-slot>
                     </x-backend.card>
                 </div>
                 <div class="tab-pane fade show" id="income-wallet" role="tabpanel" aria-labelledby="income-wallet-tab">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:master-agent-transactions-table :user="$user" :wallet="'income-wallet'" :action="true" />
+                            <livewire:transactions-table :model="$user" :wallet="'income-wallet'" :action="true" />
                         </x-slot>
                     </x-backend.card>
                 </div>

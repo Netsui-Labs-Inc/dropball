@@ -16,9 +16,6 @@ use Illuminate\Validation\ValidationException;
  */
 class DashboardController extends Controller
 {
-    /**
-     * @return \Illuminate\View\View
-     */
     public function index()
     {
 
@@ -26,17 +23,28 @@ class DashboardController extends Controller
         $user = auth()->user();
         if ($user->hasRole('Administrator')) {
             return $this->superAdmin();
+        } elseif ($user->hasRole('Processor')) {
+            return $this->processor();
         } elseif ($user->hasRole('Master Agent')) {
             return $this->masterAgent();
         } elseif ($user->hasRole('Bet Admin')) {
             return $this->betAdmin();
         } elseif ($user->hasRole('Dealer Admin')) {
             return $this->dealerAdmin();
-        }elseif ($user->hasRole('Virtual Hub')) {
+        } elseif ($user->hasRole('Virtual Hub')) {
             return $this->virtualHub();
         } elseif ($user->hasRole('Operator')) {
             return $this->operator();
         }
+    }
+
+    public function processor()
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        return view('backend.dashboard.processor')
+            ->with('user', $user)
+            ->with('hubs', Hub::count());
     }
 
     public function masterAgent()

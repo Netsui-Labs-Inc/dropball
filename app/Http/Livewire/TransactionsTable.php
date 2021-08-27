@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Http\Livewire\Action\Filters;
+use App\Http\Livewire\Services\Filters;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;

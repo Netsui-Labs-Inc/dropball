@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Action;
+namespace App\Http\Livewire\Services;
 
 use Rappasoft\LaravelLivewireTables\Views\Filter;
 

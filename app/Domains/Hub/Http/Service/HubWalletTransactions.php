@@ -12,6 +12,7 @@ class HubWalletTransactions extends BaseWithdrawalTransaction
     {
         $this->holder = Hub::where('admin_id',  $holder->id)->first();
         $this->walletType = ['name' => 'Income Wallet', 'slug' => 'income-wallet'];
+        $this->reviewer = User::role('Processor')->get()->first()->id;
     }
 
     public function getWallet()
