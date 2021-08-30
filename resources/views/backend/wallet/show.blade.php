@@ -46,19 +46,40 @@
                     <th>@lang('Date Requested')</th>
                     <td> {{$transaction->created_at }}</td>
                 </tr>
-                <tr>
-                    <th>@lang('Date Approved')</th>
-                    @php
-                        $approvedAt = ($transaction->created_at->format('Y-m-d H:i:s') === $transaction->updated_at->format('Y-m-d H:i:s')) ?
-                            'N/A' : $transaction->updated_at;
-                    @endphp
-                    <td> {{ $approvedAt }}</td>
-                </tr>
+                @if($approvedWithdrawal)
+                    <tr>
+                        <th>@lang('Date Approved')</th>
+                        @php
+                            $approvedAt = ($transaction->created_at->format('Y-m-d H:i:s') === $transaction->updated_at->format('Y-m-d H:i:s')) ?
+                                'N/A' : $transaction->updated_at;
+                        @endphp
+                        <td> {{ $approvedAt }}</td>
+                    </tr>
+                    <tr>
+                        <th>@lang('Approved by')</th>
+                        <td>{{ $approvedWithdrawal->approver->name }} </td>
+                    </tr>
+                    <tr>
+                        <th>@lang('Channel')</th>
+                        <td>{{ $approvedWithdrawal->channel }} </td>
+                    </tr>
+                    <tr>
+                        <th>@lang('Reference #')</th>
+                        <td>{{ $approvedWithdrawal->reference_no }} </td>
+                    </tr>
+                    <tr>
+                        <th>@lang('Date of Transfer')</th>
+                        <td>{{ $approvedWithdrawal->date_of_transfer }} </td>
+                    </tr>
+                @endif
                 <tr>
                     <th>@lang('Meta')</th>
+
                     <td>
                         @forelse($transaction->meta ?? [] as $key => $meta)
-                            <p><strong>{{strtoupper($key)}}</strong> : {{strtoupper($meta)}}</p>
+                            <p><strong>{{strtoupper($key)}}</strong> :
+                                {{strtoupper($meta)}}
+                            </p>
                         @empty
                             N/A
                         @endforelse

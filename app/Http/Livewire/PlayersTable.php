@@ -74,9 +74,6 @@ class PlayersTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('ID'), 'id')
-                ->searchable()
-                ->sortable(),
             Column::make(__('Name'))
                 ->searchable()
                 ->sortable(),

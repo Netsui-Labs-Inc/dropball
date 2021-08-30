@@ -39,12 +39,6 @@ class HubsTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('ID'), 'id')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Hub $row) {
-                    return '#'.$row->id;
-                })->asHtml(),
             Column::make(__('Name'), 'name')
                 ->searchable()
                 ->sortable()
@@ -58,12 +52,24 @@ class HubsTable extends DataTableComponent
                     return $row->admin->name ?? 'N/A';
                 })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
-                ->format(function ($value, $column, Hub $row) {
+                ->format(function ($value, $column,Hub $row) {
                     return number_format($row->balanceFloat);
                 })->asHtml(),
             Column::make(__('Income Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
                     return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0);
+                })->asHtml(),
+            Column::make(__('Agents'), 'agents')
+                ->format(function ($value, $column,Hub $row) {
+                    return $row->user()->whereHas('roles', function($query) {
+                        $query->where('name', 'Master Agent');
+                    })->get()->count();
+                })->asHtml(),
+            Column::make(__('Players'), 'players')
+                ->format(function ($value, $column, Hub $row) {
+                    return $row->user()->whereHas('roles', function($query) {
+                        $query->where('name', 'Player');
+                    })->get()->count();
                 })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, Hub $row) {

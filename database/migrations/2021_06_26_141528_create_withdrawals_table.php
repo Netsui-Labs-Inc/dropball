@@ -22,7 +22,7 @@ class CreateWithdrawalsTable extends Migration
             $table->string('channel');
             $table->string('account_name')->nullable();
             $table->string('account_number');
-            $table->string('note')->nullable();
+            $table->string('notes')->nullable();
             $table->decimal('fee', 64, 0)->default(0);
             $table->json('meta')->nullable();
             $table->enum('status', ['pending', 'cancelled', 'completed'])->default('PENDING');
