@@ -12,6 +12,7 @@
                         <div class="col">
                             <h4 class="h4 text-white mb-0"> @lang("Transaction History")</h4>
                         </div>
+                        @unlessrole('Processor')
                         <div class="col text-right">
                             <x-utils.link
                                 class="btn btn-info text-white"
@@ -19,6 +20,7 @@
                                 :text="__('Add Cash')"
                             />
                         </div>
+                            @endunlessrole()
                     </div>
                 </x-slot>
                 <x-slot name="body">

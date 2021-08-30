@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Domains\Wallet\Models\WalletTransaction;
 use App\Http\Livewire\Services\Filters;
 use App\Http\Livewire\Services\TransactionRoleQueryFactory;
@@ -47,11 +49,6 @@ class ReviewersTransactionTable extends DataTableComponent
     {
         $transactionByRole = $this->transactionsByRole;
         $columns = [
-            Column::make(__('Transaction ID'), 'uuid')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    return "#".$row->id;
-                })->asHtml(),
             Column::make(__('Name'), 'name')
                 ->searchable(function (Builder $query, $searchTerm) use ($transactionByRole) {
                     $transactionByRole->morphToPayable($query, $searchTerm);
@@ -75,12 +72,12 @@ class ReviewersTransactionTable extends DataTableComponent
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
                 })->asHtml(),
-            Column::make(__('Requested Date'), 'created_at')
+            Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
-            Column::make(__('Approved Date'), 'updated_at')
+            Column::make(__('Approved at'), 'updated_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
@@ -88,12 +85,25 @@ class ReviewersTransactionTable extends DataTableComponent
                     }
                     return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
+            Column::make(__('Approved by'), 'approved_by')
+                ->sortable()
+                ->format(function ($value, $column, Transaction $row) {
+                    return $this->getApprover($row->id);
+                })->asHtml(),
             Column::make(__('Action'))
                 ->format(function ($value, $column, Transaction $row) {
                     return view('backend.wallet.action', ['transaction' => $row]);
-                })
+                }),
+
         ];
 
         return $columns;
+    }
+
+    private function getApprover($transactionId)
+    {
+        $approvedWithdrawalRequest = ApprovedWithdrawalRequest::query();
+        $approvedRequest = $approvedWithdrawalRequest->where('transaction_id', $transactionId)->get()->first();
+        return ($approvedRequest) ? $approvedRequest->approver->name : 'N/A';
     }
 }

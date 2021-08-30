@@ -38,7 +38,7 @@ class BaseWithdrawalTransaction
                 'channel' => $withdrawalRequestData['channel'],
                 'account_number' => $withdrawalRequestData['account_number'],
                 'account_name' => $withdrawalRequestData['account_name'],
-                'note' => $withdrawalRequestData['details'],
+                'notes' => $withdrawalRequestData['details'],
                 'meta' => [
                     'transactionId' => $withdrawalTransaction->id
                 ]

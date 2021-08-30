@@ -5,6 +5,7 @@ namespace App\Domains\Wallet\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Http\Service\WalletHolderFactory;
+use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Http\Request;
@@ -37,8 +38,12 @@ class WalletController extends \App\Http\Controllers\Controller
 
     public function show(Transaction $transaction)
     {
+        $approvedWithdrawalRequest = ApprovedWithdrawalRequest::where('transaction_id', $transaction->id)
+                                                        ->get()->first();
         return view('backend.wallet.show')
-            ->with('transaction', $transaction);
+            ->with('transaction', $transaction)
+            ->with('approvedWithdrawal', $approvedWithdrawalRequest)
+            ->with('user', User::class);
     }
 
     public function myWallet(Request $request)
@@ -49,7 +54,6 @@ class WalletController extends \App\Http\Controllers\Controller
 
     public function withdraw(WithdrawalRequest $request)
     {
-
         /** @var User $user */
         $user = $request->user();
         if (! Hash::check($request->get('password'), $user->password)) {

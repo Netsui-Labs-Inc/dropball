@@ -59,12 +59,6 @@ class WithdrawalsTable extends DataTableComponent
     {
         $withdrawalRequest = $this->withdrawalRequest;
         $columns = [
-            Column::make(__('Withdrawal ID'), 'id')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Withdrawal $row) {
-                    return "#".$row->id;
-                })->asHtml(),
             Column::make(__('Account Number'), 'account_number')
                 ->searchable()
                 ->sortable()

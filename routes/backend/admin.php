@@ -215,7 +215,7 @@ Route::get('players-withdrawals/{withdrawal}', [WithdrawalController::class, 'sh
         $trail->push("Player Withdrawal", route('admin.players.withdrawals.show', $withdrawal));
     });
 
-Route::post('withdrawals.complete/{withdrawal}', [WithdrawalController::class, 'complete'])->name('withdrawals.complete');
+Route::post('withdrawals.complete', [WithdrawalController::class, 'complete'])->name('withdrawals.complete');
 
 Route::get('players/{player}/bet-histories', [PlayerBetsController::class, 'index'])
     ->name('players.bet-histories')

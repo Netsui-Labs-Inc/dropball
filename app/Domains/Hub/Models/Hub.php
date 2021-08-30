@@ -75,4 +75,5 @@ class Hub extends Model implements WalletFloat, Wallet
     {
         return $this->hasMany(User::class);
     }
+
 }
