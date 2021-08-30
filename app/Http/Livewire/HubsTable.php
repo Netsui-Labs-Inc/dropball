@@ -59,11 +59,11 @@ class HubsTable extends DataTableComponent
                 })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
-                    return number_format($row->balanceFloat);
+                    return number_format($row->balanceFloat, 2);
                 })->asHtml(),
             Column::make(__('Income Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
-                    return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0);
+                    return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0, 2);
                 })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, Hub $row) {

@@ -92,7 +92,7 @@ class MasterAgentsTable extends DataTableComponent
                 ->sortable(),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
-                    return number_format($row->balanceFloat);
+                    return number_format($row->balanceFloat, 2);
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()

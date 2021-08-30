@@ -28,6 +28,14 @@
                     <td>{{$hub->admin->email}}</td>
                 </tr>
                 <tr>
+                    <td>Hub Credit Balance</td>
+                    <td>{{number_format($hub->balanceFloat ?? 0, 2)}}</td>
+                </tr>
+                <tr>
+                    <td>Hub Income Balance</td>
+                    <td>{{number_format($hub->hasWallet('income-wallet') ? $hub->getWallet('income-wallet')->balanceFloat : 0, 2)}}</td>
+                </tr>
+                <tr>
                     <td>Created at</td>
                     <td>{{$hub->created_at}}</td>
                 </tr>
