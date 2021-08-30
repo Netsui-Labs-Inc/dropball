@@ -19,6 +19,7 @@ class Operator
         }
         $operator = $this->getOperator();
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
+        $operatorWallet->refreshBalance();
 
         $rate = $this->hasSubAgent($bet->user) ? .0675 : .07;
         $bettingRound = $bet->bettingRound;

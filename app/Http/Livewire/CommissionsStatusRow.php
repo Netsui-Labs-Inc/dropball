@@ -69,11 +69,11 @@ class CommissionsStatusRow extends Component
             $bet->save();
 
             DB::commit();
-            $this->finished();
+            event(new BetCommissionsProcessingFinished($bet));
         } catch (\Exception $exception) {
             DB::rollBack();
             logger("ProcessAllCommissionsJob ERROR: ".$exception->getMessage());
-            $this->failed(['errorMessage' => $exception->getMessage()]);
+            event(new BetCommissionsProcessingFailed($bet, $exception->getMessage()));
         }
     }
 
@@ -82,7 +82,7 @@ class CommissionsStatusRow extends Component
         $this->status = 'in-progress';
     }
 
-    public function finished()
+    public function finished($data)
     {
         $this->bet->refresh();
         $this->getCommissionsStatuses();

@@ -32,6 +32,7 @@ class SubAgent
 
         logger("ProcessSubAgentCommissionJob.subAgent #{$masterAgent->id} BettingRound#{$bettingRound->id} Bet#{$bet->id} Master Agent #{$parentAgent->id} {$parentAgent->name} referral will receive $commission from Sub agent#{$masterAgent->id}");
         $parentAgentWallet = $this->getWallet($parentAgent, 'Income Wallet');
+        $parentAgentWallet->refreshBalance();
         $currentBalance = $parentAgentWallet->balanceFloat;
         $parentAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'master_agent' => $masterAgent->id, 'unilevel' => true]);
         $rate = BigDecimal::of($rate * 100)->toFloat();

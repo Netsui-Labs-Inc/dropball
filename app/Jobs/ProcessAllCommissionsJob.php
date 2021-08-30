@@ -15,6 +15,7 @@ use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 
@@ -44,6 +45,15 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
         return "bet-".$this->bet->id;
     }
 
+    public function backoff()
+    {
+        return [1, 5, 10, 30];
+    }
+
+    public function middleware()
+    {
+        return [(new WithoutOverlapping("hub-".$this->bet->user->hub_id))->releaseAfter(2)];
+    }
 
     public function uniqueVia()
     {

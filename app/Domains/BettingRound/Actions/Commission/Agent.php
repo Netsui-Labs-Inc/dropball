@@ -28,6 +28,7 @@ class Agent
         logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
         $masterAgent->refresh();
         $masterAgentWallet = $this->getWallet($masterAgent, 'Income Wallet');
+        $masterAgentWallet->refreshBalance();
         $currentBalance = $masterAgentWallet->balanceFloat;
         $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
