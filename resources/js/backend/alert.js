@@ -101,4 +101,5 @@ document.addEventListener('DOMContentLoaded', () => {
         const element = document.querySelector('.pula-pool');
         element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-3');
     })
-})
+});
+

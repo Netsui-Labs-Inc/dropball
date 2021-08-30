@@ -315,7 +315,8 @@ class PermissionRoleSeeder extends Seeder
             'admin.access.hubs.transactions',
             'admin.access.hubs.wallet',
             'admin.access.hubs.manage',
-            'admin.access.hubs.show'
+            'admin.access.hubs.show',
+            'admin.access.hubs.list'
         ]);
     }
 

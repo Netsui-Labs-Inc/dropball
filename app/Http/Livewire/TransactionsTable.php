@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Http\Livewire\Services\Filters;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
@@ -101,11 +103,6 @@ class TransactionsTable extends DataTableComponent
     {
         $user = auth()->user();
         $columns = [
-            Column::make(__('Transaction ID'), 'id')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    return "#".$row->id;
-                })->asHtml(),
             Column::make(__('Type'), 'type')
                 ->searchable()
                 ->sortable()
@@ -142,6 +139,11 @@ class TransactionsTable extends DataTableComponent
                          return 'N/A';
                      }
                      return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                 })->asHtml(),
+             Column::make(__('Approved by'), 'approved_by')
+                 ->sortable()
+                 ->format(function ($value, $column, Transaction $row) {
+                        return $this->getApprover($row->id);
                  })->asHtml()
         ];
 
@@ -172,5 +174,12 @@ class TransactionsTable extends DataTableComponent
         }
 
         return $columns;
+    }
+
+    private function getApprover($transactionId)
+    {
+        $approvedWithdrawalRequest = ApprovedWithdrawalRequest::query();
+        $approvedRequest = $approvedWithdrawalRequest->where('transaction_id', $transactionId)->get()->first();
+        return ($approvedRequest) ? $approvedRequest->approver->name : 'N/A';
     }
 }

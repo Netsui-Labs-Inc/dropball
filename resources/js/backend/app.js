@@ -1,4 +1,5 @@
 window.$ = window.jQuery = require('jquery');
+import 'jquery-ui/ui/widgets/datepicker.js';
 window.Swal = require('sweetalert2');
 
 // CoreUI
@@ -21,3 +22,5 @@ window.Echo = new Echo({
     disableStats: true,
     encrypted: true,
 });
+
+$('.datepicker').datepicker();
