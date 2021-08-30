@@ -8,7 +8,7 @@
                 <x-slot name="header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h4 class="h4 text-white mb-0"> @lang("Withdrawal / Deposit History")</h4>
+                            <h4 class="h4 text-white mb-0"> @lang("Transaction History")</h4>
                         </div>
                         <div class="col text-right">
                             <x-utils.link

@@ -83,6 +83,9 @@ class ReviewersTransactionTable extends DataTableComponent
             Column::make(__('Approved Date'), 'updated_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
+                        return 'N/A';
+                    }
                     return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
             Column::make(__('Action'))

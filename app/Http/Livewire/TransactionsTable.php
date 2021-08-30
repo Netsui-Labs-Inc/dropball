@@ -130,11 +130,19 @@ class TransactionsTable extends DataTableComponent
 
                     return "<span class='badge $class'>$confirmed</span>";
                 })->asHtml(),
-            Column::make(__('Created at'), 'created_at')
+            Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                })->asHtml()
+                })->asHtml(),
+             Column::make(__('Approved at'), 'updated_at')
+                 ->sortable()
+                 ->format(function ($value, $column, Transaction $row) {
+                     if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
+                         return 'N/A';
+                     }
+                     return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                 })->asHtml()
         ];
 
         if ($this->action) {

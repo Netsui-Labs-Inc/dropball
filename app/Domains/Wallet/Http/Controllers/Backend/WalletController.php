@@ -37,7 +37,6 @@ class WalletController extends \App\Http\Controllers\Controller
 
     public function show(Transaction $transaction)
     {
-
         return view('backend.wallet.show')
             ->with('transaction', $transaction);
     }
