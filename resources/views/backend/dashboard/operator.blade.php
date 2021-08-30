@@ -8,7 +8,7 @@
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-success">{{number_format($operator->balanceFloat ?? 0)}}</div>
+                    <div class="text-value-lg text-success">{{number_format($operator->balanceFloat ?? 0, 2)}}</div>
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Total Balance")</small>
                 </x-slot>
             </x-backend.card>

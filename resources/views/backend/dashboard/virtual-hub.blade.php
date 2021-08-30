@@ -9,7 +9,7 @@
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-success">{{number_format($hub->balanceFloat ?? 0)}}</div>
+                    <div class="text-value-lg text-success">{{number_format($hub->balanceFloat ?? 0, 2)}}</div>
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Credit Balance")</small>
                 </x-slot>
             </x-backend.card>
@@ -17,7 +17,7 @@
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-success">{{number_format($hub->hasWallet('income-wallet') ? $hub->getWallet('income-wallet')->balanceFloat : 0)}}</div>
+                    <div class="text-value-lg text-success">{{number_format($hub->hasWallet('income-wallet') ? $hub->getWallet('income-wallet')->balanceFloat : 0, 2)}}</div>
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Income Balance")</small>
                 </x-slot>
             </x-backend.card>
