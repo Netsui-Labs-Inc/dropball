@@ -42,8 +42,7 @@ class WalletController extends \App\Http\Controllers\Controller
                                                         ->get()->first();
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
-            ->with('approvedWithdrawal', $approvedWithdrawalRequest)
-            ->with('user', User::class);
+            ->with('approvedWithdrawal', $approvedWithdrawalRequest);
     }
 
     public function myWallet(Request $request)

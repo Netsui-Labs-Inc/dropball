@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Services\WithdrawalTable;
 
+use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Models\Withdrawal;
 
 class PlayersWithdrawalRequest
@@ -14,9 +15,8 @@ class PlayersWithdrawalRequest
 
     public function getQuery()
     {
-        $query = Withdrawal::query();
-        $query->where('reviewer_id', $this->user->id);
-        return $query;
+        return User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+            ->where('reviewer_id', $this->user->id);
     }
 
     public function getView($row)

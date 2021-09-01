@@ -36,7 +36,7 @@
         <li class="c-sidebar-nav-item">
             <x-utils.link
                 class="c-sidebar-nav-link"
-                :href="route('admin.players.transactions', ['sorts' => ['id' => 'desc'], 'filters' => ['status' => 'pending']])"
+                :href="route('admin.players.transactions', ['sorts' => ['id' => 'desc'], 'filters' => ['status' => 'pending'], 'userType' => 'Player'])"
                 :active="activeClass(Route::is('admin.players.transactions'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-wallet"
                 :text="__('Players Wallet')" />
@@ -90,7 +90,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.master-agents.transactions', ['sorts' => ['created_at' => 'desc']])"
+                    :href="route('admin.master-agents.transactions', ['sorts' => ['created_at' => 'desc'], 'userType' => 'Master Agent'])"
                     :active="activeClass(Request::is('admin/master-agents-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Master Agents Wallet')" />
@@ -117,7 +117,7 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.hubs.transactions', ['sorts' => ['id' => 'desc']])"
+                    :href="route('admin.hubs.transactions', ['sorts' => ['id' => 'desc'], 'userType' => 'Hub'])"
                     :active="activeClass(Request::is('admin/hubs-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Hubs Wallet')" />

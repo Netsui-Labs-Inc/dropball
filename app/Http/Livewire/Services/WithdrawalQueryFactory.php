@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Http\Service\HubWalletTransactions;
 use App\Http\Livewire\Services\TransactionTable\MasterAgentsTransaction;
 use App\Http\Livewire\Services\TransactionTable\PlayersTransaction;
+use App\Http\Livewire\Services\WithdrawalTable\AllWithdrawalRequests;
 use App\Http\Livewire\Services\WithdrawalTable\HubsWithdrawalRequest;
 use App\Http\Livewire\Services\WithdrawalTable\MasterAgentsWithdrawalRequest;
 use App\Http\Livewire\Services\WithdrawalTable\PlayersWithdrawalRequest;
@@ -19,7 +20,7 @@ class WithdrawalQueryFactory
         $this->user = Auth()->user();
     }
 
-    public function createWithdrawalRequestTable()
+    public function createWithdrawalRequestTable($userType = null)
     {
         if ($this->user->hasRole('Master Agent'))
         {
@@ -35,5 +36,6 @@ class WithdrawalQueryFactory
         {
             return new HubsWithdrawalRequest();
         }
+        return new AllWithdrawalRequests($userType);
     }
 }

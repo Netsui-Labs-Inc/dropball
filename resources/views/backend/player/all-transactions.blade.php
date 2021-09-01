@@ -22,7 +22,7 @@
                 role="tab"
                 aria-controls="active"
                 aria-selected="true" >
-                @lang("Withdrawals")
+                @lang("Pending Withdrawals")
                 @if($pendingWithdrawals)
                     <span class="badge badge-danger">{{$pendingWithdrawals}}</span>
                 @endif

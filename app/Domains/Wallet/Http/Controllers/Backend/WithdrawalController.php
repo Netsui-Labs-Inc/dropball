@@ -12,6 +12,8 @@ use App\Http\Requests\WithdrawalRequestApproval;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use DB;
+use function Clue\StreamFilter\fun;
+
 class WithdrawalController extends \App\Http\Controllers\Controller
 {
     private $transactionMeta;
@@ -64,13 +66,22 @@ class WithdrawalController extends \App\Http\Controllers\Controller
         $withdrawal->save();
         $this->withdrawalAmount = $withdrawal->amountFloat;
         $this->transactionMeta = $withdrawal->meta['transactionId'];
-        $this->walletHolder = (Auth()->user()->hasRole('Processor')) ?
+        $this->walletHolder = ($this->selectBlacklistRoleForHubTransactions()) ?
             User::find(Hub::find($withdrawal->user_id)->get()->first()->admin_id) :
             $this->walletHolder = $withdrawal->user;
         $this->reviewer = $withdrawal->reviewer;
         return $this;
     }
-
+    private function selectBlacklistRoleForHubTransactions()
+    {
+        if(Auth()->user()->hasRole('Player') ||
+            Auth()->user()->hasRole('Master Agent') ||
+            Auth()->user()->hasRole('Virtual Hub')
+        ) {
+            return false;
+        }
+        return true;
+    }
     private function updateTransaction($holderFactory)
     {
         $transaction = Transaction::find($this->transactionMeta);
