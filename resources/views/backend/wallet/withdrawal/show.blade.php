@@ -69,7 +69,7 @@
             @if($withdrawal->status === 'pending')
             <div class="col text-right">
                 <x-utils.link
-                    class="btn btn-info text-white"
+                    class="btn btn-info text-white btnApprove"
                     dataTarget="#approvalDetails"
                     :text="__('Approve Withdrawal')"
                 />
@@ -86,6 +86,7 @@
     >
         <div>
             <input type="hidden" value="{{$withdrawal->id}}" name="withdrawal_id">
+            <input type="hidden" value="{{$withdrawal->created_at}}" class="datepicker-min">
             <div class="row">
                 <label for="amount" class="col col-form-label"></label>
             </div>
@@ -97,6 +98,9 @@
                     <input type="text" class="form-control" name="reference_number" min="1" step="1">
                 </div>
             </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Channel')</label>
+            </div>
             <div class="form-group row">
                 <div class="col">
                     <select name="channel" class="form-control">
@@ -106,9 +110,17 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group border-1">
-                <input type="text" autocomplete="off" name="date_of_transfer" class="form-control datepicker" placeholder="MM/DD/YYYY">
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Date of Transfer')</label>
             </div>
+            <div class="form-group row">
+                <div class="col">
+                    <input type="date" id="datePickerId" class="form-control approvalDatepicker" name="schedule" max="{{ $withdrawal->created_at->format('d-m-Y') }}">
+                </div>
+            </div>
+{{--            <div class="form-group border-1">--}}
+{{--                <input type="text" autocomplete="off" name="date_of_transfer" class="form-control datepicker" placeholder="MM/DD/YYYY">--}}
+{{--            </div>--}}
         </div>
     </x-utils.modal>
 @endsection

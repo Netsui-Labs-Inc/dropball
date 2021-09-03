@@ -17,7 +17,8 @@ class MasterAgentsWithdrawalRequest
     public function getQuery()
     {
         return User::join('withdrawals', 'withdrawals.user_id', 'users.id')
-            ->where('reviewer_id', $this->user->hub->admin_id);
+            ->where('reviewer_id', $this->user->hub->admin_id)
+            ;
     }
 
     public function getView($row)

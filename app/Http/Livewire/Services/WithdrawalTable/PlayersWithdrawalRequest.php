@@ -15,7 +15,8 @@ class PlayersWithdrawalRequest
 
     public function getQuery()
     {
-        return User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+        $query = User::query();
+        return $query->join('withdrawals', 'withdrawals.user_id', 'users.id')
             ->where('reviewer_id', $this->user->id);
     }
 
