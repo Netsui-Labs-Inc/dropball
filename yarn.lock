@@ -4153,6 +4153,7 @@
   "version" "3.1.0"
 
 "html@git://github.com/colynb/commonjs-html-prettyprinter.git":
+  "integrity" "sha512-IaKvstFFlXifd6I/FaX6k9kP1xqvJZYwsJScpajuoKl/SFkvlbQ9UyX6BmU1rXDluer2uuvlpw7do11xSOjlmg=="
   "resolved" "git+ssh://git@github.com/colynb/commonjs-html-prettyprinter.git#6c0a0fd91e44070ff528dd003b9a81d34a3d547d"
   "version" "0.0.7"
 
