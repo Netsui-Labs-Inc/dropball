@@ -7,6 +7,7 @@ class BaseWithdrawalTransaction
     protected $holder;
     protected $reviewer;
     protected $walletType;
+    protected $errorMessage = null;
 
     protected function checkWallet()
     {

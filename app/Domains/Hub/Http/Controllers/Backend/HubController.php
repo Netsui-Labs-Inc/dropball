@@ -54,8 +54,11 @@ class HubController extends Controller
     public function store(StoreHubRequest $request)
     {
         try {
-            $data = $request->validated();
-            (new CreateHubAction)($data);
+            $hubDetails = $request->validated();
+            $newHub = (new CreateHubAction)($hubDetails);
+            $hubAdmin = User::find($newHub->admin_id);
+            $hubAdmin->hub_id = $newHub->id;
+            $hubAdmin->save();
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub Created Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
@@ -110,6 +113,9 @@ class HubController extends Controller
 
     public function transactions()
     {
+        if(User::role('Processor')->get()->count() < 1) {
+            return redirect()->back()->withErrors('Unable to Access. Please Create a withdrawal Processor account to continue.');
+        }
         $pendingTransactions = Transaction::query()
             ->where("payable_type", Hub::class)
             ->where('confirmed', false);

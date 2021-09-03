@@ -12,11 +12,19 @@ class HubWalletTransactions extends BaseWithdrawalTransaction
     {
         $this->holder = Hub::where('admin_id',  $holder->id)->first();
         $this->walletType = ['name' => 'Income Wallet', 'slug' => 'income-wallet'];
-        $this->reviewer = User::role('Processor')->get()->first()->id;
+        if (User::role('Processor')->get()->count() < 1) {
+            $this->errorMessage = 'Can\'t Access Wallet. Please create a withdrawal processor account';
+        } else {
+            $this->reviewer = User::role('Processor')->get()->first()->id;
+        }
+
     }
 
     public function getWallet()
     {
+        if ($this->errorMessage !== null) {
+            return ['error' => $this->errorMessage];
+        }
         $wallet = $this->checkWallet();
         if ($this->holder === null) {
             return ['error', 'message' => 'Wallet is unavailable. please contact the account administrator'];
