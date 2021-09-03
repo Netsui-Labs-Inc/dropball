@@ -118,9 +118,6 @@
                     <input type="date" id="datePickerId" class="form-control approvalDatepicker" name="schedule" max="{{ $withdrawal->created_at->format('d-m-Y') }}">
                 </div>
             </div>
-{{--            <div class="form-group border-1">--}}
-{{--                <input type="text" autocomplete="off" name="date_of_transfer" class="form-control datepicker" placeholder="MM/DD/YYYY">--}}
-{{--            </div>--}}
         </div>
     </x-utils.modal>
 @endsection
