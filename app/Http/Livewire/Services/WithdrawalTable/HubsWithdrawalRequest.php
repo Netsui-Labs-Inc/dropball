@@ -16,9 +16,8 @@ class HubsWithdrawalRequest
 
     public function getQuery()
     {
-        $query = Withdrawal::query();
-        $query->where('reviewer_id', User::role('Processor')->get()->first()->id);
-        return $query;
+        return User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+        ->where('reviewer_id', User::role('Processor')->get()->first()->id);
     }
 
     public function getView($row)

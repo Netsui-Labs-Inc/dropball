@@ -9,7 +9,6 @@ require('@coreui/coreui');
 require('../plugins');
 
 require('./alert');
-
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
@@ -23,4 +22,10 @@ window.Echo = new Echo({
     encrypted: true,
 });
 
-$('.datepicker').datepicker();
+datePickerId.max = new Date().toISOString().split("T")[0];
+let min = $('.datepicker-min').val();
+let newDate = new Date(Date.parse(min));
+datePickerId.min = newDate.toISOString().split("T")[0];
+
+
+

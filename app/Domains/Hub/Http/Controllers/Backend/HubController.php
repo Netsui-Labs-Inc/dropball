@@ -87,11 +87,11 @@ class HubController extends Controller
         }
 
         try {
-            if ($user->hasRole('Satoshi')) {
-                $hub->depositFloat($request->get('amount'));
-            } elseif ($user->hasRole('Administrator')) {
-                $hub->depositFloat($request->get('amount'));
-            }
+            $creditedBy = [
+                'credited_by' => Auth()->user()->id
+            ];
+
+            $hub->depositFloat($request->get('amount'), $creditedBy);
 
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
         } catch (\Exception $e) {
@@ -113,7 +113,6 @@ class HubController extends Controller
         $pendingTransactions = Transaction::query()
             ->where("payable_type", Hub::class)
             ->where('confirmed', false);
-
         return view('backend.hub.transactions')->with('pendingTransactions', $pendingTransactions);
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Livewire\Services\TransactionRoleQueryFactory;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -17,9 +18,15 @@ class ReviewersTransactionTable extends DataTableComponent
 {
     public $action;
     private $transactionsByRole;
+    private $userType;
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
+
+    public function mount(Request $request)
+    {
+        $this->userType = $request->get('userType');
+    }
 
     /**
      * @return Builder
@@ -27,7 +34,7 @@ class ReviewersTransactionTable extends DataTableComponent
     public function query(): Builder
     {
         $transactionFactory = new TransactionRoleQueryFactory();
-        $this->transactionsByRole = $transactionFactory->createTransactionTable();
+        $this->transactionsByRole = $transactionFactory->createTransactionTable($this->userType);
         $query = Transaction::query();
         $query = $this->transactionsByRole->morphToPayable($query);
         return $query->where('confirmed', true)
@@ -70,24 +77,32 @@ class ReviewersTransactionTable extends DataTableComponent
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
+                    return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
             Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if($row->type === 'deposit') {
+                        return 'N/A';
+                    }
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
             Column::make(__('Approved at'), 'updated_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if($row->type === 'deposit') {
+                        return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                    }
                     if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
                         return 'N/A';
                     }
                     return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
             Column::make(__('Approved by'), 'approved_by')
-                ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if($row->type === 'deposit') {
+                        return $this->getCreditor($row->meta);
+                    }
                     return $this->getApprover($row->id);
                 })->asHtml(),
             Column::make(__('Action'))
@@ -98,6 +113,16 @@ class ReviewersTransactionTable extends DataTableComponent
         ];
 
         return $columns;
+    }
+
+    private function getCreditor($meta)
+    {
+        if (!$meta) {
+            return 'N/A';
+        }
+        if(array_key_exists('credited_by', $meta)) {
+            return User::find($meta['credited_by'])->name;
+        }
     }
 
     private function getApprover($transactionId)

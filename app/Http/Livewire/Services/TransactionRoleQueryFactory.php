@@ -2,11 +2,11 @@
 
 namespace App\Http\Livewire\Services;
 
-use App\Domains\Auth\Models\User;
-use App\Domains\Hub\Http\Service\HubWalletTransactions;
+use App\Http\Livewire\Services\TransactionTable\AllTransactions;
 use App\Http\Livewire\Services\TransactionTable\HubsTransaction;
 use App\Http\Livewire\Services\TransactionTable\MasterAgentsTransaction;
 use App\Http\Livewire\Services\TransactionTable\PlayersTransaction;
+use Illuminate\Http\Request;
 
 class TransactionRoleQueryFactory
 {
@@ -16,7 +16,7 @@ class TransactionRoleQueryFactory
         $this->user = Auth()->user();
     }
 
-    public function createTransactionTable()
+    public function createTransactionTable($userType = null)
     {
         if ($this->user->hasRole('Master Agent'))
         {
@@ -32,5 +32,7 @@ class TransactionRoleQueryFactory
         {
             return new HubsTransaction();
         }
+
+        return new AllTransactions($userType);
     }
 }

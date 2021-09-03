@@ -44,10 +44,17 @@ class PlayerController extends Controller
 
         try {
             if ($user->hasRole('Master Agent')) {
-                $user->transferFloat($player, $request->get('amount'), ['transfer_to' => $player->id, 'deposit' => true]);
+                $user->transferFloat($player, $request->get('amount'), [
+                    'transfer_to' => $player->id,
+                    'credited_by' => Auth()->user()->id,
+                    'deposit' => true
+                ]);
             }
             if ($user->hasRole('Administrator')) {
-                $player->depositFloat($request->get('amount'));
+                $creditedBy = [
+                    'credited_by' => Auth()->user()->id
+                ];
+                $player->depositFloat($request->get('amount'), $creditedBy);
             }
 
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
@@ -73,7 +80,13 @@ class PlayerController extends Controller
                 ->count();
 
         } else {
-            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
+            $pendingWithdrawals = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+                ->whereHas('roles', function ($query) {
+                    return $query->where('name', 'Player');
+                })
+                ->where('status', Withdrawal::PENDING)
+                ->get()
+                ->count();
         }
         return view('backend.player.all-transactions')
             ->with('pendingWithdrawals', $pendingWithdrawals);

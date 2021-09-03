@@ -49,9 +49,12 @@ class PlayersTable extends DataTableComponent
         if ($this->admin) {
             return User::role('Player')->onlyActive();
         }
+
         $user = auth()->user();
         $query = $user->referrals()->getQuery();
-
+        $query->whereHas('roles', function ($query) {
+            return $query->where('name', 'Player');
+        });
 
         if ($this->status === 'unverified') {
             return $query->where('email_verified_at', null);

@@ -134,10 +134,17 @@ class MasterAgentController extends Controller
 
         try {
             if ($user->hasRole('Virtual Hub')) {
-                $hub->transferFloat($masterAgent, $request->get('amount'), ['transfer_to' => $masterAgent->id, 'deposit' => true]);
+                $hub->transferFloat($masterAgent, $request->get('amount'), [
+                    'transfer_to' => $masterAgent->id,
+                    'credited_by' => Auth()->user()->id,
+                    'deposit' => true
+                ]);
             }
             if ($user->hasRole('Administrator')) {
-                $masterAgent->depositFloat($request->get('amount'));
+                $creditedBy = [
+                    'credited_by' => Auth()->user()->id
+                ];
+                $masterAgent->depositFloat($request->get('amount'), $creditedBy);
             }
 
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
@@ -163,8 +170,15 @@ class MasterAgentController extends Controller
                 ->where('status', Withdrawal::PENDING)
                 ->count();
         } else {
-            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
+            $pendingWithdrawals = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+                ->whereHas('roles', function ($query) {
+                    return $query->where('name', 'Master Agent');
+                })
+                ->where('status', Withdrawal::PENDING)
+                ->get()
+                ->count();
         }
+
         return view('backend.master-agent.transactions')->with('pendingWithdrawals',$pendingWithdrawals);
     }
 }

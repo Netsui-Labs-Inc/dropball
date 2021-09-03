@@ -117,7 +117,7 @@ class TransactionsTable extends DataTableComponent
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
+                    return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
             Column::make(__('STATUS'), 'confirmed')
                 ->sortable()
@@ -130,11 +130,17 @@ class TransactionsTable extends DataTableComponent
             Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if($row->type === 'deposit') {
+                        return 'N/A';
+                    }
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                 })->asHtml(),
              Column::make(__('Approved at'), 'updated_at')
                  ->sortable()
                  ->format(function ($value, $column, Transaction $row) {
+                     if($row->type === 'deposit') {
+                         return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                     }
                      if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
                          return 'N/A';
                      }
@@ -143,7 +149,10 @@ class TransactionsTable extends DataTableComponent
              Column::make(__('Approved by'), 'approved_by')
                  ->sortable()
                  ->format(function ($value, $column, Transaction $row) {
-                        return $this->getApprover($row->id);
+                     if($row->type === 'deposit') {
+                         return $this->getCreditor($row->meta);
+                     }
+                     return $this->getApprover($row->id);
                  })->asHtml()
         ];
 
@@ -174,6 +183,16 @@ class TransactionsTable extends DataTableComponent
         }
 
         return $columns;
+    }
+
+    private function getCreditor($meta)
+    {
+        if (!$meta) {
+            return 'N/A';
+        }
+        if(array_key_exists('credited_by', $meta)) {
+            return User::find($meta['credited_by'])->name;
+        }
     }
 
     private function getApprover($transactionId)
