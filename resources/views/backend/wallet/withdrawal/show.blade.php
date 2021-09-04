@@ -115,7 +115,7 @@
             </div>
             <div class="form-group row">
                 <div class="col">
-                    <input type="date" id="datePickerId" class="form-control approvalDatepicker" name="schedule" max="{{ $withdrawal->created_at->format('d-m-Y') }}">
+                    <input type="date" id="datePickerId" class="form-control approvalDatepicker" name="date_of_transfer" max="{{ $withdrawal->created_at->format('d-m-Y') }}">
                 </div>
             </div>
         </div>
