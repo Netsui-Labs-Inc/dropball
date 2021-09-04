@@ -3,7 +3,7 @@
 @section('title', __('Dashboard - Master Agent'))
 
 @section('content')
-    <h2 class="mb-4">Welcome Master Agent {{$logged_in_user->name}}</h2>
+    <h2 class="mb-4">Welcome Agent {{$logged_in_user->name}}</h2>
     <div class="row">
         <div class="col-12 col-md-6">
             <x-backend.card>

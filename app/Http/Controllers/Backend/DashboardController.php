@@ -42,6 +42,7 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        $this->logoutUser(!$user->hub_id);
         return view('backend.dashboard.processor')
             ->with('user', $user)
             ->with('hubs', Hub::count());
@@ -51,6 +52,7 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        $this->logoutUser(!$user->hub_id);
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
         return view('backend.dashboard.master-agent')
@@ -100,12 +102,7 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
         $hub = Hub::where('admin_id', $user->id)->first();
-        if (! $hub) {
-            auth()->logout();
-            throw ValidationException::withMessages(
-                ['email' => "Something is wrong with your account. Please contact the account administrator"]
-            );
-        }
+        $this->logoutUser(!$hub);
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
             ->onlyActive()->count();
@@ -120,5 +117,15 @@ class DashboardController extends Controller
 
         return view('backend.dashboard.operator')
             ->with('operator', $operator);
+    }
+
+    private function logoutUser($isNeedTologout)
+    {
+        if ($isNeedTologout) {
+            auth()->logout();
+            throw ValidationException::withMessages(
+                ['email' => "Something is wrong with your account. Please contact the account administrator"]
+            );
+        }
     }
 }
