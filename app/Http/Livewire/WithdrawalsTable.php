@@ -43,8 +43,7 @@ class WithdrawalsTable extends DataTableComponent
         $this->withdrawalQuery = $withdrawalQuery;
         return $this->withdrawalQuery->when($this->getFilter('channel'), function($query, $channel) use ($withdrawalQuery) {
             return $withdrawalQuery->where('channel', $channel);
-        })
-            ->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))
+        })->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))
             ->where('status', 'pending')
             ->latest('withdrawals.created_at');
     }

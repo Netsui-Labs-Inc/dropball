@@ -48,6 +48,9 @@ class WalletController extends \App\Http\Controllers\Controller
     public function myWallet(Request $request)
     {
         $this->holder = $this->holderFactory->createWalletHolder($request->user());
+        if($this->holder->getWallet()['error']){
+            return redirect()->back()->withErrors($this->holder->getWallet()['error']);
+        }
         return $this->holder->getWallet();
     }
 
