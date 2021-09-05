@@ -26,7 +26,7 @@ class WalletController extends Controller
         if($this->holder->getWallet()['error']){
             return redirect()->back()->withErrors($this->holder->getWallet()['error']);
         }
-        return $this->holder->getWallet();
+        return $this->holder->getWallet()['view'];
     }
 
     public function withdraw(WithdrawalRequest $request)

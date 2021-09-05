@@ -18,7 +18,10 @@ class MasterAgentWalletTransactions extends BaseWithdrawalTransaction
     public function getWallet()
     {
         $this->checkWallet();
-        return view('backend.wallet.master-agent-wallet')->with('user',   $this->holder);
+        return [
+            'view' => view('backend.wallet.master-agent-wallet')->with('user',   $this->holder),
+            'error' => ''
+        ];
     }
 
 }
