@@ -53,8 +53,7 @@ class WithdrawalController extends \App\Http\Controllers\Controller
             'approved_by'      => Auth()->user()->id,
             'reference_no'     => $withdrawalRequestApproval['reference_number'],
             'channel'          => $withdrawalRequestApproval['channel'],
-            'date_of_transfer' => Carbon::createFromFormat('m/d/Y', $withdrawalRequestApproval['date_of_transfer'])
-                ->format('Y-m-d')
+            'date_of_transfer' => $withdrawalRequestApproval['date_of_transfer']
         ];
         ApprovedWithdrawalRequest::create($withdrawalRequestApprovalData);
     }
@@ -80,7 +79,11 @@ class WithdrawalController extends \App\Http\Controllers\Controller
         ) {
             return false;
         }
-        return true;
+        if (Auth()->user()->hasRole('Processor'))
+        {
+            return true;
+        }
+        return false;
     }
     private function updateTransaction($holderFactory)
     {

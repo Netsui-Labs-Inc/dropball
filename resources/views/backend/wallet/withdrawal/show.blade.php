@@ -95,7 +95,7 @@
             </div>
             <div class="form-group row">
                 <div class="col">
-                    <input type="text" class="form-control" name="reference_number" min="1" step="1">
+                    <input type="text" class="form-control" name="reference_number" min="1" step="1" required>
                 </div>
             </div>
             <div class="row">
@@ -115,7 +115,14 @@
             </div>
             <div class="form-group row">
                 <div class="col">
-                    <input type="date" id="datePickerId" class="form-control approvalDatepicker" name="date_of_transfer" max="{{ $withdrawal->created_at->format('d-m-Y') }}">
+                    <input type="text"
+                           id="datePickerId"
+                           placeholder="Select Date"
+                           class="form-control approvalDatepicker"
+                           name="date_of_transfer"
+                           onfocus="(this.type='date')"
+                           required
+                    >
                 </div>
             </div>
         </div>

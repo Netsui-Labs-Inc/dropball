@@ -191,6 +191,13 @@ Route::get('players/{player}', [PlayerController::class, 'show'])
         $trail->push("Players", route('admin.players.info', $player));
     });
 
+Route::get('player/{player}/edit', [PlayerController::class, 'edit'])
+    ->name('player.edit')
+    ->middleware('can:admin.access.players.edit')
+    ->breadcrumbs(function (Trail $trail, $player) {
+        $trail->parent('admin.players.index');
+        $trail->push("Player Edit", route('admin.player.edit', $player));
+    });
 Route::get('players/{player}/wallet', [PlayerController::class, 'cashBalance'])
     ->name('players.wallet')
     ->middleware('can:admin.access.players.wallet')
@@ -228,6 +235,7 @@ Route::get('players/{player}/bet-histories', [PlayerBetsController::class, 'inde
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');
 Route::post('players/{player}/verification', [PlayerController::class, 'verify'])->name('players.verify');
+Route::put('player/{player}', [PlayerController::class, 'update'])->name('player.update');
 
 /** Master Agents */
 

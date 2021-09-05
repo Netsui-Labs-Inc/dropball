@@ -23,13 +23,17 @@ class HubWalletTransactions extends BaseWithdrawalTransaction
     public function getWallet()
     {
         if ($this->errorMessage !== null) {
-            return ['error' => $this->errorMessage];
+            $error =  $this->errorMessage;
         }
         $wallet = $this->checkWallet();
         if ($this->holder === null) {
-            return ['error', 'message' => 'Wallet is unavailable. please contact the account administrator'];
+            $error =  'Wallet is unavailable. please contact the account administrator';
         }
-        return view('backend.wallet.hub-wallet')->with('hub', $this->holder)->with('hubWallet', $wallet);
+        return [
+            'view' => view('backend.wallet.hub-wallet')->with('hub', $this->holder)->with('hubWallet', $wallet),
+            'error' => $error
+        ];
+
     }
 
 }

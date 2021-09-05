@@ -17,7 +17,10 @@ class PlayerWalletTransactions extends BaseWithdrawalTransaction
 
     public function getWallet()
     {
-        return view('frontend.pages.wallet.index')
-            ->with('user', $this->holder);
+        return [
+            'view' => view('frontend.pages.wallet.index')
+                ->with('user', $this->holder),
+            'error' => ''
+        ];
     }
 }
