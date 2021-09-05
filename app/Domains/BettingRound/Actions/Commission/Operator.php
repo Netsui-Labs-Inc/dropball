@@ -21,7 +21,7 @@ class Operator
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
         $operatorWallet->refreshBalance();
 
-        $rate = $this->hasSubAgent($bet->user) ? .0675 : .07;
+        $rate = $this->hasSubAgent($bet->user) ? .0575 : .06;
         $bettingRound = $bet->bettingRound;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
