@@ -3,16 +3,18 @@
 
 namespace App\Domains\Player\Http\Controllers\Backend;
 
+use App\Domains\Auth\Http\Requests\Backend\User\UpdatePlayerRequest;
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Requests\DepositRequest;
-use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 
 class PlayerController extends Controller
 {
+
     public function index()
     {
         $user = auth()->user();
@@ -28,6 +30,35 @@ class PlayerController extends Controller
     public function show(User $player)
     {
         return view('backend.player.show')->with('user', $player);
+    }
+
+    public function edit(User $player)
+    {
+        $hubs = Hub::all()->pluck('name', 'id');
+
+        return view('backend.player.edit')
+            ->with('player', $player)
+            ->with('hubs', $hubs);
+    }
+
+    public function update(UpdatePlayerRequest $request, User $player)
+    {
+        $request->user();
+        $input = $request->validated();
+        if ($request->has('email_verified') || $player->email_verified_at) {
+            $input['active'] = "1";
+            $player->active = 1;
+        }
+        $player->timezone = 'Asia/Manila';
+        $player->name = $input['name'];
+        $player->email = $input['email'];
+        if(!Auth()->user()->hasRole('Master Agent')) {
+            $player->hub_id = $request->get('hub_id');
+            $player->referred_by = $request->get('referred_by');
+        }
+        $player->mobile = $input['mobile'];
+        $player->save();
+        return redirect()->to(route('admin.players.index'))->withFlashSuccess("Player updated Successfully");
     }
 
     public function cashBalance(User $player)
