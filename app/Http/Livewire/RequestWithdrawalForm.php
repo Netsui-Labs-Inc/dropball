@@ -7,13 +7,11 @@ use Livewire\Component;
 class RequestWithdrawalForm extends Component
 {
     public $isAccountNameRequired = false;
-    private $theme = 'default';
     public $walletBalance;
     public $channel;
     public $accountName = 'N/A';
-    public function mount($theme = 'default', $walletBalance)
+    public function mount($walletBalance)
     {
-        $this->theme =$theme;
         $this->walletBalance = $walletBalance;
     }
 
