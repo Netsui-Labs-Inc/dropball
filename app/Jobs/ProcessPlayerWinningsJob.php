@@ -113,7 +113,11 @@ class ProcessPlayerWinningsJob implements ShouldQueue
             'bet_id' => $bet->id,
             'type' => 'win'
         ]);
+
+        $player->refresh();
+
         $bet->gain_loss = $payout['betPayout'];
+        $bet->new_balance = $player->getWallet(config('wallet.wallet.default.slug'))->balanceFloat;
         $bet->save();
         $bet->refresh();
 

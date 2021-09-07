@@ -100,6 +100,9 @@ class PlaceBetService
 
         //$this->setPoolMoney($bet);
 
+        $bet->previous_balance = $this->bettor->fresh()->balanceFloat;
+        $bet->save();
+
         return $this->bettingRound;
     }
 }
