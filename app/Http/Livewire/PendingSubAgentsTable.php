@@ -69,7 +69,7 @@ class PendingSubAgentsTable extends DataTableComponent
                 })->asHtml(),
             Column::make(__('Hub'), 'hub_id')
                 ->format(function ($value, $column, User $row) {
-                    return $row->hub->name;
+                    return $row->hub->name ?? 'N/A';
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
