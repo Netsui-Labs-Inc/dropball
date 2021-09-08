@@ -11,13 +11,13 @@ class MasterAgentsWithdrawalRequest
 
     public function __construct()
     {
-        $this->user = Auth()->user();
+        $this->user = auth()->user();
     }
 
     public function getQuery()
     {
         return User::join('withdrawals', 'withdrawals.user_id', 'users.id')
-            ->where('reviewer_id', $this->user->hub->admin_id);
+            ->where('reviewer_id', $this->user->hub->admin_id ?? null);
     }
 
     public function getView($row)
