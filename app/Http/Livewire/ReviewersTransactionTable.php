@@ -11,6 +11,7 @@ use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
@@ -18,14 +19,18 @@ class ReviewersTransactionTable extends DataTableComponent
 {
     public $action;
     private $transactionsByRole;
-    private $userType;
+    public int $perPage = 10;
+    /**
+     * @var string
+     */
+    public $sortField = 'id';
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
 
     public function mount(Request $request)
     {
-        $this->userType = $request->get('userType');
+        Session::put('userType', $request->get('userType'));
     }
 
     /**
@@ -34,7 +39,7 @@ class ReviewersTransactionTable extends DataTableComponent
     public function query(): Builder
     {
         $transactionFactory = new TransactionRoleQueryFactory();
-        $this->transactionsByRole = $transactionFactory->createTransactionTable($this->userType);
+        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'));
         $query = Transaction::query();
         $query = $this->transactionsByRole->morphToPayable($query);
         return $query->where('confirmed', true)
