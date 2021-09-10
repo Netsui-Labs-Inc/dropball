@@ -79,11 +79,7 @@ class WithdrawalController extends \App\Http\Controllers\Controller
         ) {
             return false;
         }
-        if (Auth()->user()->hasRole('Processor'))
-        {
-            return true;
-        }
-        return false;
+        return (Auth()->user()->hasRole('Processor')) ? true : false;
     }
     private function updateTransaction($holderFactory)
     {

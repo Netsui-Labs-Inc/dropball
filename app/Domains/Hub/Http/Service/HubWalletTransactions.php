@@ -22,9 +22,11 @@ class HubWalletTransactions extends BaseWithdrawalTransaction
 
     public function getWallet()
     {
+        $error = null;
         if ($this->errorMessage !== null) {
             $error =  $this->errorMessage;
         }
+
         $wallet = $this->checkWallet();
         if ($this->holder === null) {
             $error =  'Wallet is unavailable. please contact the account administrator';

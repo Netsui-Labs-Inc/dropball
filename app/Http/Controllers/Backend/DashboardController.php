@@ -42,7 +42,6 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-        $this->logoutUser(!$user->hub_id);
         return view('backend.dashboard.processor')
             ->with('user', $user)
             ->with('hubs', Hub::count());
