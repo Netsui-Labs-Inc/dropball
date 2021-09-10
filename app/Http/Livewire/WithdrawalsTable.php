@@ -96,7 +96,7 @@ class WithdrawalsTable extends DataTableComponent
                     return $this->sortable('amount', $direction);
                 })
                 ->format(function ($value, $column, User $row) {
-                    return "<div class='text-danger'>-".number_format($row->amount, 2)."</div>";
+                    return "<div class='text-danger'>-".$this->formatAmount($row->amount)."</div>";
                 })->asHtml(),
             Column::make(__('Requested at'), 'withdrawals.created_at')
                 ->sortable(function (Builder $query, $direction)  {
@@ -120,5 +120,10 @@ class WithdrawalsTable extends DataTableComponent
     {
         $this->withdrawalQuery->getQuery()->orders = null;
         return $this->withdrawalQuery->orderBy($column, $direction);
+    }
+
+    private function formatAmount($amount)
+    {
+        return number_format($amount / 100, 2);
     }
 }

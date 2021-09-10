@@ -20,7 +20,7 @@ class MasterAgentWalletTransactions extends BaseWithdrawalTransaction
         $this->checkWallet();
         return [
             'view' => view('backend.wallet.master-agent-wallet')->with('user',   $this->holder),
-            'error' => ''
+            'error' => null
         ];
     }
 
