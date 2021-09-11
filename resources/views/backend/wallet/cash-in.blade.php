@@ -1,1 +1,10 @@
-<a href='{{route('admin.wallet.show',$transaction)}}' class='btn btn-sm btn-primary text-white'><i class='fa fa-eye'></i> View</a>
+<x-utils.modal
+    wire:ignore.self
+    title="Request Withdrawal"
+    type="form"
+    targetId="requestWithdrawal"
+    action="{{$route}}"
+    submitBtn="Send Request"
+>
+
+</x-utils.modal>
