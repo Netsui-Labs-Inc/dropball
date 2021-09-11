@@ -388,3 +388,6 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
 Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
+Route::get('/redirect-uri', function() {
+    dd('Success');
+});
