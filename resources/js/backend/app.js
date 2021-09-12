@@ -21,11 +21,11 @@ window.Echo = new Echo({
     disableStats: true,
     encrypted: true,
 });
-let datePicker = $('#datePickerId');
-datePicker.max = new Date().toISOString().split("T")[0];
+
+datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();
 let newDate = new Date(Date.parse(min));
-datePicker.min = newDate.toISOString().split("T")[0];
+datePickerId.min = newDate.toISOString().split("T")[0];
 
 
 
