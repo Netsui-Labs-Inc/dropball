@@ -81,6 +81,11 @@
                                 :active="activeClass(Route::is('frontend.wallet.index'))"
                                 :text="__('Withdrawal/Deposit')"
                                 class="dropdown-item" />
+                                <x-utils.link
+                                    class="dropdown-item"
+                                    dataTarget="#cashIn"
+                                    :text="__('Cash In')"
+                                />
                             <x-utils.link
                                 :href="route('frontend.bets.index', ['sorts' => ['created_at' => 'desc']])"
                                 :active="activeClass(Route::is('frontend.bets.index'))"
