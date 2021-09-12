@@ -6,7 +6,7 @@
     <div class="flex flex-no-wrap py-2 overflow-x-auto">
         @foreach($betChoices as $choice)
             <button class="disabled:opacity-50 p-0.5 mx-0.5 my-1 {{$amount == $choice ? 'bg-red-700 text-white' : 'bg-white text-gray-500' }} transition duration-150 ease-in-out hover:text-white hover:bg-red-600 rounded  px-3 py-1 text-xs"
-                    wire:click="setAmount({{(int)$choice}})" {{$userCanBet ? '': 'disabled'}}
+                    x-on:click="$wire.setAmount({{$choice}})" {{$userCanBet ? '': 'disabled'}}
             >{{number_format($choice)}}
             </button>
         @endforeach
