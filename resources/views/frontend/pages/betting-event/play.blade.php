@@ -15,7 +15,7 @@
                                 allow="autoplay; picture-in-picture"
                                 frameborder="0"></iframe>
                     @else
-                        <h2 class="text-white text-center" style="height:59vh;width:100%;">No Stream Found</h2>
+                        <h2 class="text-white text-center" style="width:100%;">No Stream Found</h2>
                     @endif
                 </div>
                 <div class="w-full mt-2 bg-gray-800 rounded py-2 hidden xl:block lg:block ">
