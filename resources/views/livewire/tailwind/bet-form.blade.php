@@ -1,11 +1,11 @@
 <div x-data x-init="$refs.amount.focus()">
     <input type="number" x-ref="amount" name="amount" class="@error('amount') border border-red-500 @enderror mt-2 w-full text-lg leading-3 text-gray-600 py-2 dark:bg-gray-700 dark:text-gray-100 bg-gray-100 px-2 focus:ouline-none"
-           placeholder="Enter Bet Amount" type="number" min="50" wire:model.debounce.500ms="amount" {{$userCanBet ? '': 'disabled'}}
+           placeholder="Enter Bet Amount" type="number" min="50" step="10" wire:model.debounce.500ms="amount" {{$userCanBet ? '': 'disabled'}}
     />
     @error('amount')<p class="py-0.5 text-red-500 text-xs italic">{{ $message }}</p> @enderror
     <div class="flex flex-no-wrap py-2 overflow-x-auto">
         @foreach($betChoices as $choice)
-            <button class="disabled:opacity-50 p-0.5 mx-0.5 my-1 {{$amount == $choice ? 'bg-red-700 text-white' : 'bg-white text-gray-500' }} transition duration-150 ease-in-out hover:text-white hover:bg-red-600 rounded  px-3 py-1 text-xs"
+            <button wire:key="bet-amount-{{$choice}}" class="disabled:opacity-50 p-0.5 mx-0.5 my-1 {{$amount == $choice ? 'bg-red-700 text-white' : 'bg-white text-gray-500' }} transition duration-150 ease-in-out hover:text-white hover:bg-red-600 rounded  px-3 py-1 text-xs"
                     x-on:click="$wire.setAmount({{$choice}})" {{$userCanBet ? '': 'disabled'}}
             >{{number_format($choice)}}
             </button>
