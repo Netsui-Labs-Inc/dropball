@@ -124,6 +124,6 @@
 
         </div><!--row-->
     </div><!--container-->
-@include('backend.wallet.cash-in');
+   @include('backend.wallet.cash-in');
 
 @endsection

@@ -32,12 +32,3 @@ Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundB
     ->middleware(['auth.basic:god,username']);
 
 Route::get('/offline', function () { return view('vendor/laravelpwa/offline'); });
-Route::get('/sample', function () {
-    $response = Curl::to('http://devapi.buy2play.biz/fiat-payment')
-        ->withData(array( 'amount' => '100', 'currency' => 'PHP'))
-        ->withHeader('x-b2play-key: digiph-HuzFQPw3fFFCOr13XUurKTM')
-        ->withHeader('Content-Type: application/x-www-form-urlencoded')
-        ->post();
-    dd($response);
-});
-

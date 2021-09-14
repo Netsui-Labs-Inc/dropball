@@ -10,6 +10,7 @@ use App\Domains\MasterAgent\Http\Controllers\Backend\MyCommissionsLogController;
 use App\Domains\Player\Http\Controllers\Backend\PlayerController;
 
 use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
+use App\Domains\Wallet\Http\Controllers\CashInController;
 use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
 use App\Domains\Player\Http\Controllers\Backend\PlayerBetsController;
@@ -391,3 +392,5 @@ Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->nam
 Route::get('/redirect-uri', function() {
     dd('Success');
 });
+
+Route::get('/cash-in/{channel}/{amount}', [CashInController::class, 'cashIn'])->name('admin.cash-in');

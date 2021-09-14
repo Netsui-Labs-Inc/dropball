@@ -3,6 +3,7 @@
 namespace App\Domains\Wallet\Http\Service;
 
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
 use Ixudra\Curl\Facades\Curl;
 
 class CashIn
@@ -33,14 +34,16 @@ class CashIn
 
     public function sendRequest()
     {
-        $response = Curl::to(Config::get('dropball.fiat'))
+        $response = json_decode(Curl::to(Config::get('dropball.cash_in_url') . $this->channel)
             ->withData(array(
                 'amount' => $this->amount,
                 'currency' => $this->currency
             ))
             ->withHeader('x-b2play-key: ' . Config::get('dropball.b2play_key'))
             ->withHeader('Content-Type: application/x-www-form-urlencoded')
-            ->post();
+            ->post(), true);
+        dd($response['url']);
+        return \redirect($response['url']);
     }
 
     private function storePaymentDetails()
