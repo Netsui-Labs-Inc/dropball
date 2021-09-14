@@ -13,6 +13,7 @@ class CashIn
     private $currency;
     private $trackingId;
     private $url;
+    private $response;
 
     public function setChannel($channel)
     {
@@ -34,21 +35,26 @@ class CashIn
 
     public function sendRequest()
     {
-        $response = json_decode(Curl::to(Config::get('dropball.cash_in_url') . $this->channel)
-            ->withData(array(
-                'amount' => $this->amount,
-                'currency' => $this->currency
-            ))
-            ->withHeader('x-b2play-key: ' . Config::get('dropball.b2play_key'))
-            ->withHeader('Content-Type: application/x-www-form-urlencoded')
-            ->post(), true);
-        dd($response['url']);
-        return \redirect($response['url']);
+
+        $this->response = json_decode(
+                Curl::to(Config::get('dropball.cash_in_url') . $this->channel)
+                ->withData(array(
+                    'currency' => $this->currency,
+                    'amount' => $this->amount
+                ))
+                ->withHeader('x-b2play-key: ' . Config::get('dropball.b2play_key'))
+                ->withHeader('Content-Type: application/x-www-form-urlencoded')
+                ->post(),
+            true
+        );
+
+        return $this;
+
     }
 
     private function storePaymentDetails()
     {
-
+        return $this;
     }
 
     private function updatePaymentDetails()
@@ -58,12 +64,21 @@ class CashIn
 
     private function redirectToPaymentChannel()
     {
-
+        redirect()->to($this->response['url'])->send();
     }
 
     public function result()
     {
+        if($this->response['code'] === Config::get('cash-in.PAYMENT_ORDER_SUCCESS'))
+        {
+            $this->storePaymentDetails()
+            ->redirectToPaymentChannel();
+            return;
+        }
 
+        return [
+            'error' => 'message'
+        ];
     }
 
     private function checkDomain()
