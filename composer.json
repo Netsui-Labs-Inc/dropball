@@ -30,6 +30,7 @@
         "laravel/socialite": "^5.0",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^3.0",
+        "laravel/vapor-cli": "^1.24",
         "laravel/vapor-core": "^2.12",
         "laravel/vapor-ui": "^1.0",
         "laravelcollective/html": "^6.2",
@@ -64,7 +65,8 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "COMPOSER_MIRROR_PATH_REPOS": true
     },
     "extra": {
         "laravel": {

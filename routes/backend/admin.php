@@ -388,6 +388,8 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
 Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
-Route::get('/redirect-uri', function() {
-    dd('Success');
-});
+Route::get('/fiat-callback', function () { dd('success on fiat'); });
+Route::get('/crypto-callbback', function () { dd('success on crypto'); });
+
+Route::get('/crypto-withdrawal-callbback', function () { dd('success on crypto withdrawal'); });
+

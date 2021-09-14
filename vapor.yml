@@ -36,7 +36,7 @@ environments:
         - commissions
         - other-commissions
       build:
-        - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
+        - 'composer install --no-dev'
         - 'php artisan event:cache'
       deploy:
         - 'php artisan migrate --force'
