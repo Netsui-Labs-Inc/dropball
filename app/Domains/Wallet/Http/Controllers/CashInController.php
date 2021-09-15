@@ -3,14 +3,14 @@
 
 namespace App\Domains\Wallet\Http\Controllers;
 
-use App\Domains\Wallet\Http\Service\CashIn;
+use App\Domains\Wallet\Http\Service\CashInService;
 use App\Http\Controllers\Controller;
 
 class CashInController extends Controller
 {
     private $cashInService;
 
-    public function __construct(CashIn $cashInService)
+    public function __construct(CashInService $cashInService)
     {
         $this->cashInService = $cashInService;
     }
@@ -20,7 +20,9 @@ class CashInController extends Controller
         $this->cashInService->setChannel($channel)
             ->setAmount($amount)
             ->setCurrency()
-            ->sendRequest();
+            ->sendRequest()
+            ->result();
     }
+
 
 }

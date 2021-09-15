@@ -1,7 +1,11 @@
 <?php
 
+use App\Domains\Announcement\Models\Announcement;
 use App\Http\Controllers\LocaleController;
 use App\Domains\BettingRound\Http\Controllers\Frontend\BettingRoundBetController;
+use App\Domains\Wallet\Models\CashIn;
+use Illuminate\Http\Request;
+
 /*
  * Global Routes
  *
@@ -32,3 +36,10 @@ Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundB
     ->middleware(['auth.basic:god,username']);
 
 Route::get('/offline', function () { return view('vendor/laravelpwa/offline'); });
+Route::post('/cash-in-callback', function(Request $request)
+{
+    Announcement::create([
+        'message' => json_encode($request->all())
+    ]);
+    return $request->all();
+});

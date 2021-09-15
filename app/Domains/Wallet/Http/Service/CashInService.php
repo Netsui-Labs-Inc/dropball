@@ -2,18 +2,17 @@
 
 namespace App\Domains\Wallet\Http\Service;
 
+use App\Domains\Wallet\Models\CashIn;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use Ixudra\Curl\Facades\Curl;
 
-class CashIn
+class CashInService
 {
     private $channel;
     private $amount;
     private $currency;
-    private $trackingId;
-    private $url;
-    private $response;
+    private $paymentOrderResponse;
 
     public function setChannel($channel)
     {
@@ -36,7 +35,7 @@ class CashIn
     public function sendRequest()
     {
 
-        $this->response = json_decode(
+        $this->paymentOrderResponse = json_decode(
                 Curl::to(Config::get('dropball.cash_in_url') . $this->channel)
                 ->withData(array(
                     'currency' => $this->currency,
@@ -54,6 +53,13 @@ class CashIn
 
     private function storePaymentDetails()
     {
+        $cashIn = CashIn::create([
+            'tracking_id' => $this->paymentOrderResponse['tracking_id'],
+            'status'      => 0,
+            'amount'      => $this->amount,
+            'currency'    => $this->currency,
+            'channel'     => $this->channel
+        ]);
         return $this;
     }
 
@@ -64,15 +70,17 @@ class CashIn
 
     private function redirectToPaymentChannel()
     {
-        redirect()->to($this->response['url'])->send();
+        redirect()->to($this->paymentOrderResponse['url'])->send();
     }
 
     public function result()
     {
-        if($this->response['code'] === Config::get('cash-in.PAYMENT_ORDER_SUCCESS'))
+
+        if($this->paymentOrderResponse['code'] === Config::get('cash-in.PAYMENT_ORDER_SUCCESS'))
         {
+
             $this->storePaymentDetails()
-            ->redirectToPaymentChannel();
+                ->redirectToPaymentChannel();
             return;
         }
 
@@ -82,6 +90,11 @@ class CashIn
     }
 
     private function checkDomain()
+    {
+
+    }
+
+    public function checkCallback()
     {
 
     }
