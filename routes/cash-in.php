@@ -6,3 +6,4 @@ Route::group(['middleware' => ['auth', config('boilerplate.access.middleware.ver
     Route::get('/cash-in/{channel}/{amount}', [CashInController::class, 'cashIn'])->name('player.cash-in');
 });
 
+Route::post('/cash-in-callback', [CashInController::class, 'getCashInResult']);

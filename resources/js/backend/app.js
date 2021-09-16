@@ -26,6 +26,3 @@ datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();
 let newDate = new Date(Date.parse(min));
 datePickerId.min = newDate.toISOString().split("T")[0];
-
-
-

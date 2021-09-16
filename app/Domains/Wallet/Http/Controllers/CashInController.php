@@ -5,6 +5,7 @@ namespace App\Domains\Wallet\Http\Controllers;
 
 use App\Domains\Wallet\Http\Service\CashInService;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 class CashInController extends Controller
 {
@@ -24,5 +25,8 @@ class CashInController extends Controller
             ->result();
     }
 
-
+    public function getCashInResult(Request $request)
+    {
+        
+    }
 }

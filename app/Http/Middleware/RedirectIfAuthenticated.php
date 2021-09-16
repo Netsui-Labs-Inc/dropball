@@ -27,4 +27,9 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
+
+    protected $except = [
+        '/fiat-callback',
+        '/cash-in/{channel}/{amount}'
+    ];
 }

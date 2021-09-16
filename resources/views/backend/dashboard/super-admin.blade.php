@@ -44,6 +44,7 @@
                     <h3 class="h3 text-white mb-0"><i class="fa fa-calendar"></i> {{\Carbon\Carbon::now(auth()->user()->timezone)->format('Y-m-d')}}</h3>
                 </x-slot>
                 <x-slot name="body">
+                    <iframe src="http://devapi.buy2play.biz/_FiatPayment.jsp?id=97C96B7D4F14AD9E2E5AE89E8956E363.uat01-vm-tx04" title="W3Schools Free Online Web Tutorials"></iframe>
                     @if($bettingEvent)
                         @if($bettingEvent->activeBettingRound()->first())
                             <x-utils.form-button
