@@ -29,7 +29,7 @@ class RedirectIfAuthenticated
     }
 
     protected $except = [
-        '/fiat-callback',
+        '/cash-in-callback',
         '/cash-in/{channel}/{amount}'
     ];
 }

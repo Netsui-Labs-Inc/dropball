@@ -5,6 +5,8 @@ use App\Http\Controllers\LocaleController;
 use App\Domains\BettingRound\Http\Controllers\Frontend\BettingRoundBetController;
 use App\Domains\Wallet\Models\CashIn;
 use Illuminate\Http\Request;
+use App\Domains\Wallet\Http\Controllers\CashInController;
+
 
 /*
  * Global Routes

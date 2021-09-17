@@ -15,7 +15,7 @@ class CreateCryptoWithdrawalWalletsTable extends Migration
     {
         Schema::create('crypto_withdrawal_wallets', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tracking_id');
+            $table->string('tracking_id')->nullable();
             $table->string('wallet_address')->nullable();
             $table->timestamps();
         });

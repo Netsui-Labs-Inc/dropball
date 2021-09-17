@@ -15,9 +15,11 @@ class CreateCashInsTable extends Migration
     {
         Schema::create('cash_ins', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('tracking_id');
+            $table->bigInteger('user_id')->nullable();
+            $table->string('tracking_id')->nullable();
             $table->bigInteger('status')->unsigned()->nullable();
             $table->decimal('amount', 64, 0);
+            $table->string('url')->nullable();
             $table->string('currency')->nullable();
             $table->string('channel')->nullable();
             $table->timestamps();
