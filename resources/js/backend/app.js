@@ -1,5 +1,4 @@
 window.$ = window.jQuery = require('jquery');
-import 'jquery-ui/ui/widgets/datepicker.js';
 window.Swal = require('sweetalert2');
 
 // CoreUI
@@ -26,3 +25,8 @@ datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();
 let newDate = new Date(Date.parse(min));
 datePickerId.min = newDate.toISOString().split("T")[0];
+
+$('.cashInForm"').on('click', function(event)
+{
+    event.preventDefault();
+})
