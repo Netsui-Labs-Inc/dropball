@@ -7,6 +7,7 @@ use App\Domains\Wallet\Http\Service\CashInService;
 use App\Domains\Wallet\Http\Service\PaymentOrderService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Response;
 
 class CashInController extends Controller
 {
@@ -25,17 +26,32 @@ class CashInController extends Controller
         $this->paymentOrderService = $paymentOrderService;
     }
 
-    public function cashIn($channel, $amount)
+    public function cashIn(Request $request)
     {
-        $this->paymentOrderService->setChannel($channel)
+
+        $amount = $request->get('amount');
+        $channel = $request->get('channel');
+
+        $result = $this->paymentOrderService->setChannel($channel)
             ->setAmount($amount)
             ->setCurrency()
             ->sendRequest()
             ->getResult();
+
+        return Response::json(array(
+                'status' => $result['status'],
+                'url'    => $result['url']
+        ));
     }
 
     public function getCashIn(Request $request)
     {
-        dd($this->cashInService->saveCashIn($request->all()));
+        $this->cashInService->saveCashIn($request->all());
     }
+
+    public function refresh(Request $request)
+    {
+        return $this->cashInService->refreshCashIn($request->get('cash-in-id'));
+    }
+
 }

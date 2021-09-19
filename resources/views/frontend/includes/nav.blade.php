@@ -85,6 +85,8 @@
                                     class="dropdown-item"
                                     dataTarget="#cashIn"
                                     :text="__('Cash In')"
+                                    data-backdrop="static"
+                                    data-keyboard="false"
                                 />
                             <x-utils.link
                                 :href="route('frontend.bets.index', ['sorts' => ['created_at' => 'desc']])"
@@ -112,4 +114,5 @@
             </ul>
         </div><!--navbar-collapse-->
     </div><!--container-->
+    @include('backend.wallet.cash-in');
 </nav>

@@ -11,6 +11,7 @@ class Crypto {
     private $currency;
     private $cashInResult;
     private $url;
+    private $status;
     private $channel = 'crypto-payment';
 
     public function setCurrency($currency)
@@ -36,6 +37,7 @@ class Crypto {
         ]);
 
         $this->url = $response['data']['url'];
+        return $this;
     }
 
     public function getPaymentOrder($amount)
@@ -46,6 +48,13 @@ class Crypto {
         ];
     }
 
+    public function returnPaymentOrderResponse()
+    {
+        return [
+            'status' => 1,
+            'url'    => $this->url
+        ];
+    }
 
     public function saveCashInResponse(CashIn $cashIn, $cashInResponse)
     {
@@ -108,8 +117,5 @@ class Crypto {
         return $this->currency;
     }
 
-    public function getUrl()
-    {
-        return $this->url;
-    }
+
 }

@@ -66,7 +66,6 @@ const SwalAlert = (icon, title, timeout = 7000) => {
         title
     })
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     window.livewire.on('swal:modal', data => {
         SwalModal(data.icon, data.title, data.text, data.show_confirm_button,  data.outside_click)

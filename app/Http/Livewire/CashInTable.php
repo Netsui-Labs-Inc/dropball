@@ -43,7 +43,7 @@ class CashInTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, CashIn $row) {
-                    return $this->getStatus($row->status);
+                    return $this->getStatus($row->status, $row->id);
                 })->asHtml(),
             Column::make(__('Created At'), 'created_at')
                 ->searchable()
@@ -51,21 +51,32 @@ class CashInTable extends DataTableComponent
                 ->format(function ($value, $column, CashIn $row) {
                     return $row->created_at;
                 })->asHtml(),
+            Column::make(__('Action'))
+                ->format(function ($value, $column, CashIn $row) {
+                    $disable = '';
+                    if ($row->status) {
+                        $disable = 'disabled="disabled"';
+                    }
+                   return '<button
+                        class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync"
+                        data-cash_in_id="'.$row->id.'"
+                         '.$disable.'></button></td>';
+                })->asHtml(),
         ];
     }
 
-    public function getStatus($status)
+    public function getStatus($status, $cashInId)
     {
         if ($status === 2)
         {
-            return "<div class='text-danger'>Failed</div>";
+            return "<div class='text-danger cashIn-$cashInId'>Failed</div>";
         }
 
         if ($status === 1)
         {
-            return "<div class='text-success'>Success</div>";
+            return "<div class='text-success cashIn-$cashInId'>Success</div>";
         }
 
-        return "<div class='text-warning'>Pending</div>";
+        return "<div class='text-warning cashIn-$cashInId'>Pending</div>";
     }
 }

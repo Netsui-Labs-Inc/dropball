@@ -1,15 +1,12 @@
 window.$ = window.jQuery = require('jquery');
 window.Swal = require('sweetalert2');
-
 // CoreUI
 require('@coreui/coreui');
-
 // Boilerplate
 require('../plugins');
-
 require('./alert');
-import Echo from 'laravel-echo';
 
+import Echo from 'laravel-echo';
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
@@ -25,8 +22,3 @@ datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();
 let newDate = new Date(Date.parse(min));
 datePickerId.min = newDate.toISOString().split("T")[0];
-
-$('.cashInForm"').on('click', function(event)
-{
-    event.preventDefault();
-})

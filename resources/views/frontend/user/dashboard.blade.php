@@ -141,6 +141,7 @@
                                     <th>Currency</th>
                                     <th>Status</th>
                                     <th>Created</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             @endif
@@ -151,14 +152,19 @@
                                     <td>{{ $cashIn->currency }}</td>
                                     <td>
                                         @if($cashIn->status === 0)
-                                            <div class="text-warning">Pending</div>
+                                            <div class="text-warning cashIn-{{ $cashIn->id }}">Pending</div>
                                         @elseif ($cashIn->status === 1)
-                                            <div class="text-success">Success</div>
+                                            <div class="text-success cashIn-{{ $cashIn->id }}">Success</div>
                                         @else
-                                            <div class="text-danger">Failed</div>
+                                            <div class="text-danger cashIn-{{ $cashIn->id }}">Failed</div>
                                         @endif
                                     </td>
                                     <td>{{ $cashIn->created_at }}</td>
+                                    <td><button class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync" data-cash_in_id="{{ $cashIn->id }}"
+                                        @if($cashIn->status)
+                                            disabled="disabled"
+                                        @endif
+                                        ></button></td>
                                 </tr>
                             @empty
                                 <p class="text-center lead">No Cash-in History Available</p>
@@ -176,6 +182,6 @@
 
         </div><!--row-->
     </div><!--container-->
-   @include('backend.wallet.cash-in');
+  
 
 @endsection

@@ -12,13 +12,7 @@
                             <div class="col">
                                 <h2 class="h2 text-white mb-0"> @lang("Cash In History")</h2>
                             </div>
-                            <div class="col text-right">
-                                <x-utils.link
-                                    class="btn btn-sm btn-white"
-                                    dataTarget="#requestWithdrawal"
-                                    :text="__('Request Withdrawal')"
-                                />
-                            </div>
+
                         </div>
                     </x-slot>
                     <x-slot name="body">
@@ -28,8 +22,4 @@
             </div>
         </div>
     </div>
-    {{-- @include('includes.partials.request-withdrawal-form', [
-    'walletBallance' => number_format(auth()->user()->balanceFloat),
-    'route' => '#'
-    ]) --}}
 @endsection

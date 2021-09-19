@@ -11,6 +11,7 @@ class PaymentOrderService
     private $channel;
     private $amount;
     private $response;
+    private $result;
     private $paymentChannelFactory;
 
     public function __construct(PaymentChannelFactory $paymentChannelFactory)
@@ -42,6 +43,7 @@ class PaymentOrderService
 
     public function sendRequest()
     {
+
         $this->response = json_decode(
                 Curl::to(Config::get('cash-in.CASH_IN_URL') . $this->channel->getChannel())
                 ->withData(
@@ -58,32 +60,23 @@ class PaymentOrderService
 
     private function storeResponse()
     {
-        $this->channel->storePaymentOrderResponse(
+        $this->result = $this->channel->storePaymentOrderResponse(
             $this->response, $this->amount
-        );
+        )
+        ->returnPaymentOrderResponse();
         return $this;
-
-    }
-
-    private function redirectToPaymentChannel()
-    {
-        redirect()
-            ->to($this->channel->geturl())
-            ->send();
-
     }
 
     public function getResult()
     {
         if($this->response['code'] === Config::get('cash-in.PAYMENT_ORDER_SUCCESS'))
         {
-            $this->storeResponse()
-                ->redirectToPaymentChannel();
-            return;
+           $this->storeResponse();
+           return $this->result;
         }
 
         return [
-            'error' => 'message'
+            'status' => 0
         ];
     }
 

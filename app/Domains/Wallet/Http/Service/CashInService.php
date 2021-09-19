@@ -10,6 +10,7 @@ use Ixudra\Curl\Facades\Curl;
 
 class CashInService
 {
+    private $status = ['Pending', 'Success', 'Failed'];
     private $paymentChannelFactory;
 
     public function __construct(PaymentChannelFactory $paymentChannelFactory)
@@ -30,5 +31,12 @@ class CashInService
         $channel = $this->paymentChannelFactory->createPaymentChannel($cashIn->channel);
         return $channel->saveCashInResponse($cashIn, $cashInCallbackResponse)
                             ->getResult();
+    }
+
+    public function refreshCashIn($cashInId)
+    {
+        return $this->status[
+            CashIn::where('id', $cashInId)->get()->first()->status
+        ];
     }
 }

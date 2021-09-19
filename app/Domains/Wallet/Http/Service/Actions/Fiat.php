@@ -43,6 +43,15 @@ class fiat {
         ]);
 
         $this->url = $response['url'];
+        return $this;
+    }
+
+    public function returnPaymentOrderResponse()
+    {
+        return [
+            'status' => 1,
+            'url'    => $this->url
+        ];
     }
 
     public function saveCashInResponse(CashIn $cashIn, $cashInResponse)
@@ -102,11 +111,6 @@ class fiat {
     public function getCurrency()
     {
         return $this->currency;
-    }
-
-    public function getUrl()
-    {
-        return $this->url;
     }
 
     public function getResult()
