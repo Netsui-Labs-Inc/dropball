@@ -62,8 +62,10 @@ class fiat {
 
         $cashIn->status = Config::get('cash-in.SUCCESS');
         $cashIn->save();
+
         $this->cashInResult = [
-            'error' => false,
+            'cash-in' => $cashIn,
+            'error'   => false,
             'message' => 'Payment Successful.'
         ];
         return $this;
@@ -74,7 +76,8 @@ class fiat {
         if (!Arr::exists($cashInResponse, 'amount') ||  !Arr::exists($cashInResponse, 'amount'))
         {
             $this->cashInResult = [
-                'error' => true,
+                'cash-in' => $cashIn,
+                'error'   => true,
                 'message' => 'Field did not match.'
             ];
             return true;
@@ -83,7 +86,8 @@ class fiat {
         if ($cashIn->amount !== $cashInResponse['amount'] || $cashIn->currency !== $cashInResponse['currency'])
         {
             $this->cashInResult = [
-                'error' => true,
+                'cash-in' => $cashIn,
+                'error'   => true,
                 'message' => 'Data did not match.'
             ];
             return true;
@@ -94,7 +98,8 @@ class fiat {
             $cashIn->save();
 
             $this->cashInResult = [
-                'error' => true,
+                'cash-in' => $cashIn,
+                'error'   => true,
                 'message' => 'Cash-in Failed.'
             ];
             return true;

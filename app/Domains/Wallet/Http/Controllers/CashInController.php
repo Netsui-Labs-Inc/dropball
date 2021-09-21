@@ -17,13 +17,17 @@ class CashInController extends Controller
     public function index()
     {
         return  view('frontend.pages.cash-in.index');
-                // ->with('user', $this->holder);
     }
 
     public function __construct(CashInService $cashInService, PaymentOrderService $paymentOrderService)
     {
         $this->cashInService = $cashInService;
         $this->paymentOrderService = $paymentOrderService;
+    }
+
+    public function cashInPage()
+    {
+        return view('backend.wallet.cash-in-page');
     }
 
     public function cashIn(Request $request)
@@ -52,6 +56,11 @@ class CashInController extends Controller
     public function refresh(Request $request)
     {
         return $this->cashInService->refreshCashIn($request->get('cash-in-id'));
+    }
+
+    public fuction getWalletAddress()
+    {
+        
     }
 
 }

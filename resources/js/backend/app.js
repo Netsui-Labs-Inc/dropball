@@ -3,12 +3,12 @@ window.Swal = require('sweetalert2');
 // CoreUI
 require('@coreui/coreui');
 // Boilerplate
+require('../bootstrap');
 require('../plugins');
 require('./alert');
-
+require('argon-design-system-free/assets/js/argon-design-system.min.js');
 import Echo from 'laravel-echo';
 window.Pusher = require('pusher-js');
-
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: process.env.MIX_ABLY_PUBLIC_KEY,

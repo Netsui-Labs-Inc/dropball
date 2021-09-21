@@ -11,10 +11,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CashInTable extends DataTableComponent
 {
+    protected $options = [
+        'bootstrap.classes.table' => 'table',
+    ];
 
     public function query()
     {
-        $query = CashIn::query();
+        $query = CashIn::where('user_id', auth()->user()->id);
         return $query->latest();
     }
 
@@ -58,9 +61,9 @@ class CashInTable extends DataTableComponent
                         $disable = 'disabled="disabled"';
                     }
                    return '<button
-                        class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync"
-                        data-cash_in_id="'.$row->id.'"
-                         '.$disable.'></button></td>';
+                        class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync btn-cash-in-id-'.$row->id.'"
+                        data-cash_in_id="'.$row->id.'" '
+                         .$disable.'></button></td>';
                 })->asHtml(),
         ];
     }

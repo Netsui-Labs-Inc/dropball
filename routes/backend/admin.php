@@ -19,6 +19,15 @@ use App\Domains\BettingEvent\Http\Controllers\Backend\JackpotController;
 
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
+Route::post('/cash-in', [CashInController::class, 'cashIn'])->name('player.cash-in');
+Route::post('/cash-in/refresh', [CashInController::class, 'refresh'])->name('player.cash-in');
+Route::post('/cash-in/wallet-address', [CashInController::class, 'getWalletAddress'])->name('player.cash-in');
+Route::get('/cash-in-page', [CashInController::class, 'cashInPage'])->name('my.cash-in')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.dashboard');
+        $trail->push("My Cash Ins", route('admin.my.cash-in'));
+    });
+
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->name('dashboard')
     ->breadcrumbs(function (Trail $trail) {
@@ -389,8 +398,3 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
 Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
-Route::get('/redirect-uri', function() {
-    dd('Success');
-});
-
-Route::get('/cash-in/{channel}/{amount}', [CashInController::class, 'cashIn'])->name('admin.cash-in');

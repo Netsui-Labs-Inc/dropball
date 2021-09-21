@@ -44,9 +44,6 @@
                     <h3 class="h3 text-white mb-0"><i class="fa fa-calendar"></i> {{\Carbon\Carbon::now(auth()->user()->timezone)->format('Y-m-d')}}</h3>
                 </x-slot>
                 <x-slot name="body">
-                     title="W3Schools Free Online Web Tutorials"
-                     sandbox="
-                     allow-scripts allow-forms allow-same-origin"></iframe>
                     @if($bettingEvent)
                         @if($bettingEvent->activeBettingRound()->first())
                             <x-utils.form-button

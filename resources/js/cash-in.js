@@ -1,5 +1,4 @@
 import axios from "axios";
-import { Resolver } from "laravel-mix/src/Resolver";
 
 class cashIn {
 
@@ -22,7 +21,25 @@ class cashIn {
         });
         this.btnFiat = $('.btn-fiat');
         this.inputAmount = $('#cash-in-amount');
+        this.inputWalletAddress = $('#wallet-address');
+        this.btnCrytoWithdrawal = $('.btn-crypto-withdrawal');
+        this.cryptoElement = $('.crypto-element');
+        this.checkUseWalletAddress = $('#check-use-wallet-address');
+        this.walletSection = $('.wallet_title_section');
+        this.walletTitle = $('#wallet-title');
+        this.cashInDefaultElements = $('.cashin-default-elements');
+        this.btnCancel = $('.btn-cancel');
+        this.btnWithdraw = $('.btn-withdraw');
+        this.setAsDefaultWallet = $('.set-as-default-wallet');
+        this.routePrefix = this.getRoutePrefix($('.route-prefix').val());
         this.setEvent();
+    }
+
+    getRoutePrefix(userType) {
+        if (userType === 'admin') {
+            return '/admin';
+        }
+        return '';
     }
 
     setEvent()
@@ -43,20 +60,83 @@ class cashIn {
         this.btnRefresh.on('click', function(event) {
             self.requestCashInUpdate($(event.target), self)
         });
+
+        this.btnCrytoWithdrawal.on('click', function() {
+            self.setCryptoWithdrawal(self, true);
+        });
+
+        this.checkUseWalletAddress.on('click', function() {
+            self.showWalletAddressTitle(
+                ($('#check-use-wallet-address:checkbox:checked').length > 0),
+                self
+            );
+        });
+
+        this.btnCancel.on('click', function() {
+            self.setCryptoWithdrawal(self, false);
+        });
+
+        this.inputWalletAddress.on('keyup', function() {
+            if (self.inputWalletAddress.val().length > 0) {
+                self.setAsDefaultWallet.removeClass('d-none');
+                return;
+            }
+            self.setAsDefaultWallet.addClass('d-none');
+        });
+    }
+
+
+    setCryptoWithdrawal(self, $on)
+    {
+        if($on) {
+            self.cryptoElement.removeClass('d-none');
+            self.cashInDefaultElements.addClass('d-none');
+            return;
+        }
+        self.cryptoElement.addClass('d-none');
+        self.cashInDefaultElements.removeClass('d-none');
+    }
+
+    getWallet()
+    {
+        axios({
+            method: 'post',
+            url: self.routePrefix + '/cash-in/refresh'
+        }).then((response) => {
+
+            refreshBtn.addClass('fa-sync');
+            refreshBtn.removeClass('fa-spinner fa-spin');
+            self.changeStatus(response.data, cashInId);
+        });
+    }
+
+    showWalletAddressTitle(isChecked, self)
+    {
+        self.inputWalletAddress.prop('disabled', isChecked);
+        if(isChecked) {
+            self.walletSection.removeClass('d-none');
+            self.walletTitle.attr('type', 'text');
+
+            return;
+        }
+        self.walletTitle.attr('type', 'hidden');
+        self.walletSection.addClass('d-none');
     }
 
     requestCashInUpdate(refreshBtn, self)
     {
+
         refreshBtn.removeClass('fa-sync');
         refreshBtn.addClass('fa-spinner fa-spin');
         let cashInId = refreshBtn.attr('data-cash_in_id');
         axios({
             method: 'post',
-            url: '/cash-in/refresh',
+            url: self.routePrefix + '/cash-in/refresh',
             data: {
                 'cash-in-id' : cashInId,
             }
         }).then((response) => {
+
             refreshBtn.addClass('fa-sync');
             refreshBtn.removeClass('fa-spinner fa-spin');
             self.changeStatus(response.data, cashInId);
@@ -65,6 +145,7 @@ class cashIn {
 
     changeStatus(status, cashInId)
     {
+
         if (status === 'Success') {
             $('.cashIn-' + cashInId)
             .removeClass('text-danger')
@@ -97,10 +178,9 @@ class cashIn {
         if(!self.inputAmount.val()) {
             return;
         }
-
         axios({
             method: 'post',
-            url: '/cash-in',
+            url: self.routePrefix + '/cash-in',
             data: {
                 'channel' : channel,
                 'amount'  : self.inputAmount.val()
@@ -128,5 +208,6 @@ class cashIn {
         window.open(url, '_blank');
         self.modalClose(self);
     }
+
 }
 export default cashIn;

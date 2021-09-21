@@ -160,7 +160,7 @@
                                         @endif
                                     </td>
                                     <td>{{ $cashIn->created_at }}</td>
-                                    <td><button class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync" data-cash_in_id="{{ $cashIn->id }}"
+                                    <td><button class="btn btn-sm btn-outline-warning btn-refresh fas fa-sync btn-cash-in-id-{{ $cashIn->id }}" data-cash_in_id="{{ $cashIn->id }}"
                                         @if($cashIn->status)
                                             disabled="disabled"
                                         @endif
@@ -182,6 +182,6 @@
 
         </div><!--row-->
     </div><!--container-->
-  
+
 
 @endsection

@@ -115,4 +115,5 @@
         </div><!--navbar-collapse-->
     </div><!--container-->
     @include('backend.wallet.cash-in');
+    <livewire:cash-in-callback />
 </nav>

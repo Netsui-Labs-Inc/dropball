@@ -48,8 +48,22 @@
                     class="dropdown-item"
                     icon="c-icon mr-2 cil-user"
                     :href="route('admin.auth.my-account')"
-                ><x-slot name="text">
+                >
+                    <x-slot name="text">
                         @lang('My Account')
+                    </x-slot>
+                </x-utils.link>
+
+                <x-utils.link
+                    class="dropdown-item"
+                    icon="c-icon mr-2 cil-money"
+                    dataTarget="#cashIn"
+                    :text="__('Cash In')"
+                    data-backdrop="static"
+                    data-keyboard="false"
+                >
+                    <x-slot name="text">
+                        @lang('Cash In')
                     </x-slot>
                 </x-utils.link>
 
@@ -75,5 +89,8 @@
         <div class="c-subheader-nav d-md-down-none mfe-2">
             @yield('page-action')
         </div>
+        @include('backend.wallet.cash-in');
+        <livewire:cash-in-callback />
     </div><!--c-subheader-->
 </header>
+

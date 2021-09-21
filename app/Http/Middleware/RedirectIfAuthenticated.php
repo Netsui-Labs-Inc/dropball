@@ -30,6 +30,6 @@ class RedirectIfAuthenticated
 
     protected $except = [
         '/cash-in-callback',
-        '/cash-in/{channel}/{amount}'
+        '/cash-in'
     ];
 }

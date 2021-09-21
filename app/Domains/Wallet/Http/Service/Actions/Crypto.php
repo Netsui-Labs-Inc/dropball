@@ -27,16 +27,16 @@ class Crypto {
     public function storePaymentOrderResponse($response, $amount)
     {
         CashIn::create([
-            'tracking_id' => $response['data']['tracking_id'],
+            'tracking_id' => $response['tracking_id'],
             'user_id'     => auth()->user()->id,
             'status'      => Config::get('cash-in.PENDING'),
-            'url'         => $response['data']['url'],
+            'url'         => $response['url'],
             'amount'      => $amount,
             'currency'    => $this->currency,
             'channel'     => $this->channel
         ]);
 
-        $this->url = $response['data']['url'];
+        $this->url = $response['url'];
         return $this;
     }
 
@@ -72,7 +72,8 @@ class Crypto {
         ]);
 
         $this->cashInResult = [
-            'error' => false,
+            'cash-in' => $cashIn,
+            'error'   => false,
             'message' => 'Payment Successful.'
         ];
         return $this;
@@ -83,15 +84,18 @@ class Crypto {
         if (!Arr::exists($cashInResponse, 'wallet_address'))
         {
             $this->cashInResult = [
-                'error' => true,
+                'cash-in' => $cashIn,
+                'error'   => true,
                 'message' => 'Field did not match.'
             ];
             return true;
         }
+
         if ($cashInResponse['status'] === Config::get('cash-in.CALLBACK_FAILED'))
         {
             $this->cashInResult = [
-                'error' => true,
+                'cash-in' => $cashIn,
+                'error'   => true,
                 'message' => 'Cash-in Failed.'
             ];
             $cashIn->status = Config::get('cash-in.FAILED');
