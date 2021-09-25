@@ -10,7 +10,7 @@ use App\Domains\Auth\Notifications\Frontend\ResetPasswordNotification;
 use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
-use App\Domains\Wallet\Models\CashIn;
+use App\Domains\CashIn\Models\CashIn;
 use App\Domains\Wallet\Models\WalletTransaction;
 use App\Models\Traits\HasBetCommission;
 use App\Models\Traits\HasWithdrawal;

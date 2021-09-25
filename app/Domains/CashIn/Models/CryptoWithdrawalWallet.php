@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Wallet\Models;
+namespace App\Domains\CashIn\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +9,9 @@ class CryptoWithdrawalWallet extends Model
 {
     use HasFactory;
     protected $fillable = [
+        'type',
+        'user_id',
+        'title',
         'tracking_id',
         'wallet_address',
         'created_at',

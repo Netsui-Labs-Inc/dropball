@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Wallet\Models\CashIn;
+use App\Domains\Cashin\Models\CashIn;
 use Livewire\Component;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;

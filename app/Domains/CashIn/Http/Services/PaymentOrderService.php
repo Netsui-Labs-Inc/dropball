@@ -1,23 +1,22 @@
 <?php
 
-namespace App\Domains\Wallet\Http\Service;
+namespace App\Domains\CashIn\Http\Services;
 
-use App\Domains\Wallet\Http\Service\Actions\PaymentChannelFactory;
+use App\Domains\CashIn\Interfaces\CashInChannelInterface;
 use Illuminate\Support\Facades\Config;
 use Ixudra\Curl\Facades\Curl;
 
 class PaymentOrderService
 {
     private $channel;
-    private $amount;
+    private $fields;
     private $response;
     private $result;
-    private $paymentChannelFactory;
+    private $address;
 
-    public function __construct(PaymentChannelFactory $paymentChannelFactory)
+    public function __construct(CashInChannelInterface $channel)
     {
-        $this->paymentChannelFactory = $paymentChannelFactory;
-
+        $this->channel = $channel;
     }
 
     public function setChannel($channel)
@@ -27,9 +26,14 @@ class PaymentOrderService
 
     }
 
-    public function setAmount($amount)
+    public function setField($amount, $address = null, $extraFields = null)
     {
-        $this->amount = $amount;
+        $this->fields = [
+            'amount' => $amount,
+            'address' => $address,
+            'extra'   => $extraFields
+        ];
+
         return $this;
 
     }
@@ -47,23 +51,23 @@ class PaymentOrderService
         $this->response = json_decode(
                 Curl::to(Config::get('cash-in.CASH_IN_URL') . $this->channel->getChannel())
                 ->withData(
-                        $this->channel->getPaymentOrder($this->amount)
+                        $this->channel->getPaymentOrder($this->fields)
                     )
                 ->withHeader('x-b2play-key: ' . Config::get('cash-in.B2PLAY_KEY'))
                 ->withHeader('Content-Type: application/x-www-form-urlencoded')
                 ->post(),
             true
         );
-
         return $this;
     }
 
     private function storeResponse()
     {
         $this->result = $this->channel->storePaymentOrderResponse(
-            $this->response, $this->amount
+            $this->response, $this->fields['amount']
         )
         ->returnPaymentOrderResponse();
+
         return $this;
     }
 

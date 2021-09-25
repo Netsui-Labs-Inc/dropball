@@ -1,16 +1,18 @@
 <?php
 
-namespace App\Domains\Wallet\Http\Service\Actions;
+namespace App\Domains\CashIn\Http\Services\Actions;
 
-use App\Domains\Wallet\Models\CashIn;
+use App\Domains\CashIn\Interfaces\CashInChannelInterface;
+use App\Domains\CashIn\Models\CashIn;
+use App\Domains\CashIn\Models\CryptoWithdrawalWallet;
 use Arr;
 use Config;
 
-class fiat {
+class Crypto implements CashInChannelInterface{
     private $currency;
     private $cashInResult;
     private $url;
-    private $channel = 'fiat-payment';
+    private $channel = 'crypto-payment';
 
     public function setCurrency($currency)
     {
@@ -19,18 +21,10 @@ class fiat {
             return;
         }
 
-        $this->currency = 'PHP';
+        $this->currency = 'BTC';
     }
 
-    public function getPaymentOrder($amount)
-    {
-        return [
-            'currency' => $this->currency,
-            'amount'   => $amount
-        ];
-    }
-
-    public function storePaymentOrderResponse($response, $amount)
+    public function storePaymentOrderResponse($response, $amount) : CashInChannelInterface
     {
         CashIn::create([
             'tracking_id' => $response['tracking_id'],
@@ -46,7 +40,15 @@ class fiat {
         return $this;
     }
 
-    public function returnPaymentOrderResponse()
+    public function getPaymentOrder(array $fields) : array
+    {
+        return [
+            'currency' => $this->currency,
+            'amount'   => $fields['amount']
+        ];
+    }
+
+    public function returnPaymentOrderResponse() : array
     {
         return [
             'status' => 1,
@@ -54,7 +56,7 @@ class fiat {
         ];
     }
 
-    public function saveCashInResponse(CashIn $cashIn, $cashInResponse)
+    public function saveCashInResponse(CashIn $cashIn, $cashInResponse) : CashInChannelInterface
     {
         if($this->checkResponseData($cashIn, $cashInResponse)) {
             return $this;
@@ -62,6 +64,12 @@ class fiat {
 
         $cashIn->status = Config::get('cash-in.SUCCESS');
         $cashIn->save();
+
+        CryptoWithdrawalWallet::create([
+            'tracking_id'    => $cashInResponse['tracking_id'],
+            'wallet_address' => $cashInResponse['wallet_address'],
+            'created_at'     => $cashInResponse['created']
+        ]);
 
         $this->cashInResult = [
             'cash-in' => $cashIn,
@@ -71,9 +79,9 @@ class fiat {
         return $this;
     }
 
-    private function checkResponseData(CashIn $cashIn, $cashInResponse)
+    public function checkResponseData(CashIn $cashIn, $cashInResponse)
     {
-        if (!Arr::exists($cashInResponse, 'amount') ||  !Arr::exists($cashInResponse, 'amount'))
+        if (!Arr::exists($cashInResponse, 'wallet_address'))
         {
             $this->cashInResult = [
                 'cash-in' => $cashIn,
@@ -83,29 +91,24 @@ class fiat {
             return true;
         }
 
-        if ($cashIn->amount !== $cashInResponse['amount'] || $cashIn->currency !== $cashInResponse['currency'])
+        if ($cashInResponse['status'] === Config::get('cash-in.CALLBACK_FAILED'))
         {
-            $this->cashInResult = [
-                'cash-in' => $cashIn,
-                'error'   => true,
-                'message' => 'Data did not match.'
-            ];
-            return true;
-        }
-
-        if($cashInResponse['status'] === Config::get('cash-in.CALLBACK_FAILED')) {
-            $cashIn->status = Config::get('cash-in.FAILED');
-            $cashIn->save();
-
             $this->cashInResult = [
                 'cash-in' => $cashIn,
                 'error'   => true,
                 'message' => 'Cash-in Failed.'
             ];
+            $cashIn->status = Config::get('cash-in.FAILED');
+            $cashIn->save();
             return true;
         }
 
         return false;
+    }
+
+    public function getResult()
+    {
+        return $this->cashInResult;
     }
 
     public function getChannel()
@@ -118,9 +121,5 @@ class fiat {
         return $this->currency;
     }
 
-    public function getResult()
-    {
-        return $this->cashInResult;
-    }
 
 }

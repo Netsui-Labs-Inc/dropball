@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domains\Wallet\Models;
+namespace App\Domains\CashIn\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

@@ -8,20 +8,20 @@ use App\Domains\MasterAgent\Http\Controllers\Backend\MasterAgentController;
 use App\Domains\MasterAgent\Http\Controllers\Backend\SubAgentController;
 use App\Domains\MasterAgent\Http\Controllers\Backend\MyCommissionsLogController;
 use App\Domains\Player\Http\Controllers\Backend\PlayerController;
-
 use App\Domains\Wallet\Http\Controllers\Backend\WalletController;
-use App\Domains\Wallet\Http\Controllers\CashInController;
 use App\Http\Controllers\Backend\DashboardController;
 use Tabuna\Breadcrumbs\Trail;
 use App\Domains\Player\Http\Controllers\Backend\PlayerBetsController;
 use App\Domains\Wallet\Http\Controllers\Backend\WithdrawalController;
 use App\Domains\BettingEvent\Http\Controllers\Backend\JackpotController;
+use App\Domains\CashIn\Http\Controllers\CashInController;
+use App\Domains\CashIn\Http\Controllers\PaymentOrderController;
 
 // All route names are prefixed with 'admin.'.
 //Route::redirect('/', '/admin/dashboard', 301);
-Route::post('/cash-in', [CashInController::class, 'cashIn'])->name('player.cash-in');
+Route::post('/cash-in', [PaymentOrderController::class, 'requestPaymentOrder'])->name('player.cash-in');
 Route::post('/cash-in/refresh', [CashInController::class, 'refresh'])->name('player.cash-in');
-Route::post('/cash-in/wallet-address', [CashInController::class, 'getWalletAddress'])->name('player.cash-in');
+Route::post('/cash-in/wallet-address', [CashInController::class, 'getWalletAddress'])->name('player.cashin.get.wallet');
 Route::get('/cash-in-page', [CashInController::class, 'cashInPage'])->name('my.cash-in')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');

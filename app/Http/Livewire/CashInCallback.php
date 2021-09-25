@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Wallet\Models\CallbackBroadcastRequest;
+use App\Domains\CashIn\Models\CallbackBroadcastRequest;
 use Livewire\Component;
 
 class CashInCallback extends Component

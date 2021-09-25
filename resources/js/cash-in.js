@@ -23,15 +23,26 @@ class cashIn {
         this.inputAmount = $('#cash-in-amount');
         this.inputWalletAddress = $('#wallet-address');
         this.btnCrytoWithdrawal = $('.btn-crypto-withdrawal');
-        this.cryptoElement = $('.crypto-element');
+        this.proceedContainer = $('.proceed-container');
         this.checkUseWalletAddress = $('#check-use-wallet-address');
         this.walletSection = $('.wallet_title_section');
         this.walletTitle = $('#wallet-title');
         this.cashInDefaultElements = $('.cashin-default-elements');
         this.btnCancel = $('.btn-cancel');
-        this.btnWithdraw = $('.btn-withdraw');
+        this.btnProceed = $('.btn-proceed');
         this.setAsDefaultWallet = $('.set-as-default-wallet');
+        this.checkSetDefaultWallet = $('#check-use-as-default-wallet');
         this.routePrefix = this.getRoutePrefix($('.route-prefix').val());
+        this.isDefaultWallet = false;
+        this.amountContainer = $('.amountContainer');
+        this.isCryptoWithdrawal = false;
+
+        this.CRYPTO_CHANNEL = 1;
+        this.FIAT_CHANNEL = 2;
+        this.CRYPTO_WITHDRAWAL_CHANNEL = 3;
+        this.selectedChannel = 0;
+        this.modalTitle = $('#cashInModalTitle');
+        this.cryptoWithdrawalContainer = $('.crypto-withdrawal-container');
         this.setEvent();
     }
 
@@ -46,14 +57,43 @@ class cashIn {
     {
         let self = this;
         this.btnCrypto.on('click', function() {
-            self.requestPaymentOrder(self, 'crypto-payment');
+            self.amountContainer.removeClass('d-none');
+            self.selectedChannel = self.CRYPTO_CHANNEL;
+            self.modalTitle.text('Cash In - Crypto');
+            self.proceedContainer.removeClass('d-none');
+            self.btnCrypto.removeClass('btn-outline-primary');
+            self.btnCrypto.addClass('btn-primary');
+
+            self.btnFiat.addClass('btn-outline-warning');
+            self.btnFiat.removeClass('btn-warning');
+
+            self.btnCrytoWithdrawal.addClass('btn-outline-success');
+            self.btnCrytoWithdrawal.removeClass('btn-success');
+
+            self.inputWalletAddress.attr('type', 'hidden');
+            self.cryptoWithdrawalContainer.addClass('d-none');
         });
 
         this.btnFiat.on('click', function() {
-            self.requestPaymentOrder(self, 'fiat-payment');
+            self.amountContainer.removeClass('d-none');
+            self.selectedChannel = self.FIAT_CHANNEL;
+            self.modalTitle.text('Cash In - Bank');
+            self.proceedContainer.removeClass('d-none');
+            self.btnFiat.removeClass('btn-outline-warning');
+            self.btnFiat.addClass('btn-warning');
+
+            self.btnCrypto.addClass('btn-outline-primary');
+            self.btnCrypto.removeClass('btn-primary');
+
+            self.btnFiat.addClass('btn-outline-warning');
+            self.btnFiat.removeClass('btn-warning');
+
+            self.inputWalletAddress.attr('type', 'hidden');
+            self.cryptoWithdrawalContainer.addClass('d-none');
         });
 
         this.btnClose.on('click', function() {
+            self.amountContainer.removeClass('d-none');
             self.modalClose(self);
         });
 
@@ -62,7 +102,23 @@ class cashIn {
         });
 
         this.btnCrytoWithdrawal.on('click', function() {
-            self.setCryptoWithdrawal(self, true);
+            self.amountContainer.removeClass('d-none');
+            self.selectedChannel = self.CRYPTO_WITHDRAWAL_CHANNEL;
+            self.modalTitle.text('Cash In - Crypto Withdrawal');
+            self.proceedContainer.removeClass('d-none');
+            self.btnCrytoWithdrawal.removeClass('btn-outline-success');
+            self.btnCrytoWithdrawal.addClass('btn-success');
+
+            self.btnCrypto.addClass('btn-outline-primary');
+            self.btnCrypto.removeClass('btn-primary');
+
+            self.btnFiat.addClass('btn-outline-warning');
+            self.btnFiat.removeClass('btn-warning');
+
+            self.inputWalletAddress.attr('type', 'text');
+            self.cryptoWithdrawalContainer.removeClass('d-none');
+            //self.cryptoElement.removeClass('d-none');
+
         });
 
         this.checkUseWalletAddress.on('click', function() {
@@ -73,22 +129,91 @@ class cashIn {
         });
 
         this.btnCancel.on('click', function() {
-            self.setCryptoWithdrawal(self, false);
+            self.amountContainer.addClass('d-none');
+            self.selectedChannel = 0;
+            self.modalTitle.text('Cash In');
+            self.proceedContainer.addClass('d-none');
+
+            self.btnCrytoWithdrawal.addClass('btn-outline-success');
+            self.btnCrytoWithdrawal.removeClass('btn-success');
+
+            self.btnCrypto.addClass('btn-outline-primary');
+            self.btnCrypto.removeClass('btn-primary');
+
+            self.btnFiat.addClass('btn-outline-warning');
+            self.btnFiat.removeClass('btn-warning');
+
+            self.inputWalletAddress.attr('type', 'hidden');
+            self.cryptoWithdrawalContainer.addClass('d-none');
+
+           // self.isCryptoWithdrawal = false;
+            //self.setCryptoWithdrawal(self, false);
+        });
+
+        this.btnProceed.on('click', function() {
+            self.proceedCashIn(self);
+            //self.requestPaymentOrder(self, 'crypto-withdrawal');
         });
 
         this.inputWalletAddress.on('keyup', function() {
+            self.checkInputWalletAddressValidity(self.inputWalletAddress);
             if (self.inputWalletAddress.val().length > 0) {
-                self.setAsDefaultWallet.removeClass('d-none');
+                //self.setAsDefaultWallet.removeClass('d-none');
                 return;
             }
-            self.setAsDefaultWallet.addClass('d-none');
+            //self.setAsDefaultWallet.addClass('d-none');
+        });
+
+        this.checkSetDefaultWallet.on('click', function() {
+            if($('#check-use-as-default-wallet:checkbox:checked').length > 0) {
+                self.isDefaultWallet = true;
+                self.walletSection.removeClass('d-none');
+                self.walletTitle.prop('disabled', false).attr('type','text');
+                return;
+            }
+                self.isDefaultWallet = false;
+                self.walletSection.addClass('d-none');
+                self.walletTitle.prop('disabled', true).attr('type','text');
         });
     }
 
+    proceedCashIn(self)
+    {
+        if(self.selectedChannel === self.CRYPTO_CHANNEL) {
+             self.requestPaymentOrder(self, 'crypto-payment');
+            return;
+        }
 
+        if(self.selectedChannel === self.FIAT_CHANNEL) {
+            self.requestPaymentOrder(self, 'fiat-payment');
+            return;
+        }
+
+        if(self.selectedChannel === self.CRYPTO_WITHDRAWAL_CHANNEL) {
+            self.requestPaymentOrder(self, 'crypto-withdrawal');
+            //elf.isCryptoWithdrawal = true;
+            //self.setCryptoWithdrawal(self, true);
+            return;
+        }
+    }
+
+    checkInputWalletAddressValidity(walletAddress)
+    {
+        if(!(/^[a-zA-Z0-9]*$/.test(walletAddress.val())))
+        {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Cannot accept special characters!'
+              });
+
+            walletAddress.focus().val(walletAddress.val().slice(0, -1));
+        }
+    }
     setCryptoWithdrawal(self, $on)
     {
         if($on) {
+            self.inputWalletAddress.attr('type', 'text');
             self.cryptoElement.removeClass('d-none');
             self.cashInDefaultElements.addClass('d-none');
             return;
@@ -103,7 +228,6 @@ class cashIn {
             method: 'post',
             url: self.routePrefix + '/cash-in/refresh'
         }).then((response) => {
-
             refreshBtn.addClass('fa-sync');
             refreshBtn.removeClass('fa-spinner fa-spin');
             self.changeStatus(response.data, cashInId);
@@ -116,11 +240,25 @@ class cashIn {
         if(isChecked) {
             self.walletSection.removeClass('d-none');
             self.walletTitle.attr('type', 'text');
-
+            self.getWalletAddress(self);
+            self.setAsDefaultWallet.addClass('d-none');
             return;
         }
-        self.walletTitle.attr('type', 'hidden');
+
+        self.walletTitle.attr('type', 'hidden').val('');
         self.walletSection.addClass('d-none');
+        self.inputWalletAddress.val('');
+    }
+
+    getWalletAddress(self)
+    {
+        axios({
+            method: 'post',
+            url: self.routePrefix + '/cash-in/wallet-address'
+        }).then((response) => {
+            self.inputWalletAddress.val(response.data.wallet_address);
+            self.walletTitle.val(response.data.title);
+        });
     }
 
     requestCashInUpdate(refreshBtn, self)
@@ -173,25 +311,76 @@ class cashIn {
         location.reload();
     }
 
-    requestPaymentOrder(self, channel)
+    checkPaymentOrderRequirements(self)
     {
         if(!self.inputAmount.val()) {
+            return false;
+        }
+        if (self.isCryptoWithdrawal)
+        {
+            return self.checkCryptoWithdrawalRequirements(self);
+        }
+        return true
+    }
+
+    checkCryptoWithdrawalRequirements(self)
+    {
+        if(!self.inputWalletAddress.val()) {
+            return false;
+        }
+        if(self.isDefaultWallet) {
+            return (self.walletTitle.val()) ? true : false;
+        }
+        return true;
+
+    }
+
+    requestPaymentOrder(self, channel)
+    {
+        if (!self.checkPaymentOrderRequirements(self)) {
             return;
         }
+
         axios({
             method: 'post',
             url: self.routePrefix + '/cash-in',
             data: {
-                'channel' : channel,
-                'amount'  : self.inputAmount.val()
+                'channel'            : channel,
+                'amount'             : self.inputAmount.val(),
+                'set_default_wallet' : self.isDefaultWallet,
+                'wallet_address'     : self.inputWalletAddress.val(),
+                'wallet_title'       : self.walletTitle.val()
             }
         }).then((response) => {
             if(channel === 'fiat-payment') {
                 self.redirectToFiat(response['data']['url'], self)
                 return;
+            } else if (channel === 'crypto-withdrawal') {
+                self.showWithdrawalRequestResult(response['data']['status'], self)
+                return;
             }
             self.showCryptoPayment(response['data'], self)
         });
+    }
+
+    showWithdrawalRequestResult(status, self)
+    {
+        let title = 'Something went wrong!';
+        let icon = 'error';
+        if(status) {
+            title = 'Withdrawal Request Successfully sent!';
+            icon = 'success';
+        }
+
+        Swal.fire({
+            position: 'middle',
+            icon: icon,
+            title: title,
+            showConfirmButton: false,
+            timer: 3000
+          }).then((result) => {
+                self.modalClose(self);
+          })
     }
 
     showCryptoPayment(paymentOrderResponse, self)
