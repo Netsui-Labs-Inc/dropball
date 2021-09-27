@@ -147,8 +147,16 @@
                         @enderror
                     </div>
                     <div class="flex flex-col mt-5">
-                        <label for="referral" class="text-lg font-semibold text-gray-100 fleading-tight">Referral</label>
-                        <input required name="referral_id" id="referral_id" class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="text" value="{{request()->get('referral',  old('referral_id') )}}" />
+                        <label for="referral" class="text-lg font-semibold text-gray-100 fleading-tight">Agent's Code Name</label>
+                        <input required name="referral_id" id="referral_id"
+                            class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow"
+                            type="text" value="{{ base64_decode(
+                                    request()->get('r',  old('referral_id'))
+                                )}}"
+                            @if(request()->get('r'))
+                                disabled
+                            @endif
+                            />
                         @error('referral_id')
                         <p class="text-red-500 text-xs italic mt-4">
                             {{ $message }}

@@ -35,7 +35,7 @@
                     <small class="text-muted text-uppercase font-weight-bold">Invite players and earn commissions</small>
                     <div class="text-value-lg text-info">
                         <div class="input-group">
-                            <input type="text"  id="referralLink" class="form-control " value="{{route('frontend.auth.register', ['referral' => $user->referral_id])}}" aria-label="referral">
+                            <input type="text"  id="referralLink" class="form-control " value="{{route('frontend.auth.register', ['r' => base64_encode($user->referral_id)])}}" aria-label="referral">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button" onclick="copyReferralLink()">Copy</button>
                             </div>
