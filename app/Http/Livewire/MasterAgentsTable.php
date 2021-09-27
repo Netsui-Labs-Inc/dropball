@@ -91,6 +91,12 @@ class MasterAgentsTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat, 2);
                 })->asHtml(),
+            Column::make(__('Players'))
+                ->format(function ($value, $column, User $row) {
+                    return User::role('Player')
+                        ->where('referred_by', $row->id)
+                        ->onlyActive()->count();
+                })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, User $row) {

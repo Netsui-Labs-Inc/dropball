@@ -105,9 +105,13 @@ class DashboardController extends Controller
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
             ->onlyActive()->count();
+        $players = User::role('Player')
+            ->where('hub_id', $hub->id)
+            ->onlyActive()->count();
         return view('backend.dashboard.virtual-hub')
             ->with('masterAgents', $masterAgents)
-            ->with('hub', $hub);
+            ->with('hub', $hub)
+            ->with('players', $players);
     }
 
     public function operator()
