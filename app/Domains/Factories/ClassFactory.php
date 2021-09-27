@@ -4,7 +4,7 @@ namespace App\Domains\Factories;
 
 use App\Domains\CashIn\Http\Services\Actions\Crypto;
 use App\Domains\CashIn\Http\Services\Actions\CryptoWithdrawal;
-use App\Domains\CashIn\Http\Services\Actions\fiat;
+use App\Domains\CashIn\Http\Services\Actions\Fiat;
 
 class ClassFactory
 {
@@ -19,7 +19,7 @@ class ClassFactory
     {
         $this->classList = collect([
             'crypto-payment' => new Crypto(),
-            'fiat-payment'  => new fiat(),
+            'fiat-payment'  => new Fiat(),
             'crypto-withdrawal' => new CryptoWithdrawal()
         ]);
     }

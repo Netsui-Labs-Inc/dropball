@@ -7,7 +7,7 @@ use App\Domains\CashIn\Models\CashIn;
 use Arr;
 use Config;
 
-class fiat implements CashInChannelInterface {
+class Fiat implements CashInChannelInterface {
     private $currency;
     private $cashInResult;
     private $url;

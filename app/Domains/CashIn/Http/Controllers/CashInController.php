@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Response;
 use App\Domains\Factories\ClassFactory;
 use App\Domains\CashIn\Models\CryptoWithdrawalWallet;
+use App\Domains\Announcement\Models\Announcement;
 
 class CashInController extends Controller
 {
@@ -34,6 +35,10 @@ class CashInController extends Controller
 
     public function getCashIn(Request $request)
     {
+        Announcement::create([
+            'message' => json_encode($request->all())
+        ]);
+
         $cashIn = CashIn::where(
             'tracking_id', $request->get('tracking_id'))->get()->first();
 

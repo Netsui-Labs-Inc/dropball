@@ -14,9 +14,12 @@
             <form onsubmit="return false;">
             <div class="form-group d-flex flex-row">
                     <div class="cashin-default-elements">
-                          <button type="button" class="btn btn-lg btn-outline-primary btn-crypto"><i class='fa fa-coins pt-1'></i> @lang('Crypto')</button>
-                          <button type="button" class="btn btn-lg btn-outline-warning btn-fiat"><i class='fa fa-money-check pt-1'></i> @lang('Bank')</button>
-                          <button type="button" class="btn btn-lg btn-outline-success btn-crypto-withdrawal"><i class='fa fa-money-briefcase pt-1'></i> @lang('Crypto Withdrawal')</button>
+                          <button type="button" class="btn btn-lg btn-crypto  btn-outline-primary">
+                             <img src="/images/icons/bitcoin.png" width="100" /></button>
+                          <button type="button" class="btn btn-lg btn-outline-warning btn-fiat">
+                            <img src="/images/icons/bank.png" width="100" /></button></button>
+                          <button type="button" class="btn btn-lg btn-outline-success btn-crypto-withdrawal">
+                            <img src="/images/icons/crypto-withdrawal.png" width="100" /></button></button>
                     </div>
                   <div class="crypto-element  d-none">
                       <button type="button" class="btn btn-lg btn-outline-danger btn-cancel"> @lang('cancel')</button>

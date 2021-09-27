@@ -2,12 +2,9 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Cashin\Models\CashIn;
-use Livewire\Component;
+use App\Domains\CashIn\Models\CashIn;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-use Rappasoft\LaravelLivewireTables\Views\Filter;
-use Illuminate\Database\Eloquent\Builder;
 
 class CashInTable extends DataTableComponent
 {

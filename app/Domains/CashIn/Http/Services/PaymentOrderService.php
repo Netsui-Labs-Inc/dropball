@@ -47,7 +47,6 @@ class PaymentOrderService
 
     public function sendRequest()
     {
-
         $this->response = json_decode(
                 Curl::to(Config::get('cash-in.CASH_IN_URL') . $this->channel->getChannel())
                 ->withData(
