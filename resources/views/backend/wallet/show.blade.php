@@ -90,8 +90,20 @@
         </x-slot>
 
         <x-slot name="footer">
-            <small class="float-right">
-                @if(!$transaction->confirmed)
+            @if($transaction->type === 'deposit')
+                <small class="float-right">
+                    @role('Administrator')
+                    <div class="col text-right">
+                        <x-utils.link
+                            class="btn btn-info text-white"
+                            dataTarget="#amend"
+                            :text="__('Amend')"
+                        />
+                    </div>
+                    @endrole
+                </small>
+            @endif
+                {{-- @if(!$transaction->confirmed)
                     @if(auth()->user()->hasRole('Operator') && $transaction->payable instanceof \App\Domains\Hub\Models\Hub)
                         <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
                     @endif
@@ -105,11 +117,61 @@
                             <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
                         @endif
                     @endif
-                    @role('Administrator')
-                        <x-utils.form-button :action="route('admin.wallet.confirm', $transaction)" button-class="btn btn-success btn-sm">Verify </x-utils.form-button>
-                    @endrole
-                @endif
-            </small>
+
+                @endif --}}
+
         </x-slot>
     </x-backend.card>
+    <x-utils.modal
+    title="Amend Transaction"
+    type="form"
+    targetId="amend"
+    action="{{route('admin.amend.transaction', $transaction)}}"
+    submitBtn="Proceed"
+    >
+    <div>
+        <div class="row">
+            <label for="amount" class="col col-form-label">@lang('Deposited Amount')</label>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <input
+                    type="number"
+                    class="form-control"
+                    name="amount"
+                    value="{{ number_format($transaction->amountFloat, 2)}}"
+                    disabled value=>
+
+            </div>
+        </div>
+        <div class="row">
+            <label for="" class="col col-form-label">@lang('Change to')</label>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <input
+                    type="number"
+                    class="form-control"
+                    name="change_to_amount"
+                    data-toggle="tooltip"
+                    data-placement="left"
+                    title="Amount to change from the original amount of transaction"
+                    required
+                    >
+            </div>
+        </div>
+        <div class="row">
+            <label for="" class="col col-form-label">@lang('Notes')</label>
+        </div>
+        <div class="form-group row">
+            <div class="col">
+                <textarea
+                    class="form-control"
+                    name="notes"
+                    required
+                    ></textarea>
+            </div>
+        </div>
+    </div>
+</x-utils.modal>
 @endsection

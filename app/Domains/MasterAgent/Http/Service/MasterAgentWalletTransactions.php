@@ -5,8 +5,12 @@ namespace App\Domains\MasterAgent\Http\Service;
 use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Http\Service\BaseWithdrawalTransaction;
+use App\Domains\Wallet\Interfaces\WalletTransactionInterface;
 
-class MasterAgentWalletTransactions extends BaseWithdrawalTransaction
+
+class MasterAgentWalletTransactions
+extends BaseWithdrawalTransaction
+implements WalletTransactionInterface
 {
     public function __construct(User $holder)
     {
@@ -15,7 +19,13 @@ class MasterAgentWalletTransactions extends BaseWithdrawalTransaction
         $this->walletType = ['name' => 'Income Wallet', 'slug' => 'income-wallet'];
     }
 
-    public function getWallet()
+    public function setWalletType($walletType) : WalletTransactionInterface
+    {
+        $this->walletType = $walletType;
+        return $this;
+    }
+
+    public function getWallet() : array
     {
         $this->checkWallet();
         return [

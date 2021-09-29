@@ -24,7 +24,7 @@
         <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-info">{{number_format($user->referrals()->count())}}</div>
+                    <div class="text-value-lg text-info">{{number_format($players)}}</div>
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Total Players")</small>
                 </x-slot>
             </x-backend.card>

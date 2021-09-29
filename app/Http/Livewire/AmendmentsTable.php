@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\AmendedTransaction;
 use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Domains\Wallet\Models\WalletTransaction;
 use App\Http\Livewire\Services\Filters;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Session;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
-class ReviewersTransactionTable extends DataTableComponent
+class AmendmentsTable extends DataTableComponent
 {
     public $action;
     private $transactionsByRole;
@@ -28,30 +29,13 @@ class ReviewersTransactionTable extends DataTableComponent
         'bootstrap.classes.table' => 'table',
     ];
 
-    public function mount(Request $request)
-    {
-        Session::put('userType', $request->get('userType'));
-    }
-
     /**
      * @return Builder
      */
+
     public function query(): Builder
     {
-        $transactionFactory = new TransactionRoleQueryFactory();
-        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'));
-        $query = Transaction::query();
-        $query = $this->transactionsByRole->morphToPayable($query);
-        return $query->where('confirmed', true)
-            ->when($this->getFilter('type'),
-            fn ($query, $term) => $query->where('type', $term)
-        )->latest('created_at');
-
-    }
-    public function filters(): array
-    {
-        $filter = new Filters();
-        return $filter->type()->getFilters();
+        $query = AmendedTransaction::query();
     }
 
     /**
@@ -125,26 +109,5 @@ class ReviewersTransactionTable extends DataTableComponent
         ];
 
         return $columns;
-    }
-
-    private function getCreditor($meta)
-    {
-        if (!$meta) {
-            return 'N/A';
-        }
-        if(array_key_exists('credited_by', $meta)) {
-            return User::find($meta['credited_by'])->name;
-        }
-
-        if(array_key_exists('approved_by', $meta)) {
-            return User::find($meta['approved_by'])->name;
-        }
-    }
-
-    private function getApprover($transactionId)
-    {
-        $approvedWithdrawalRequest = ApprovedWithdrawalRequest::query();
-        $approvedRequest = $approvedWithdrawalRequest->where('transaction_id', $transactionId)->get()->first();
-        return ($approvedRequest) ? $approvedRequest->approver->name : 'N/A';
     }
 }

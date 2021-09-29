@@ -7,7 +7,7 @@ require('@coreui/coreui');
 
 // Boilerplate
 require('../plugins');
-
+require('../bootstrap');
 require('./alert');
 import Echo from 'laravel-echo';
 

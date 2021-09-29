@@ -28,11 +28,12 @@ class BaseWithdrawalTransaction
         return $amount * 100;
     }
 
-    public function withdraw($withdrawalRequestData, $amount)
+    public function withdraw($withdrawalRequestData, $amount, $meta = ['withdrawal' => true], $status = false)
     {
+
         try {
-            $withdrawalTransaction = $this->checkWallet()->withdrawFloat($amount, ['withdrawal' => true], false);
-            $this->holder->withdrawals()->create([
+            $withdrawalTransaction = $this->checkWallet()->withdrawFloat($amount, $meta, $status);
+            $withdrawal = $this->holder->withdrawals()->create([
                 'uuid' => $withdrawalTransaction->uuid,
                 'amount' => $this->addTwoZerosToAmount($withdrawalRequestData['amount']),
                 'reviewer_id' => $this->reviewer,
@@ -44,7 +45,12 @@ class BaseWithdrawalTransaction
                     'transactionId' => $withdrawalTransaction->id
                 ]
             ]);
-            return ['result' => true, 'amount' => number_format($amount)];
+            return [
+                'result' => true,
+                'amount' => number_format($amount),
+                'transaction' => $withdrawalTransaction,
+                'withdrawal' => $withdrawal
+            ];
         } catch (\Exception $e) {
             return ['result' => false, 'amount' => number_format($this->checkWallet()->balanceFloat)];
         }
@@ -60,13 +66,9 @@ class BaseWithdrawalTransaction
         $this->holder->getWallet($this->walletType['slug'])->confirm($transaction);
     }
 
-    public function deposit($amount, $transaction, $userId)
+    public function deposit($amount, $meta)
     {
-        $this->holder->depositFloat($amount, [
-            'withdrawal' => true,
-            'user' => $userId,
-            'transaction' => $transaction->uuid,
-        ]);
+        return $this->holder->depositFloat($amount, $meta);
     }
 
 }

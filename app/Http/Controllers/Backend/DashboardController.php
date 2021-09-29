@@ -51,11 +51,16 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        $playersCount = User::role('Player')
+                        ->where('referred_by', $user->id)
+                        ->get()
+                        ->count();
         $this->logoutUser(!$user->hub_id);
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
         return view('backend.dashboard.master-agent')
             ->with('user', $user)
+            ->with('players', $playersCount)
             ->with('transactions', $user->transactions);
     }
 

@@ -4,20 +4,23 @@
 namespace App\Domains\Wallet\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Http\Service\TransactionAmendmentService;
 use App\Domains\Wallet\Http\Service\WalletHolderFactory;
 use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use App\Http\Requests\TransactionAmendmentRequest;
 class WalletController extends \App\Http\Controllers\Controller
 {
     private $holder;
     private $holderFactory;
-    public function __construct(WalletHolderFactory $holderFactory)
+    private $transactionAmendmendService;
+    public function __construct(WalletHolderFactory $holderFactory, TransactionAmendmentService $transactionAmendmentService)
     {
         $this->holderFactory = $holderFactory;
+        $this->transactionAmendmentService = $transactionAmendmentService;
     }
 
     public function index()
@@ -67,4 +70,19 @@ class WalletController extends \App\Http\Controllers\Controller
         }
         return redirect()->back()->withErrors("Insufficient funds. Your current balance is ". $result['amount']);
     }
+
+    public function amendTransaction(Transaction $transaction, TransactionAmendmentRequest $request)
+    {
+        $amendment = $request->validated();
+        $user = User::find($transaction->payable_id);
+        $this->holder = $this->holderFactory->createWalletHolder($user);
+        $result = $this->transactionAmendmentService->setWalletHolder($this->holder)
+                                        ->amend($transaction, $amendment['change_to_amount'], $amendment['notes']);
+        if ($result['error']) {
+            return redirect()->back()->withErrors($result['message']);
+        }
+
+        return redirect()->back()->withFlashSuccess($result['message']);
+    }
+
 }

@@ -393,3 +393,5 @@ Route::get('/crypto-callbback', function () { dd('success on crypto'); });
 
 Route::get('/crypto-withdrawal-callbback', function () { dd('success on crypto withdrawal'); });
 
+Route::post('amend-transaction/{transaction}', [WalletController::class, 'amendTransaction'])
+    ->name('amend.transaction');
