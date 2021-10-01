@@ -19,6 +19,7 @@ class CreateAmendedTransactionsTable extends Migration
             $table->bigInteger('amendment_transaction_id');
             $table->string('notes')->nullable();
             $table->bigInteger('amended_by');
+            $table->bigInteger('user');
             $table->timestamps();
         });
     }

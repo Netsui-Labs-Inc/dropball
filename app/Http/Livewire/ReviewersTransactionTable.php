@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Domains\Wallet\Models\AmendedTransaction;
 
 class ReviewersTransactionTable extends DataTableComponent
 {
@@ -80,14 +81,30 @@ class ReviewersTransactionTable extends DataTableComponent
                     {
                         $class = 'badge-primary';
                     }
+                    $amended = '';
+                    if (AmendedTransaction::where('original_transaction_id', $row->id)->get()->count()) {
+                        $amended = "<span class='badge badge-warning text-white'> amended</span>";
+                    }
 
-                    return "<span class='badge $class'> {$row->type}</span>";
+                    return "<span class='badge $class'> {$row->type}</span> $amended" ;
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
+
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                        ->where('original_transaction_id', $row->id)->get();
+
+                    $amount = $row->amountFloat + ($amendedTransactions->sum('amount') / 100);
+
+                    if (count($amendedTransactions) &&
+                            number_format($row->amountFloat, 2) !== number_format($amount, 2)
+                        ) {
+                        return "<s><div class='$class'>$sign".number_format($row->amountFloat, 2)." '
+                        </s><div class='text-warning'>". number_format($amount, 2). "</div></div>";
+                    }
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),

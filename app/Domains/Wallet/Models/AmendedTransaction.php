@@ -12,6 +12,7 @@ class AmendedTransaction extends Model
     protected $fillable = [
         'original_transaction_id',
         'amendment_transaction_id',
+        'user',
         'notes',
         'amended_by',
     ];

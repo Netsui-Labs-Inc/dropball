@@ -35,7 +35,17 @@
 
                 <tr>
                     <th>@lang('Amount')</th>
-                    <td>{{ number_format($transaction->amountFloat, 2)}}</td>
+                    <td>
+                        @if (count($amendmentTransactions))
+                            <span class='badge badge-info'> Original Amount</span>
+                            <s>{{ number_format($transaction->amountFloat, 2)}}</s>  <br />
+                            <span class='badge badge-warning'> Current Amount</span>
+                            {{ number_format($amendedAmount, 2)}}
+                        @else
+                             {{ number_format($transaction->amountFloat, 2)}}
+                        @endif
+
+                    </td>
                 </tr>
 
                 <tr>
@@ -78,7 +88,11 @@
                     <td>
                         @forelse($transaction->meta ?? [] as $key => $meta)
                             <p><strong>{{strtoupper($key)}}</strong> :
+                                @if($key === 'credited_by' || $key === 'approved_by')
+                                    {{ $creditedBy }}
+                                @else
                                 {!! $meta !!}
+                                @endif
                             </p>
                         @empty
                             N/A
@@ -163,12 +177,22 @@
         </div>
         <div class="form-group row">
             <div class="col">
+
+                @php
+                    if(count($amendmentTransactions)) {
+                        $amount = number_format($amendedAmount, 2);
+                    } else {
+                        $amount = number_format($transaction->amountFloat, 2);
+                    }
+                @endphp
+
                 <input
-                    type="number"
+                    type="text"
                     class="form-control"
                     name="amount"
-                    value="{{ number_format($transaction->amountFloat, 2)}}"
-                    disabled value=>
+                    value="{{ $amount }}"
+                    disabled
+                   >
 
             </div>
         </div>

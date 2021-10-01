@@ -28,8 +28,13 @@
             </div>
         </div>
     </div>
+
+
     @include('includes.partials.request-withdrawal-form', [
     'walletBallance' => number_format(auth()->user()->balanceFloat),
     'route' => '#'
     ])
+
+
 @endsection
+

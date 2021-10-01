@@ -24,6 +24,16 @@
                 aria-selected="true" >
                 @lang("Pending Withdrawal") @if($pendingWithdrawals) <span class="badge badge-danger">{{$pendingWithdrawals}}</span>@endif
             </x-utils.link>
+            <x-utils.link
+                class="nav-link bg-white"
+                id="active-transaction-tab"
+                data-toggle="pill"
+                href="#amendment-transaction"
+                role="tab"
+                aria-controls="active"
+                aria-selected="true" >
+                @lang("Amendment Transactions")
+            </x-utils.link>
         </div>
     </nav>
     <div class="tab-content" id="tabsContent">
@@ -38,6 +48,13 @@
             <x-backend.card>
                 <x-slot name="body">
                     <livewire:withdrawals-table />
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="tab-pane fade show" id="amendment-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
+            <x-backend.card>
+                <x-slot name="body">
+                    <livewire:amendments-table />
                 </x-slot>
             </x-backend.card>
         </div>

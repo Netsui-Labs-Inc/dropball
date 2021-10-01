@@ -18,6 +18,7 @@ class WalletController extends \App\Http\Controllers\Controller
     private $holder;
     private $holderFactory;
     private $transactionAmendmendService;
+    private $divisorToAdjustTwoDecimalPlaces = 100;
     public function __construct(WalletHolderFactory $holderFactory, TransactionAmendmentService $transactionAmendmentService)
     {
         $this->holderFactory = $holderFactory;
@@ -50,8 +51,29 @@ class WalletController extends \App\Http\Controllers\Controller
 
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
+            ->with('amendedAmount', $this->getAmendedAmount($transaction, $amendedTransactions))
+            ->with('creditedBy', $this->getCreditedBy($transaction))
             ->with('amendmentTransactions', $amendedTransactions)
             ->with('approvedWithdrawal', $approvedWithdrawalRequest);
+    }
+
+    private function getCreditedBy($transaction)
+    {
+
+        if (array_key_exists('credited_by', $transaction->meta)) {
+            $metaId = $transaction->meta['credited_by'];
+        } elseif (array_key_exists('approved_by', $transaction->meta)) {
+            $metaId = $transaction->meta['approved_by'];
+        } else {
+            $metaId = 1;
+        }
+
+        return User::where('id', $metaId)->get()->first()->name;
+    }
+
+    private function getAmendedAmount($transaction, $amendedTransactions)
+    {
+        return $transaction->amountFloat + ($amendedTransactions->sum('amount') / 100);
     }
 
     public function myWallet(Request $request)

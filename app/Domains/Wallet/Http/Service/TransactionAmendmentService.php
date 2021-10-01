@@ -84,10 +84,15 @@ class TransactionAmendmentService
             AmendedTransaction::create([
                 'original_transaction_id'  => $this->transaction->id,
                 'amendment_transaction_id' => $result['transaction']->id,
+                'user'                     => $this->transaction->payable_id,
                 'notes'                    => $this->notes,
                 'amended_by'               => $this->approver
 
             ]);
+
+            $result['transaction']->confirmed = 0;
+            $result['transaction']->save();
+
             DB::commit();
             return [
                 'error' => false,
@@ -95,6 +100,7 @@ class TransactionAmendmentService
             ];
 
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             return [
                 'error' => true,
@@ -119,18 +125,23 @@ class TransactionAmendmentService
                 'credited_by' => $this->approver
             ];
 
-            $result = $this->walletHolder->setWalletType(['name' => 'Default Wallet', 'slug' => 'default'])
+            $amendedTransaction = $this->walletHolder->setWalletType(['name' => 'Default Wallet', 'slug' => 'default'])
                 ->deposit($this->amount, $meta);
 
 
-            $this->changeTypeToAmendment($result);
+            $this->changeTypeToAmendment($amendedTransaction);
 
             AmendedTransaction::create([
                 'original_transaction_id'  => $this->transaction->id,
-                'amendment_transaction_id' => $result->id,
+                'amendment_transaction_id' => $amendedTransaction->id,
                 'notes'                    => $this->notes,
+                'user'                     => $this->transaction->payable_id,
                 'amended_by'               => $this->approver
             ]);
+
+            $amendedTransaction->confirmed = 0;
+            $amendedTransaction->save();
+
             DB::commit();
             return [
                 'error' => false,
@@ -138,6 +149,7 @@ class TransactionAmendmentService
             ];
 
         } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             return [
                 'error' => true,

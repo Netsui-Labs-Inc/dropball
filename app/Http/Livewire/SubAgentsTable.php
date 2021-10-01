@@ -77,6 +77,12 @@ class SubAgentsTable extends DataTableComponent
             Column::make(__('Commission rate'), 'commission_rate')
                 ->searchable()
                 ->sortable(),
+            Column::make(__('Players'))
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return User::where('referred_by', $row->id)->get()->count();
+                })->asHtml(),
             Column::make(__('Verified'))
                 ->format(function ($value, $column, User $row) {
                     return view('backend.auth.user.includes.verified', ['user' => $row]);

@@ -2,19 +2,15 @@
 
 namespace App\Http\Livewire;
 
-use App\Domains\Auth\Models\User;
-use App\Domains\Wallet\Models\AmendedTransaction;
-use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
-use App\Domains\Wallet\Models\WalletTransaction;
-use App\Http\Livewire\Services\Filters;
-use App\Http\Livewire\Services\TransactionRoleQueryFactory;
-use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Domains\Wallet\Models\AmendedTransaction;
+use CreateAmendedTransactionsTable;
+use Illuminate\Support\Facades\DB;
 
 class AmendmentsTable extends DataTableComponent
 {
@@ -29,13 +25,22 @@ class AmendmentsTable extends DataTableComponent
         'bootstrap.classes.table' => 'table',
     ];
 
+    public function mount(Request $request)
+    {
+        Session::put('userType', $request->get('userType'));
+    }
+
     /**
      * @return Builder
      */
-
     public function query(): Builder
     {
         $query = AmendedTransaction::query();
+        $query->join('model_has_roles AS model_role', 'model_role.model_id', '=', 'amended_transactions.user')
+            ->join('roles', 'roles.id', '=', 'model_role.role_id')
+            ->where('roles.name', Session::get('userType'));
+
+        return $query;
     }
 
     /**
@@ -43,67 +48,39 @@ class AmendmentsTable extends DataTableComponent
      */
     public function columns(): array
     {
-        $transactionByRole = $this->transactionsByRole;
-        $columns = [
-            Column::make(__('Name'), 'name')
-                ->searchable(function (Builder $query, $searchTerm) use ($transactionByRole) {
-                    $transactionByRole->morphToPayable($query, $searchTerm);
-                })
-                ->format(function ($value, $column, Transaction $row) {
-                    return $row->payable->name;
-                })->asHtml(),
-            Column::make(__('Type'), 'type')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = 'badge-success';
-                    if ($row->type == 'withdrawal')
-                    {
-                        $class = 'badge-warning';
-                    } elseif ($row->type == 'amendment')
-                    {
-                        $class = 'badge-primary';
-                    }
 
-                    return "<span class='badge $class'> {$row->type}</span>";
+        $columns = [
+            Column::make(__('ID'), 'uuid')
+                ->format(function ($value, $column, AmendedTransaction $row) {
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                        ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
+                        ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
+                    return $amendedTransactions->uuid;
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
-                    $sign = $row->amountFloat > 0 ? '+' : null;
-
-                    return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
+                ->format(function ($value, $column, AmendedTransaction $row) {
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                    ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
+                    ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
+                    return number_format($amendedTransactions->amount / 100, 2);
                 })->asHtml(),
-            Column::make(__('Requested at'), 'created_at')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    if($row->type === 'deposit') {
-                        return 'N/A';
-                    }
-                    return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+            Column::make(__('Approve At'), 'amended_transactions.created_at')
+                ->format(function ($value, $column, AmendedTransaction $row) {
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                    ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
+                    ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
+                    return $amendedTransactions->created_at;
                 })->asHtml(),
-            Column::make(__('Approved at'), 'updated_at')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    if($row->type === 'deposit') {
-                        return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                    }
-                    if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
-                        return 'N/A';
-                    }
-                    return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                })->asHtml(),
-            Column::make(__('Approved by'), 'approved_by')
-                ->format(function ($value, $column, Transaction $row) {
-                    if($row->type === 'deposit' || $row->type === 'amendment') {
-                        return $this->getCreditor($row->meta);
-                    }
-                    return $this->getApprover($row->id);
+            Column::make(__('Approve by'), 'approved_by')
+                ->format(function ($value, $column, AmendedTransaction $row) {
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                    ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
+                    ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
+                    return $amendedTransactions->name;
                 })->asHtml(),
             Column::make(__('Action'))
-                ->format(function ($value, $column, Transaction $row) {
-                    return view('backend.wallet.action', ['transaction' => $row]);
+                ->format(function ($value, $column, AmendedTransaction $row) {
+                    return view('backend.wallet.action', ['transaction' => $row->amendment_transaction_id]);
                 }),
 
         ];
