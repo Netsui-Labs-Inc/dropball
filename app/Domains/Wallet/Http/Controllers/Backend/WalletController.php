@@ -6,6 +6,7 @@ namespace App\Domains\Wallet\Http\Controllers\Backend;
 use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Http\Service\TransactionAmendmentService;
 use App\Domains\Wallet\Http\Service\WalletHolderFactory;
+use App\Domains\Wallet\Models\AmendedTransaction;
 use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
 use App\Http\Requests\WithdrawalRequest;
 use Bavix\Wallet\Models\Transaction;
@@ -43,8 +44,13 @@ class WalletController extends \App\Http\Controllers\Controller
     {
         $approvedWithdrawalRequest = ApprovedWithdrawalRequest::where('transaction_id', $transaction->id)
                                                         ->get()->first();
+        $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                                                ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
+                                                ->where('original_transaction_id', $transaction->id)->get();
+
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
+            ->with('amendmentTransactions', $amendedTransactions)
             ->with('approvedWithdrawal', $approvedWithdrawalRequest);
     }
 

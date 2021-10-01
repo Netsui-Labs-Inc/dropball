@@ -42,6 +42,9 @@ class EventBettingRound extends Component
     public function showStatus($data)
     {
         $this->bettingRound = BettingRound::find($data['bettingRoundId']);
+        if(!$this->bettingRound) {
+            return;
+        }
 
         $this->emit('swal:alert', [
             'icon' => 'info',
@@ -58,6 +61,11 @@ class EventBettingRound extends Component
     public function showResult($data)
     {
         $this->bettingRound = BettingRound::find($data['bettingRoundId']);
+
+        if(!$this->bettingRound) {
+            return;
+        }
+
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $userBets = $this->bettingRound->userBets(auth()->user()->id)->get();
 

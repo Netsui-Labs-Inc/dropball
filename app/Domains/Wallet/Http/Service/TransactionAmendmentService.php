@@ -39,8 +39,8 @@ class TransactionAmendmentService
         $this->transaction = $transaction;
         $this->notes = $notes;
 
-        $this->metaNotes = 'Transaction Amendment from transaction id : ' .
-        $this->transaction->uuid . ' dated ' . $this->transaction->created_at;
+        $this->metaNotes = '<br />Transaction Amendment from <br />Transaction id : <a href="/admin/wallet-transactions/' . $this->transaction->id
+        . '">'.$this->transaction->uuid .' </a> <br />Dated ' . $this->transaction->created_at;
 
         if ($transaction->amount > $amount)
         {

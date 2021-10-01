@@ -212,8 +212,15 @@ class UserService extends BaseService
      *
      * @return User
      */
-    public function updateProfile(User $user, array $data = []): User
+    public function updateProfile(User $user, array $data = [])
     {
+        if ($user->name === $data['name'] && $user->referral_id === $data['code-name']) {
+            return [
+                'error' => true,
+                'message' => 'There is no changes on the profile information.'
+            ];
+        }
+
         $user->name = $data['name'] ?? null;
 
         if ($user->canChangeEmail() && $user->email !== $data['email']) {
@@ -223,8 +230,30 @@ class UserService extends BaseService
             session()->flash('resent', true);
         }
 
-        return tap($user)->save();
+        if (array_key_exists('code-name', $data)) {
+            $countReferral = User::where('referral_id', $data['code-name'])
+                            ->where('id', '!=', $user->id)
+                            ->get()
+                            ->count();
+
+            $user->referral_id = $data['code-name'];
+        }
+
+        if ($countReferral > 0) {
+            return [
+                'error' => true,
+                'message' => 'Code Name not available.'
+            ];
+        }
+
+        tap($user)->save();
+
+        return [
+                'error' => false
+            ];
     }
+
+
 
     /**
      * @param  User  $user

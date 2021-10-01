@@ -78,16 +78,44 @@
                     <td>
                         @forelse($transaction->meta ?? [] as $key => $meta)
                             <p><strong>{{strtoupper($key)}}</strong> :
-                                {{strtoupper($meta)}}
+                                {!! $meta !!}
                             </p>
                         @empty
                             N/A
                         @endforelse
                     </td>
                 </tr>
+            </table>
 
+            <table class="table align-items-center table-flush">
+                @if(count($amendmentTransactions))
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h2 class="h2 text-success mb-0"> @lang("Amendment History")</h2>
+                    </div>
+                </div>
+                <thead class="thead-light">
+                <tr>
+                    <th>#Transaction ID</th>
+                    <th>Amount</th>
+                    <th>Amended By</th>
+                    <th>Date and Time</th>
+                </tr>
+                </thead>
+                @endif
+                @forelse($amendmentTransactions as $amendmentTransaction)
+                    <tr>
+                        <td><a href="/admin/wallet-transactions/{{ $amendmentTransaction->amendment_transaction_id }}" >{{ $amendmentTransaction->uuid }}</a></td>
+                        <td>{{ number_format($amendmentTransaction->amount / 100, 2) }}</td>
+                        <td>{{ $amendmentTransaction->name }}</td>
+                        <td>{{ $amendmentTransaction->created_at }}</td>
+                    </tr>
+                @empty
+                    <p class="text-center lead">No Amendment History Available</p>
+                @endforelse
             </table>
         </x-slot>
+
 
         <x-slot name="footer">
             @if($transaction->type === 'deposit')
