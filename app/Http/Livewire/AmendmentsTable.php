@@ -65,7 +65,8 @@ class AmendmentsTable extends DataTableComponent
                     ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
                     return number_format($amendedTransactions->amount / 100, 2);
                 })->asHtml(),
-            Column::make(__('Approve At'), '')
+            Column::make(__('Approve At'), 'amended_transactions.created_at')
+                ->sortable()
                 ->format(function ($value, $column, AmendedTransaction $row) {
                    $transaction = AmendedTransaction::where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
                     return $transaction->created_at;

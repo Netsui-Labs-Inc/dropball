@@ -47,7 +47,14 @@ class WalletController extends \App\Http\Controllers\Controller
                                                         ->get()->first();
         $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
                                                 ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
-                                                ->where('original_transaction_id', $transaction->id)->get();
+                                                ->where('original_transaction_id', $transaction->id)
+                                                ->latest()
+                                                ->get([
+                                                    'transactions.uuid',
+                                                    'transactions.amount',
+                                                    'users.name',
+                                                    'amended_transactions.created_at',
+                                                ]);
 
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
