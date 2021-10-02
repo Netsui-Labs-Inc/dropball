@@ -40,6 +40,7 @@ class AmendmentsTable extends DataTableComponent
             ->join('roles', 'roles.id', '=', 'model_role.role_id')
             ->where('roles.name', Session::get('userType'));
 
+
         return $query;
     }
 
@@ -64,12 +65,10 @@ class AmendmentsTable extends DataTableComponent
                     ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
                     return number_format($amendedTransactions->amount / 100, 2);
                 })->asHtml(),
-            Column::make(__('Approve At'), 'amended_transactions.created_at')
+            Column::make(__('Approve At'), '')
                 ->format(function ($value, $column, AmendedTransaction $row) {
-                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
-                    ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
-                    ->where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
-                    return $amendedTransactions->created_at;
+                   $transaction = AmendedTransaction::where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
+                    return $transaction->created_at;
                 })->asHtml(),
             Column::make(__('Approve by'), 'approved_by')
                 ->format(function ($value, $column, AmendedTransaction $row) {

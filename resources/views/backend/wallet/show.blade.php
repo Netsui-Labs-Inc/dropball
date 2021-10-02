@@ -50,7 +50,12 @@
 
                 <tr>
                     <th>@lang('Status')</th>
-                    <td><span class='badge badge-info'> {{$transaction->confirmed ? 'confirmed': 'pending'}}</span></td>
+                    @if($transaction->type === 'amendment')
+                    <td><span class='badge badge-info'>confirmed</span></td>
+                    @else
+                        <td><span class='badge badge-info'> {{$transaction->confirmed ? 'confirmed': 'pending'}}</span></td>
+                    @endif
+
                 </tr>
                 <tr>
                     <th>@lang('Date Requested')</th>
