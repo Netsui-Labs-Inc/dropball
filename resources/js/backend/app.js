@@ -10,7 +10,7 @@ require('../plugins');
 require('../bootstrap');
 require('./alert');
 import Echo from 'laravel-echo';
-
+import AmendmentDetails from './amendment-details';
 window.Pusher = require('pusher-js');
 
 window.Echo = new Echo({
@@ -21,6 +21,9 @@ window.Echo = new Echo({
     disableStats: true,
     encrypted: true,
 });
+
+let amendmentDetails = new AmendmentDetails();
+amendmentDetails.init();
 
 datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();

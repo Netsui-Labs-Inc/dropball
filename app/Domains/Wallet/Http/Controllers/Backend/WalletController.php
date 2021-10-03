@@ -48,18 +48,21 @@ class WalletController extends \App\Http\Controllers\Controller
         $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
                                                 ->join('users', 'amended_transactions.amended_by', '=', 'users.id')
                                                 ->where('original_transaction_id', $transaction->id)
-                                                ->latest()
                                                 ->get([
                                                     'transactions.uuid',
                                                     'transactions.amount',
                                                     'users.name',
                                                     'amended_transactions.created_at',
+                                                    'amended_transactions.notes',
+                                                    'transactions.meta'
                                                 ]);
-
+        $currentAmount = 0;
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
             ->with('amendedAmount', $this->getAmendedAmount($transaction, $amendedTransactions))
             ->with('creditedBy', $this->getCreditedBy($transaction))
+            ->with('currentAmount', $currentAmount)
+            ->with('totalAmendment', 0)
             ->with('amendmentTransactions', $amendedTransactions)
             ->with('approvedWithdrawal', $approvedWithdrawalRequest);
     }

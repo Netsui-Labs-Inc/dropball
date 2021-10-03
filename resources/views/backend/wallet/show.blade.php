@@ -116,18 +116,46 @@
                 <thead class="thead-light">
                 <tr>
                     <th>#Transaction ID</th>
-                    <th>Amount</th>
+                    <th>Amended Amount</th>
+                    <th>Current Amount</th>
                     <th>Amended By</th>
                     <th>Date and Time</th>
+                    <th>Details</th>
                 </tr>
                 </thead>
                 @endif
+
                 @forelse($amendmentTransactions as $amendmentTransaction)
+                @php
+                    $totalAmendment = $totalAmendment + ($amendmentTransaction->amount / 100);
+                    $currentAmount = $transaction->amountFloat + $totalAmendment;
+               @endphp
                     <tr>
-                        <td><a href="/admin/wallet-transactions/{{ $amendmentTransaction->amendment_transaction_id }}" >{{ $amendmentTransaction->uuid }}</a></td>
-                        <td>{{ number_format($amendmentTransaction->amount / 100, 2) }}</td>
+                        <td>
+                            {{ $amendmentTransaction->uuid }}
+                        <td>
+                            {{ number_format($amendmentTransaction->amount / 100, 2) }}</td>
+                        <td>
+                            <span class='badge badge-warning text-white'>
+                                {{ number_format($currentAmount, 2) }}
+                            </span>
+                        </td>
                         <td>{{ $amendmentTransaction->name }}</td>
                         <td>{{ $amendmentTransaction->created_at }}</td>
+                        <td>
+                            <x-utils.link
+                            class="btn btn-sm btn-primary text-white amended-transaction"
+                            dataTarget="#amendment-details"
+                            data-id="{{ $amendmentTransaction->uuid }}"
+                            data-amount="{{ number_format($amendmentTransaction->amount / 100, 2) }}"
+                            data-balance="{{ number_format($currentAmount, 2) }}"
+                            data-created_by="{{ $amendmentTransaction->name }}"
+                            data-created_at="{{ $amendmentTransaction->created_at }}"
+                            data-note="{{ $amendmentTransaction->notes }}"
+                            >
+                            View
+                            </x-utils.link>
+                        </td>
                     </tr>
                 @empty
                     <p class="text-center lead">No Amendment History Available</p>
@@ -231,4 +259,5 @@
         </div>
     </div>
 </x-utils.modal>
+@include('backend.wallet.includes.amendment-details')
 @endsection
