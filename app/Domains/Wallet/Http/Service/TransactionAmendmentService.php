@@ -23,32 +23,36 @@ class TransactionAmendmentService
         return $this;
     }
 
-    private function addTwoDigitsToAmount($amount)
-    {
-        return $amount * 100;
-    }
-
-    private function removeTwoDigitsFromAmount($amount)
-    {
-        return $amount / 100;
-    }
-
     public function amend(Transaction $transaction, $amount, $notes)
     {
-        $amount = $this->addTwoDigitsToAmount($amount);
+    
+        if ($amount <= 0) 
+        {
+            return  [
+                'error' => true,
+                'message' => 'You cannot set the amount to less than or equal to 0.'
+            ];
+        }
+
+        $this->amount = $currentTransactionAmount - $amount;
         $this->transaction = $transaction;
         $this->notes = $notes;
 
         $this->metaNotes = '<br />Transaction Amendment from <br />Transaction id : <a href="/admin/wallet-transactions/' . $this->transaction->id
         . '">'.$this->transaction->uuid .' </a> <br />Dated ' . $this->transaction->created_at;
 
-        if ($transaction->amount > $amount)
+        $amendedTransactions = AmendedTransaction::join('transactions', 'transactions.id', '=', 'amendment_transaction_id')
+                                                ->where('amended_transactions.original_transaction_id', $transaction->id)->get();
+        
+        $totalAmendedTransactionAmount = $amendedTransactions->sum('amount') / 100;
+        $currentTransactionAmount = $transaction->amountFloat + $totalAmendedTransactionAmount;
+       
+        if ($currentTransactionAmount > $amount)
         {
-            $this->amount = $this->removeTwoDigitsFromAmount($transaction->amount - $amount);
             return $this->withdraw();
         }
-
-        $this->amount = $this->removeTwoDigitsFromAmount($amount - $transaction->amount);
+       
+        $this->amount = $amount - $currentTransactionAmount;
         return $this->deposit();
     }
 
