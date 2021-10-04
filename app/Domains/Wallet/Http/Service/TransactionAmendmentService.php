@@ -33,8 +33,7 @@ class TransactionAmendmentService
                 'message' => 'You cannot set the amount to less than or equal to 0.'
             ];
         }
-
-        $this->amount = $currentTransactionAmount - $amount;
+        
         $this->transaction = $transaction;
         $this->notes = $notes;
 
@@ -49,6 +48,7 @@ class TransactionAmendmentService
        
         if ($currentTransactionAmount > $amount)
         {
+            $this->amount = $currentTransactionAmount - $amount;
             return $this->withdraw();
         }
        
