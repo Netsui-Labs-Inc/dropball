@@ -44,14 +44,14 @@
         @endcan
         @role('Master Agent')
             @if(!Auth::user()->referred_by)
-                <li class="c-sidebar-nav-title">@lang('Sub-agents')</li>
+                <li class="c-sidebar-nav-title">@lang('Agents')</li>
                 <li class="c-sidebar-nav-item">
                     <x-utils.link
                         class="c-sidebar-nav-link"
                         :href="route('admin.sub-agents.index', ['sorts' => ['id' => 'desc']])"
                         :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
                         icon="c-sidebar-nav-icon cil-user"
-                        :text="__('Sub-Agents List')" />
+                        :text="__('Agents List')" />
                 </li>
             @endif
         @endrole

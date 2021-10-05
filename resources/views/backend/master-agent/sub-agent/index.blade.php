@@ -2,13 +2,13 @@
 
 @section('title', __('Sub Agents'))
 @section('page-action')
-    <a href="{{route('admin.sub-agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Sub Agent</a>
+    <a href="{{route('admin.sub-agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
 @endsection
 @section('content')
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <x-utils.link
-                :text="__('Active Sub-agents')"
+                :text="__('Active Agents')"
                 class="nav-link bg-white active"
                 id="active-players-tab"
                 data-toggle="pill"

@@ -11,56 +11,48 @@ class AgentForm extends Component
     public $masterAgentCommissionRate;
     public $notAMasterAgent = false;
     public $masterAgents;
+    public $masterAgent;
+    public $display = 'd-none';
+    public $try;
+
     public function mount()
     {
         $masterAgentRoleId = 4;
         $masterAgentCommissionRate = auth()->user()->commission_rate;
+
         if ($masterAgentCommissionRate === null) {
             $this->notAMasterAgent = true;
-            $masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+            $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
                                         ->where('role_id', $masterAgentRoleId)
                                         ->where('referred_by', null)
-                                        ->get([
-                                            'users.id',
-                                            'users.name'
-                                        ]);
-
-            $masterAgentList = [];
-            foreach($masterAgents as $masterAgent)
-            {
-                $masterAgentList += ["$masterAgent->id" => " $masterAgent->name"];
-            }
-
-            $this->masterAgents = $masterAgentList;
+                                        ->get();
+            return;
         }
-
         $this->commissionRates = $this->createCommissionRates($masterAgentCommissionRate);
-    }
 
-    private function getCommissionRate()
-    {
-        if (auth()->user()->hasRole('Master Agent'))
-        {
-            return auth()->user()->commission_rate;
-        }
-
-        return null;
     }
 
     private function createCommissionRates($masterAgentCommissionRate)
     {
         $masterAgentCommissionRate -= 0.1;
-        $rates = [];
+        $rates = collect();
         for ($rate = $masterAgentCommissionRate; $rate > 0  ; $rate -= 0.1) {
             $formatedRate = number_format($rate, 1);
-            $rates += ["$formatedRate" => "$formatedRate%"];
+            $rates->push(['value' => $formatedRate, 'percentage' => "$formatedRate%"]);
         }
         return $rates;
     }
 
-    public function test()
+    public function showRate()
     {
-        dd('test');
+        $this->try = $this->masterAgent;
+        $masterAgent = User::where('id', $this->masterAgent)->get()->first();
+        if(!$masterAgent)
+        {
+            $this->commissionRates = null;
+            return;
+        }
+        $this->commissionRates = $this->createCommissionRates($masterAgent->commission_rate);
     }
 
     public function render()
