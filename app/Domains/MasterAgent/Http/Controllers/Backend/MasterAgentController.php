@@ -10,14 +10,15 @@ use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
 use App\Domains\Hub\Models\Hub;
+use App\Domains\MasterAgent\Http\Service\AgentFilter;
 use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
 use Auth;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
 class MasterAgentController extends Controller
 {
     /**
@@ -50,9 +51,16 @@ class MasterAgentController extends Controller
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
     }
-    public function index()
+    public function index(Request $request)
     {
-        return view('backend.master-agent.index');
+        $agentLabel = $this->filterAgent($request->get('agent'));
+        return view('backend.master-agent.index')
+            ->with('agentsLabel', $agentLabel);
+    }
+
+    private function filterAgent($isAgent)
+    {
+        return ($isAgent  === '1') ? 'Agent' : 'Master Agent';
     }
 
     public function show(User $masterAgent)
@@ -162,23 +170,22 @@ class MasterAgentController extends Controller
         return redirect()->back()->withFlashSuccess("Master Agent was verified");
     }
 
-    public function transactions()
+    public function transactions(Request $request, AgentFilter $agentFilter)
     {
 
         if (auth()->user()->hasRole('Virtual Hub')) {
-            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)
-                ->where('status', Withdrawal::PENDING)
-                ->count();
+            $query = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+                ->where('reviewer_id', auth()->user()->id)
+                ->where('status', Withdrawal::PENDING);
         } else {
-            $pendingWithdrawals = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+            $query = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
                 ->whereHas('roles', function ($query) {
                     return $query->where('name', 'Master Agent');
                 })
-                ->where('status', Withdrawal::PENDING)
-                ->get()
-                ->count();
+                ->where('status', Withdrawal::PENDING);
         }
-
+        $query = $agentFilter->setAgent($query, $request->get('agent'))->getQuery();
+        $pendingWithdrawals = $query->get()->count();
         return view('backend.master-agent.transactions')->with('pendingWithdrawals',$pendingWithdrawals);
     }
 }

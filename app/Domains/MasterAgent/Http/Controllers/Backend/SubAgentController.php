@@ -10,6 +10,7 @@ use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class SubAgentController extends Controller
 {
@@ -40,6 +41,7 @@ class SubAgentController extends Controller
         $this->userService = $userService;
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
+
     }
 
     public function index(Request $request)
@@ -58,13 +60,21 @@ class SubAgentController extends Controller
 
     public function create()
     {
+
         return view('backend.master-agent.sub-agent.create');
     }
+
 
     public function store(StoreSubAgentRequest $request)
     {
         $user = $request->user();
         $input = $request->validated();
+        $checkCommission = $this->checkCommissionRate($input['commission_rate']);
+        if($checkCommission['error'])
+        {
+            return redirect()->back()->withErrors($checkCommission['message']);
+        }
+
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
@@ -84,4 +94,20 @@ class SubAgentController extends Controller
     {
         return view('backend.master-agent.sub-agent.pending');
     }
+
+    private function checkCommissionRate($agentCommissionRate)
+    {
+        if($agentCommissionRate >= auth()->user()->commission_rate || $agentCommissionRate <= 0)
+        {
+            return [
+                'error'   => true,
+                'message' => 'Something went Wrong!'
+            ];
+        }
+
+        return [
+            'error'   => false,
+        ];
+    }
+
 }

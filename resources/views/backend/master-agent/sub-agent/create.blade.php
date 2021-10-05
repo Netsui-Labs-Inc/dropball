@@ -42,7 +42,7 @@
                     <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Code Name') }}" value="{{ old('referral_id') }}" maxlength="255" required />
                 </div>
             </div><!--form-group-->
-
+            @livewire('agent-form')
             <div class="form-group row">
                 <label for="password" class="col-md-2 col-form-label">@lang('Password')</label>
 
