@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentRequest;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentByMasterAgent;
+use Carbon\Carbon;
 
 class SubAgentController extends Controller
 {
@@ -63,6 +64,7 @@ class SubAgentController extends Controller
     public function approve(User $agent)
     {
         $agent->active = 1;
+        $agent->email_verified_at = Carbon::now()->timestamp;
         $agent->save();
 
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent Created Successfully");

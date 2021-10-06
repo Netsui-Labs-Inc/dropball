@@ -118,11 +118,13 @@
                     </tr>
                 @endif
             </table>
-            @role('Virtual Hub')
-            <div class="float-right">
-                <a href='{{route('admin.agents.approve',$user)}}' class='btn btn-sm btn-warning text-white'><i class='fa fa-check'></i> Approve</a>
-            </div>
-            @endrole
+                @if(!$user->email_verified_at)
+                    @role('Virtual Hub')
+                        <div class="float-right">
+                            <a href='{{route('admin.agents.approve',$user)}}' class='btn btn-sm btn-warning text-white'><i class='fa fa-check'></i> Approve</a>
+                        </div>
+                    @endrole
+                @endif
         </x-slot>
 
         <x-slot name="footer">

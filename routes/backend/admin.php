@@ -333,6 +333,22 @@ Route::get('agents-info/{agent}', [SubAgentController::class, 'show'])
         $trail->push("Agents Info", route('admin.agents.info', $agent));
     });
 
+Route::get('agents-info-under-list/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.under.list')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.under.list', $agent));
+    });
+
+Route::get('agents-info-for-master-agent/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.for.master.agent')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.for.master.agent', $agent));
+    });
+
 Route::get('agents/pending', [SubAgentController::class, 'pending'])
     ->name('agents.pending')
     ->breadcrumbs(function (Trail $trail) {
