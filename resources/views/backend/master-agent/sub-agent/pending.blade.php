@@ -2,7 +2,7 @@
 
 @section('title', __('Pending Sub Agents'))
 @section('page-action')
-    <a href="{{route('admin.sub-agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Sub Agent</a>
+    <a href="{{route('admin.agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
 @endsection
 @section('content')
     <x-backend.card>
@@ -10,7 +10,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="h3 mb-0">
-                        @lang('Pending Sub Agents')
+                        @lang('Pending Agents')
                     </h3>
                 </div>
             </div>

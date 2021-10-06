@@ -32,6 +32,8 @@ class ReviewersTransactionTable extends DataTableComponent
     public function mount(Request $request)
     {
         Session::put('userType', $request->get('userType'));
+        Session::put('isAgent', $request->get('agent'));
+
     }
 
     /**
@@ -40,7 +42,7 @@ class ReviewersTransactionTable extends DataTableComponent
     public function query(): Builder
     {
         $transactionFactory = new TransactionRoleQueryFactory();
-        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'));
+        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'), Session::get('isAgent'));
         $query = Transaction::query();
         $query = $this->transactionsByRole->morphToPayable($query);
         return $query->where('confirmed', true)

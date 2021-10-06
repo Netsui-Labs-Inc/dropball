@@ -7,7 +7,8 @@ use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 /**
  * Class BettingRoundsTable.
  */
@@ -26,15 +27,17 @@ class MasterAgentsTable extends DataTableComponent
      */
     public $status;
     public $admin;
-
+    public $agentlabel = 'Master Agents';
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active'): void
+
+    public function mount(Request $request, $status = 'active'): void
     {
+        Session::put('agent', $request->get('agent'));
         $this->status = $status;
     }
 
@@ -55,7 +58,7 @@ class MasterAgentsTable extends DataTableComponent
                 $query->where('hub_id', $hub->id);
             }
         }
-
+        $query = $this->filterAgent($query);
 
         if ($this->status === 'unverified') {
             return $query->where('email_verified_at', null);
@@ -72,6 +75,15 @@ class MasterAgentsTable extends DataTableComponent
         return $query->onlyActive();
     }
 
+    private function filterAgent($query)
+    {
+        if (Session::get('agent')  === '1')
+        {
+            $this->agentlabel = 'Agents';
+           return $query->where('referred_by','!=', null);
+        }
+        return $query->where('referred_by', null);
+    }
     /**
      * @return array
      */

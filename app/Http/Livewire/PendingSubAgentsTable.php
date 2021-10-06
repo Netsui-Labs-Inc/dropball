@@ -45,7 +45,15 @@ class PendingSubAgentsTable extends DataTableComponent
     {
         $user = auth()->user();
         $query = User::role('Master Agent')->whereNotNull('referred_by');
-        return $query->whereNull('email_verified_at');
+
+        if($user->hasRole('Virtual Hub'))
+        {
+            $hub = Hub::where('admin_id', $user->id)->get()->first();
+            $query->where('hub_id', $hub->id);
+        }
+
+        return $query->whereNull('email_verified_at')
+                    ->latest();
     }
 
     /**
