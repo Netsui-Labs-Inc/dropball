@@ -10,7 +10,7 @@ use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
 /**
  * Class StoreUserRequest.
  */
-class StoreSubAgentRequest extends FormRequest
+class UpdateAgentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,12 +31,15 @@ class StoreSubAgentRequest extends FormRequest
     {
         return [
             'name' => ['required', 'max:100'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')],
-            'mobile' => ['required', 'max:100', Rule::unique('users')],
-            'referral_id' => ['required', 'max:100', Rule::unique('users')],
-            'referred_by' => 'required',
+            'email' => ['required', 'max:255', 'email', Rule::unique('users')->ignore($this->agent)],
+            'mobile' => ['required', 'max:100', Rule::unique('users')->ignore($this->agent)],
+            'hub_id' => ['exists:hubs,id'],
+            'commission_rate' => 'required',
+            'referral_id' => ['required', 'max:100', Rule::unique('users')->ignore($this->agent)],
             'password' => ['max:100'],
-            'commission_rate' => 'required'
+            'referred_by' => 'required',
+            'active' => ['sometimes', 'in:1'],
+            'email_verified' => ['sometimes', 'in:1'],
         ];
     }
 
@@ -50,4 +53,5 @@ class StoreSubAgentRequest extends FormRequest
             'permissions.*.exists' => __('One or more permissions were not found or are not allowed to be associated with this user type.'),
         ];
     }
+
 }

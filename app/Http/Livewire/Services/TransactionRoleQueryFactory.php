@@ -16,7 +16,7 @@ class TransactionRoleQueryFactory
         $this->user = Auth()->user();
     }
 
-    public function createTransactionTable($userType = null)
+    public function createTransactionTable($userType = null, $isAgent = null)
     {
         if ($this->user->hasRole('Master Agent'))
         {
@@ -25,7 +25,7 @@ class TransactionRoleQueryFactory
 
         if ($this->user->hasRole('Virtual Hub'))
         {
-            return new MasterAgentsTransaction();
+            return new MasterAgentsTransaction($isAgent);
         }
 
         if ($this->user->hasRole('Processor'))

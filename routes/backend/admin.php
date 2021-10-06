@@ -295,28 +295,61 @@ Route::get('master-agent-transactions', [MasterAgentController::class, 'transact
         $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
     });
 
-Route::get('sub-agents', [SubAgentController::class, 'index'])
-    ->name('sub-agents.index')
+    /** AGENT 's
+     */
+
+Route::get('agents', [SubAgentController::class, 'index'])->name('agents.index')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Sub Agents", route('admin.sub-agents.index'));
+        $trail->push("Agents", route('admin.agents.index'));
     });
 
-Route::get('sub-agents/pending', [SubAgentController::class, 'pending'])
-    ->name('sub-agents.pending')
+Route::get('agents/{agent}/edit', [SubAgentController::class, 'edit'])->name('agents.edit')
+    ->middleware('can:admin.access.master-agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.agents.edit', $agent));
+    });
+
+Route::get('agents/{agent}/wallet', [MasterAgentController::class, 'cashBalance'])
+    ->name('agents.wallet')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agent Wallet", route('admin.agents.wallet', $agent));
+    });
+
+Route::get('agents-info/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.pending');
+        $trail->push("Agents Info", route('admin.agents.info', $agent));
+    });
+
+Route::get('agents/pending', [SubAgentController::class, 'pending'])
+    ->name('agents.pending')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Pending Suba-agents", route('admin.sub-agents.pending'));
+        $trail->push("Pending Agents", route('admin.agents.pending'));
     });
 
-Route::get('sub-agents/create', [SubAgentController::class, 'create'])
-    ->name('sub-agents.create')
+Route::get('agent-transactions', [MasterAgentController::class, 'transactions'])->name('agents.transactions')
+    ->middleware('can:admin.access.master-agents.transactions')
     ->breadcrumbs(function (Trail $trail) {
-        $trail->parent('admin.sub-agents.index');
-        $trail->push("Create Sub Agents", route('admin.sub-agents.create'));
+        $trail->parent('admin.dashboard');
+        $trail->push("Agent Transactions", route('admin.agents.transactions'));
+    });
+
+Route::get('agents/create', [SubAgentController::class, 'create'])
+    ->name('agents.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Create Agents", route('admin.agents.create'));
     });
 
 Route::post('sub-agents', [SubAgentController::class, 'store'])->name('sub-agents.store');
+Route::post('agents/{agent}', [SubAgentController::class, 'update'])->name('agents.update');
 
 /** Hubs */
 

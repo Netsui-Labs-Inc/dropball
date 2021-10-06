@@ -180,6 +180,7 @@ class UserService extends BaseService
                 'commission_rate' => $data['commission_rate'] ?? null,
                 'hub_id' => $data['hub_id'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
+                'referred_by' => $data['referred_by'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
                 'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : $user->email_verified_at,
                 'active' => isset($data['active']) ? $data['active'] === '1' : $user->active,

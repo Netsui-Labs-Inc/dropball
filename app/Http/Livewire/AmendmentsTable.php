@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\MasterAgent\Http\Service\AgentFilter;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -25,9 +26,13 @@ class AmendmentsTable extends DataTableComponent
         'bootstrap.classes.table' => 'table',
     ];
 
-    public function mount(Request $request)
+    private $agentFilter;
+
+    public function mount(Request $request, AgentFilter $agentFilter)
     {
         Session::put('userType', $request->get('userType'));
+        Session::put('isAgent', $request->get('agent'));
+        $this->agentFilter = $agentFilter;
     }
 
     /**
@@ -36,12 +41,12 @@ class AmendmentsTable extends DataTableComponent
     public function query(): Builder
     {
         $query = AmendedTransaction::query();
-        $query->join('model_has_roles AS model_role', 'model_role.model_id', '=', 'amended_transactions.user')
+        $query->join('users', 'users.id', '=', 'amended_transactions.user')
+            ->join('model_has_roles AS model_role', 'model_role.model_id', '=', 'amended_transactions.user')
             ->join('roles', 'roles.id', '=', 'model_role.role_id')
             ->where('roles.name', Session::get('userType'));
+       return $this->agentFilter->setAgent($query, Session::get('isAgent'))->getQuery();
 
-
-        return $query;
     }
 
     /**
