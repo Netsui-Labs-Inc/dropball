@@ -311,6 +311,12 @@ Route::get('agents/{agent}/edit', [SubAgentController::class, 'edit'])->name('ag
         $trail->push("Edit Agent", route('admin.agents.edit', $agent));
     });
 
+Route::get('agents-edit/{agent}', [SubAgentController::class, 'masterAgentEdit'])->name('master.agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.master.agents.edit', $agent));
+    });
+
 Route::get('agents/{agent}/wallet', [MasterAgentController::class, 'cashBalance'])
     ->name('agents.wallet')
     ->middleware('can:admin.access.master-agents.wallet')
@@ -349,7 +355,9 @@ Route::get('agents/create', [SubAgentController::class, 'create'])
     });
 
 Route::post('sub-agents', [SubAgentController::class, 'store'])->name('sub-agents.store');
+Route::get('agents-approve/{agent}', [SubAgentController::class, 'approve'])->name('agents.approve');
 Route::post('agents/{agent}', [SubAgentController::class, 'update'])->name('agents.update');
+Route::post('agents-update/{agent}', [SubAgentController::class, 'updateByMasterAgent'])->name('agents.update.by.master.agent');
 
 /** Hubs */
 

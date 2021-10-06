@@ -84,7 +84,11 @@
 
                 <tr>
                     <th>@lang('Roles')</th>
-                    <td>{!! $user->roles_label !!}</td>
+                    @if($user->referred_by)
+                        <td>Agent</td>
+                    @else
+                        <td>Master Agent</td>
+                    @endif
                 </tr>
 
                 <tr>
@@ -114,9 +118,15 @@
                     </tr>
                 @endif
             </table>
+            @role('Virtual Hub')
+            <div class="float-right">
+                <a href='{{route('admin.agents.approve',$user)}}' class='btn btn-sm btn-warning text-white'><i class='fa fa-check'></i> Approve</a>
+            </div>
+            @endrole
         </x-slot>
 
         <x-slot name="footer">
+
             <small class="float-right text-muted">
                 <strong>@lang('Account Created'):</strong> @displayDate($user->created_at) ({{ $user->created_at->diffForHumans() }}),
                 <strong>@lang('Last Updated'):</strong> @displayDate($user->updated_at) ({{ $user->updated_at->diffForHumans() }})

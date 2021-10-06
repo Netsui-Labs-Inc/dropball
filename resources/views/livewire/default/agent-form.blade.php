@@ -14,7 +14,13 @@
                     class="form-control"
                     placeholder="{{ __('Name') }}"
                     value=@if($agent)"{{ $agent->name }}" @else "{{ old('name') }}"@endif
-                    maxlength="100" required />
+                    maxlength="100"
+                    required
+                    @if($masterAgentsEdit)
+                        disabled
+                    @endif
+                    />
+
                 </div>
             </div><!--form-group-->
 
@@ -28,7 +34,13 @@
                     class="form-control"
                     placeholder="{{ __('E-mail Address') }}"
                     value=@if($agent)"{{ $agent->email }}" @else "{{ old('email') }}"@endif
-                    maxlength="255" required />
+                    maxlength="255"
+                    required
+                    @if($masterAgentsEdit)
+                        disabled
+                    @endif
+
+                    />
                 </div>
             </div><!--form-group-->
             <div class="form-group row">
@@ -40,7 +52,12 @@
                     class="form-control"
                     placeholder="{{ __('Mobile Number') }}"
                     value=@if($agent)"{{ $agent->mobile }}" @else "{{ old('mobile') }}"@endif
-                    maxlength="255" required />
+                    maxlength="255"
+                    required
+                    @if($masterAgentsEdit)
+                        disabled
+                     @endif
+                    />
                 </div>
             </div><!--form-group-->
             @if($notAMasterAgent)
