@@ -2,12 +2,7 @@
 
 @section('title', __('Master Agents'))
 @section('page-action')
-    <a href="
-    @if($agentsLabel === 'Agent')
-        {{route('admin.sub-agents.create')}}
-    @else
-        {{route('admin.master-agents.create')}}
-    @endif" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add {{ $agentsLabel }}</a>
+    <a href="{{route('admin.master-agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Master Agent</a>
 @endsection
 @section('content')
     <x-backend.card>
@@ -15,7 +10,7 @@
             <div class="row align-items-center">
                 <div class="col">
                     <h3 class="h3 mb-0">
-                        @lang($agentsLabel.'s')
+                        @lang('Master Agents')
                     </h3>
                 </div>
             </div>

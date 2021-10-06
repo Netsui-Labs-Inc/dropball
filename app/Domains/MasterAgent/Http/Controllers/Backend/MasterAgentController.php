@@ -53,9 +53,7 @@ class MasterAgentController extends Controller
     }
     public function index(Request $request)
     {
-        $agentLabel = $this->filterAgent($request->get('agent'));
-        return view('backend.master-agent.index')
-            ->with('agentsLabel', $agentLabel);
+        return view('backend.master-agent.index');
     }
 
     private function filterAgent($isAgent)

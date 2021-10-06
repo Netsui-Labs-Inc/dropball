@@ -48,8 +48,8 @@
                 <li class="c-sidebar-nav-item">
                     <x-utils.link
                         class="c-sidebar-nav-link"
-                        :href="route('admin.sub-agents.index', ['sorts' => ['id' => 'desc']])"
-                        :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
+                        :href="route('admin.agents.index', ['sorts' => ['id' => 'desc']])"
+                        :active="activeClass(Route::is('admin.agents.index'), 'c-active')"
                         icon="c-sidebar-nav-icon cil-user"
                         :text="__('Agents List')" />
                 </li>
