@@ -11,6 +11,7 @@ use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentRequest;
+use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentByMasterAgent;
 
 class SubAgentController extends Controller
 {
@@ -41,6 +42,30 @@ class SubAgentController extends Controller
         $this->userService = $userService;
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
+
+    }
+
+    public function updateByMasterAgent(UpdateAgentByMasterAgent $request, User $agent)
+    {
+        $input = $request->validated();
+
+        if(!$this->checkMasterAgentCommissionRates($input['referred_by'], $input['commission_rate']))
+        {
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+
+        $agent->commission_rate = $input['commission_rate'];
+        $agent->referral_id = $input['referral_id'];
+        $agent->save();
+        return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
+    }
+
+    public function approve(User $agent)
+    {
+        $agent->active = 1;
+        $agent->save();
+
+        return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent Created Successfully");
 
     }
 
@@ -100,11 +125,22 @@ class SubAgentController extends Controller
     {
         return view('backend.master-agent.sub-agent.create');
     }
+
     public function edit(User $agent)
     {
+
         $hubs = Hub::all()->pluck('name', 'id');
 
         return view('backend.master-agent.sub-agent.edit')
+            ->with('agent', $agent)
+            ->with('hubs', $hubs);
+    }
+
+    public function masterAgentEdit(User $agent)
+    {
+        $hubs = Hub::all()->pluck('name', 'id');
+
+        return view('backend.master-agent.sub-agent.master-agent-edit-module')
             ->with('agent', $agent)
             ->with('hubs', $hubs);
     }

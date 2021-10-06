@@ -8,7 +8,7 @@
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <x-utils.link
-                :text="__('Active Sub-agents')"
+                :text="__('Active Agents')"
                 class="nav-link bg-white active"
                 id="active-players-tab"
                 data-toggle="pill"

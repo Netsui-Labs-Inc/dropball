@@ -2,7 +2,10 @@
 
 @section('title', __('Master Agents'))
 @section('page-action')
+    @if(!Auth::user()->hasRole('Virtual Hub'))
     <a href="{{route('admin.agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
+    @endif
+
 @endsection
 @section('content')
     <x-backend.card>

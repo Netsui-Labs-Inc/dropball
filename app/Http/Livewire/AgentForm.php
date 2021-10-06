@@ -17,10 +17,12 @@ class AgentForm extends Component
     public $agent;
     public $agentsMasterAgent;
     public $agentCommisionRate;
-    public function mount($agent = null, $edit = false)
+    public $masterAgentsEdit;
+    public function mount($agent = null, $edit = false, $masterAgentsEdit = false)
     {
         $this->agent = $agent;
         $this->edit = $edit;
+        $this->masterAgentsEdit = $masterAgentsEdit;
         $this->agentsMasterAgent = $this->setAgent($agent);
         $masterAgentRoleId = 4;
         $masterAgentCommissionRate = auth()->user()->commission_rate;

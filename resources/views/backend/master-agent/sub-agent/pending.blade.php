@@ -2,7 +2,6 @@
 
 @section('title', __('Pending Sub Agents'))
 @section('page-action')
-    <a href="{{route('admin.agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
 @endsection
 @section('content')
     <x-backend.card>
