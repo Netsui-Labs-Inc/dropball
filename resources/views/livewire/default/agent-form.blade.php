@@ -60,15 +60,31 @@
                     />
                 </div>
             </div><!--form-group-->
+            @role('Administrator')
+                <div class="form-group row">
+                    <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
+                    <div class="col-md-10">
+                    {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control', 'wire:model="hubId"', 'wire:change="selectHub"']) !!}
+                    </div>
+                </div>
+            @else
+                <input type="hidden" value="{{ Auth::user()->hub_id }}" name="hub_id" />
+            @endrole
+
             @if($notAMasterAgent)
                 <div class="form-group row">
                     <label for="referred_by" class="col-md-2 col-form-label">@lang('Master Agent')</label>
                     <div class="col-md-10">
-                        <select class ="form-control" wire:model="masterAgent" wire:change="showRate" name="referred_by" required>
-                            @if($agent)
+                        <select class ="form-control" wire:model="masterAgent" wire:change="setFormWhenSelectedMasterAgent" name="referred_by" required>
+
+                            @if($agentsMasterAgent && $agent)
                                 <option value="{{ $agentsMasterAgent['id'] }}">{{ $agentsMasterAgent['name'] }}</option>
                             @endif
-                            <option value="">Select Master Agent</option>
+
+                            @if(!$selectedAgent && !$firstLoad || !$agent)
+                                <option value="">Select Master Agent</option>
+                            @endif
+
                             @foreach ($masterAgents as $masterAgent)
                                 <option value="{{ $masterAgent->id }}">{{ $masterAgent->name }}</option>
                             @endforeach
@@ -83,19 +99,27 @@
                     value="{{ Auth::user()->id }}"
                 />
             @endif
-                @if($commissionRates)
+                @if($commissionRates && $showRate)
+
                     <div class="form-group row">
                         <label for="commission_rate" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
                         <div class="col-md-10">
-                            <select class ="form-control" name="commission_rate">
-                                @if($agent)
-                                <option value="{{ $agentCommisionRate['value'] }}">{{ $agentCommisionRate['percentage'] }}</option>
-                                agentCommisionRate
-                                @endif
-                                @foreach ($commissionRates as $commissionRate)
-                                    <option value="{{ $commissionRate['value'] }}">{{ $commissionRate['percentage'] }}</option>
-                                @endforeach
-                            </select>
+                            @if($firstLoad)
+                                <select class ="form-control" name="commission_rate">
+                                        <option value="{{ $agentCommisionRate['value'] }}">{{ $agentCommisionRate['percentage'] }}</option>
+                                        @foreach ($commissionRates as $commissionRate)
+                                            <option value="{{ $commissionRate['value'] }}">{{ $commissionRate['percentage'] }}</option>
+                                        @endforeach
+                                </select>
+                            @else
+                                <select class ="form-control" name="commission_rate" wire:change="selectRate">
+
+                                    @foreach ($commissionRates as $commissionRate)
+                                        <option value="{{ $commissionRate['value'] }}">{{ $commissionRate['percentage'] }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
+
                         </div>
                     </div>
                 @endif

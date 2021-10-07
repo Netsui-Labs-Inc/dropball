@@ -317,7 +317,7 @@ Route::get('agents-edit/{agent}', [SubAgentController::class, 'masterAgentEdit']
         $trail->push("Edit Agent", route('admin.master.agents.edit', $agent));
     });
 
-Route::get('agents/{agent}/wallet', [MasterAgentController::class, 'cashBalance'])
+Route::get('agents/{agent}/wallet', [SubAgentController::class, 'cashBalance'])
     ->name('agents.wallet')
     ->middleware('can:admin.access.master-agents.wallet')
     ->breadcrumbs(function (Trail $trail, $agent) {

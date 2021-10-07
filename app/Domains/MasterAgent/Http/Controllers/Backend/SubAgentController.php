@@ -93,12 +93,7 @@ class SubAgentController extends Controller
             $input['hub_id'] = $user->hub_id;
         }
         $user = $this->userService->update($agent, $input);
-        if(array_key_exists('email_verified', $input))
-        {
-            return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
-        }
-        return redirect()->to(route('admin.agents.pending'))->withFlashSuccess("Agent updated Successfully.");
-
+        return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
     }
 
     public function show(User $agent)
@@ -109,18 +104,23 @@ class SubAgentController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+
         if ($user->hasRole('Master Agent'))
         {
-            if ($user->hasRole('Administrator')) {
-                $pendingAgents = User::role('Master Agent')->whereNotNull('referred_by')->whereNull('email_verified_at')->get();
-            } else {
-                $pendingAgents = $user->referrals()->whereNull('email_verified_at')->get();
-            }
-
-            return view('backend.master-agent.sub-agent.master-agent-agent-list')->with('pendingAgents', $pendingAgents);
+            $pendingAgents = $user->referrals()->whereNull('email_verified_at')->get();
         }
 
-        return view('backend.master-agent.sub-agent.index');
+        if ($user->hasRole('Virtual Hub'))
+        {
+            $pendingAgents = User::where('hub_id', $user->hub_id)
+                            ->where('email_verified_at', null)->get();
+        }
+
+        if ($user->hasRole('Administrator')) {
+            $pendingAgents = User::role('Master Agent')->whereNotNull('referred_by')->whereNull('email_verified_at')->get();
+        }
+
+        return view('backend.master-agent.sub-agent.master-agent-agent-list')->with('pendingAgents', $pendingAgents);
     }
 
     public function create()
@@ -151,7 +151,13 @@ class SubAgentController extends Controller
     {
         $user = $request->user();
         $input = $request->validated();
+
         if(!$this->checkMasterAgentCommissionRates($input['referred_by'], $input['commission_rate']))
+        {
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+
+        if ($this->checkHubId($input['hub_id']))
         {
             return redirect()->back()->withErrors('Something went wrong!');
         }
@@ -159,20 +165,31 @@ class SubAgentController extends Controller
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
-        $input['hub_id'] = $user->hub_id;
+
+
         $agent = $this->userService->store($input);
 
         $agent->createWallet([
             'name' => 'Income Wallet',
             'slug' => 'income-wallet',
         ]);
-        if (auth()->user()->hasRole('Virtual Hub'))
-        {
-            return redirect()->to(route('admin.agents.pending'))->withFlashSuccess("Agent Created Successfully");
 
-        }
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent Created Successfully");
 
+    }
+
+    public function cashBalance(User $agent)
+    {
+        return view('backend.master-agent.wallet')->with('user', $agent);
+    }
+
+    private function checkHubId($hubId)
+    {
+        if(auth()->user()->hasRole('Master Agent'))
+        {
+            return ((int) $hubId === auth()->user()->hub_id) ? false : true;
+        }
+        return false;
     }
 
     private function checkMasterAgentCommissionRates($masterAgentId, $AgentRate)

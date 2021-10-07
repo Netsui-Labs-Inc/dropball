@@ -2,7 +2,9 @@
 
 @section('title', __('Sub Agents'))
 @section('page-action')
-    <a href="{{route('admin.agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
+    @if(Auth::user()->hasRole('Master Agent') || Auth::user()->hasRole('Administrator'))
+        <a href="{{route('admin.agents.create')}}" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add Agent</a>
+    @endif
 @endsection
 @section('content')
     <nav>
@@ -39,7 +41,7 @@
         <div class="tab-pane fade show" id="pending-agents" role="tabpanel" aria-labelledby="pending-agents-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:sub-agents-table status="unverified" admin="{{auth()->user()->hasRole('Administrator')}}"/>
+                    <livewire:pending-sub-agents-table status="unverified" admin="{{auth()->user()->hasRole('Administrator')}}"/>
                 </x-slot>
             </x-backend.card>
         </div>

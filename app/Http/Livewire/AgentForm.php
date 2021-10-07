@@ -18,27 +18,83 @@ class AgentForm extends Component
     public $agentsMasterAgent;
     public $agentCommisionRate;
     public $masterAgentsEdit;
+    public $hubs;
+    public $hubId;
+    public $showRate = true;
+    public $selectedAgent = false;
+    public $firstLoad = true;
+    public $masterAgentChange = false;
+
     public function mount($agent = null, $edit = false, $masterAgentsEdit = false)
     {
         $this->agent = $agent;
         $this->edit = $edit;
         $this->masterAgentsEdit = $masterAgentsEdit;
-        $this->agentsMasterAgent = $this->setAgent($agent);
-        $masterAgentRoleId = 4;
-        $masterAgentCommissionRate = auth()->user()->commission_rate;
-        if ($masterAgentCommissionRate === null) {
-            $hub = Hub::where('admin_id', auth()->user()->id)->get()->first();
-            $this->notAMasterAgent = true;
-            $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
-                                        ->where('role_id', $masterAgentRoleId)
-                                        ->where('referred_by', null)
-                                        ->where('hub_id', $hub->id)
-                                        ->get();
 
+        $this->agentsMasterAgent = $this->setAgent($agent);
+        $masterAgentCommissionRate = auth()->user()->commission_rate;
+        $this->hubs = Hub::all()->pluck('name', 'id');
+        $this->hubId = auth()->user()->hub_id;
+
+        if ($masterAgentCommissionRate === null)
+        {
+            $this->getMasterAgents();
             return;
         }
-
         $this->commissionRates = $this->createCommissionRates($masterAgentCommissionRate);
+
+    }
+
+    public function selectHub()
+    {
+        $this->setFormWhenSelectedHub();
+        $this->getMasterAgents();
+    }
+
+    private function setFormWhenSelectedHub()
+    {
+        $this->agentsMasterAgent = null;
+        $this->selectedAgent = false;
+        $this->showRate = false;
+        $this->firstLoad = false;
+    }
+
+    public function setFormWhenSelectedMasterAgent()
+    {
+        $this->showRate = true;
+        $this->masterAgentChange = true;
+        $this->firstLoad = false;
+        $this->showRate();
+    }
+
+    public function selectRate()
+    {
+        $this->firstLoad = false;
+    }
+
+    public function getMasterAgents()
+    {
+
+        $hubId = $this->getHub();
+        $this->notAMasterAgent = true;
+
+        $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->where('roles.name', 'Master Agent')
+                ->where('referred_by', null)
+                ->where('hub_id', $hubId)
+                ->get(['users.id','users.name']);
+
+    }
+
+    private function getHub()
+    {
+
+        if(!$this->hubId) {
+            return Hub::all()->first()->id;
+        }
+
+        return $this->hubId;
 
     }
 
@@ -79,6 +135,7 @@ class AgentForm extends Component
 
     public function showRate()
     {
+
         $masterAgent = User::where('id', $this->masterAgent)->get()->first();
         if(!$masterAgent)
         {
@@ -86,6 +143,7 @@ class AgentForm extends Component
             return;
         }
         $this->commissionRates = $this->createCommissionRates($masterAgent->commission_rate);
+
     }
 
     public function render()

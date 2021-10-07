@@ -119,11 +119,11 @@
                 @endif
             </table>
                 @if(!$user->email_verified_at)
-                    @role('Virtual Hub')
+                    @if(Auth::user()->hasRole('Virtual Hub') || Auth::user()->hasRole('Administrator'))
                         <div class="float-right">
                             <a href='{{route('admin.agents.approve',$user)}}' class='btn btn-sm btn-warning text-white'><i class='fa fa-check'></i> Approve</a>
                         </div>
-                    @endrole
+                    @endif
                 @endif
         </x-slot>
 

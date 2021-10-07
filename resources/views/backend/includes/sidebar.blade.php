@@ -109,14 +109,6 @@
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.agents.pending', ['sorts' => ['created_at' => 'desc'], 'agent' => true])"
-                    :active="activeClass(Route::is('admin.agents.pending'), 'c-active')"
-                    icon="c-sidebar-nav-icon cil-user"
-                    :text="__('Agent\'s Approval')" />
-            </li>
-            <li class="c-sidebar-nav-item">
-                <x-utils.link
-                    class="c-sidebar-nav-link"
                     :href="route('admin.agents.transactions', ['sorts' => ['created_at' => 'desc'], 'userType' => 'Master Agent', 'agent' => true])"
                     :active="activeClass(Request::is('admin/agents-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"

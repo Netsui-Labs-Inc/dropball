@@ -91,7 +91,16 @@ class SubAgentsTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     return User::where('referred_by', $row->id)->get()->count();
                 })->asHtml(),
-
+            Column::make(__('Players'))
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return User::where('referred_by', $row->id)->get()->count();
+                })->asHtml(),
+            Column::make(__('Balance'))
+                ->format(function ($value, $column, User $row) {
+                    return number_format($row->balanceFloat, 2);
+                })->asHtml(),
         ];
 
         if ($this->user->hasRole('Virtual Hub'))
