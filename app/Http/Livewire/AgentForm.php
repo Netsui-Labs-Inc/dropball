@@ -42,7 +42,6 @@ class AgentForm extends Component
             return;
         }
         $this->commissionRates = $this->createCommissionRates($masterAgentCommissionRate);
-
     }
 
     public function selectHub()
