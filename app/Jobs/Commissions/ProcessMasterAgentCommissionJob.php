@@ -27,6 +27,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     public ?User $masterAgent;
 
     public $tries = 25;
+
     /**
      * ProcessMasterAgentCommissionJob constructor.
      * @param Bet $bet
@@ -97,9 +98,6 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
             return;
         }
         $bettingRound = $bet->bettingRound;
-        $agent = $masterAgent->masterAgent;
-        $percentage = abs($masterAgent->commission_rate - $agent->commission_rate);
-
         $rate = BigDecimal::of(($masterAgent->commission_rate / 100) ?? .01)->toFloat();
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
         try {
@@ -138,8 +136,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
         $parentAgent = $masterAgent->masterAgent;
         $bettingRound = $this->bet->bettingRound;
         $bet = $this->bet;
-        $masterAgentCommission = abs($masterAgent->commission_rate - $parentAgent->commission_rate);
-        $rate = BigDecimal::of($masterAgentCommission )->toFloat();
+        $rate = BigDecimal::of(0.0025 )->toFloat();
 
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
         try {
