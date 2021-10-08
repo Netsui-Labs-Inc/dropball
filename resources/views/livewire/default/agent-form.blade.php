@@ -106,7 +106,9 @@
                         <div class="col-md-10">
                             @if($firstLoad)
                                 <select class ="form-control" name="commission_rate">
-                                        <option value="{{ $agentCommisionRate['value'] }}">{{ $agentCommisionRate['percentage'] }}</option>
+                                        @if($agentCommisionRate)
+                                            <option value="{{ $agentCommisionRate['value'] }}">{{ $agentCommisionRate['percentage'] }}</option>
+                                        @endif
                                         @foreach ($commissionRates as $commissionRate)
                                             <option value="{{ $commissionRate['value'] }}">{{ $commissionRate['percentage'] }}</option>
                                         @endforeach
