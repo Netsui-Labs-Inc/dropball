@@ -34,11 +34,17 @@ class Agent
         $rate = BigDecimal::of($rate * 100)->toFloat();
         $commissionModel = $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
 
-        activity('agent commissions')
+        $agentRole = 'Master Agent';
+        if ($masterAgent->referred_by)
+        {
+            $agentRole = "Agent";
+        }
+
+        activity($agentRole. ' commissions')
             ->performedOn($masterAgent)
             ->causedBy($bettingRound)
             ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $player->id, 'previous_balance' => $currentBalance, 'new_balance' => $masterAgentWallet->balanceFloat])
-            ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
+            ->log("$agentRole #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
         return $commissionModel;
     }

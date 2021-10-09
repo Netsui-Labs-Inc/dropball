@@ -14,6 +14,7 @@ use App\Domains\MasterAgent\Http\Service\AgentFilter;
 use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
+use App\Models\CommissionRate;
 use Auth;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
@@ -95,14 +96,22 @@ class MasterAgentController extends Controller
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
+        
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         }
+        
         $user = $this->userService->store($input);
 
         $user->createWallet([
             'name' => 'Income Wallet',
             'slug' => 'income-wallet',
+        ]);
+
+        CommissionRate::create([
+            'hub_id'          => $input['hub_id'],
+            'master_agent_id' => $user->id,
+            'commission_rate' => 3 - $input['commission_rate']
         ]);
 
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");

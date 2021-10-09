@@ -44,7 +44,7 @@ class SubAgent
             ->performedOn($masterAgent)
             ->causedBy($bettingRound)
             ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $masterAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $parentAgentWallet->balanceFloat])
-            ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
+            ->log("Master Agent #{$parentAgent->id} {$parentAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
 
         return $commissionModel;
 }

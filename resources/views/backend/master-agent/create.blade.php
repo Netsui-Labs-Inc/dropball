@@ -40,10 +40,10 @@
                 </div><!--form-group-->
 
                 <div class="form-group row">
-                    <label for="referral_id" class="col-md-2 col-form-label">@lang('Referral ID')</label>
+                    <label for="referral_id" class="col-md-2 col-form-label">@lang('Code Name')</label>
 
                     <div class="col-md-10">
-                        <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Referral ID') }}" value="{{ old('referral_id') }}" maxlength="255" required />
+                        <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Code Name') }}" value="{{ old('referral_id') }}" maxlength="255" required />
                     </div>
                 </div><!--form-group-->
                 @role('Administrator')

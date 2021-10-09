@@ -4,7 +4,9 @@ namespace App\Domains\BettingRound\Actions\Commission;
 
 use App\Domains\Bet\Models\Bet;
 use App\Jobs\Traits\WalletAndCommission;
+use App\Models\CommissionRate;
 use Brick\Math\BigDecimal;
+
 use DB;
 
 class Hub
@@ -21,7 +23,9 @@ class Hub
         /** @var Hub $hub */
         $hub = $player->hub;
         $bettingRound = $bet->bettingRound;
-        $percentage = (3 - $masterAgent->commission_rate);
+
+        $percentage = $this->getCommissionRate($hub, $masterAgent);
+
         $rate = ($percentage / 100) ?? 0.01;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
@@ -41,5 +45,25 @@ class Hub
             ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
         return $commissionModel;
+    }
+
+    private function getCommissionRate($hub, $agent)
+    {
+
+        $query = CommissionRate::where('hub_id', $hub->id);
+
+        if ($agent->referred_by)
+        {
+            $query->where('master_agent_id', $agent->referred_by);
+        }
+        else
+        {
+            $query->where('master_agent_id', $agent->id);
+        }
+
+        return $query->get()
+                ->first()
+                ->commission_rate;
+
     }
 }
