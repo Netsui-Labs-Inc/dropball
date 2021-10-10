@@ -31,6 +31,8 @@ class SubAgentController extends Controller
      */
     protected $permissionService;
 
+    private $agentCommissionRate;
+
     /**
      * UserController constructor.
      *
@@ -55,7 +57,7 @@ class SubAgentController extends Controller
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
-        $agent->commission_rate = $input['commission_rate'];
+        $agent->commission_rate = $this->agentCommissionRate;
         $agent->referral_id = $input['referral_id'];
         $agent->save();
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
@@ -84,6 +86,7 @@ class SubAgentController extends Controller
         if ($request->has('email_verified') || $agent->email_verified_at) {
             $input['active'] = "1";
         }
+        $input['commission_rate'] = $this->agentCommissionRate;
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
@@ -162,6 +165,7 @@ class SubAgentController extends Controller
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
+        $input['commission_rate'] = $this->agentCommissionRate;
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
@@ -196,13 +200,16 @@ class SubAgentController extends Controller
     {
         $masterAgentCommissionRate = User::where('id', $masterAgentId)
                                     ->get()->first()->commission_rate;
-
+        
+        $this->agentCommissionRate = $AgentRate / $masterAgentCommissionRate;
+       
         $masterAgentCommissionRate -= 0.1;
         $rates = collect();
         for ($rate = $masterAgentCommissionRate; $rate > 0  ; $rate -= 0.1) {
             $formatedRate = number_format($rate, 1);
             $rates->push($formatedRate);
         }
+
 
         return $rates->contains($AgentRate);
     }

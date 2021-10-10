@@ -2,6 +2,7 @@
 
 namespace App\Domains\BettingRound\Actions\Commission;
 
+use App\Domains\Auth\Models\User;
 use DB;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Domains\Bet\Models\Bet;
@@ -21,8 +22,20 @@ class Agent
         if (! $masterAgent) {
             return true;
         }
+
+        $agentRole = 'Master Agent';
+        $commissionRate = $masterAgent->commission_rate;
+        if ($masterAgent->referred_by)
+        {
+            $parentAgent = User::where('id', $masterAgent->referred_by)
+                                ->get()
+                                ->first();
+            $commissionRate = number_format($parentAgent->commission_rate * $masterAgent->commission_rate, 1);
+            $agentRole = "Agent";
+        }
+
         $bettingRound = $bet->bettingRound;
-        $rate = BigDecimal::of(($masterAgent->commission_rate / 100) ?? .01)->toFloat();
+        $rate = BigDecimal::of(($commissionRate / 100) ?? .01)->toFloat();
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
@@ -34,11 +47,7 @@ class Agent
         $rate = BigDecimal::of($rate * 100)->toFloat();
         $commissionModel = $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
 
-        $agentRole = 'Master Agent';
-        if ($masterAgent->referred_by)
-        {
-            $agentRole = "Agent";
-        }
+      
 
         activity($agentRole. ' commissions')
             ->performedOn($masterAgent)

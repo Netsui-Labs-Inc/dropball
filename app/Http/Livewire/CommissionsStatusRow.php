@@ -55,8 +55,10 @@ class CommissionsStatusRow extends Component
 
     public function processCommissions($betId)
     {
+        
         try {
             $bet = Bet::find($betId);
+        
             $this->started();
             DB::beginTransaction();
             $agent = (new Agent)($bet);
