@@ -83,7 +83,11 @@ class SubAgentsTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, User $row) {
-                    return number_format($row->commission_rate, 1) . '%';
+                    $masterAgent = User::where('id', $row->referred_by)
+                                        ->get()
+                                        ->first();
+
+                    return number_format($masterAgent->commission_rate * $row->commission_rate, 1) . '%';
                 })->asHtml(),
             Column::make(__('Players'))
                 ->searchable()
