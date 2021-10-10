@@ -127,13 +127,25 @@ class MasterAgentController extends Controller
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
+
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         } elseif ($user->hasRole('Master Agent')) {
             $input['hub_id'] = $user->hub_id;
         }
+
         $user = $this->userService->update($masterAgent, $input);
 
+        $commissionRate = CommissionRate::where('hub_id', $input['hub_id'])
+                                        ->where('master_agent_id', $user->id)
+                                        ->get()
+                                        ->first();
+        
+        $defaultHubCommissionRate = 3;
+        $commissionRate->commission_rate = $defaultHubCommissionRate - $input['commission_rate'];
+        $commissionRate->updated_at = Carbon::now()->toDateTimeString();
+        $commissionRate->save();
+     
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
     }
 

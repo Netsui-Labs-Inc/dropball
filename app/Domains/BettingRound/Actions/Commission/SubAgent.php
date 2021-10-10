@@ -26,7 +26,8 @@ class SubAgent
         }
         $parentAgent = $masterAgent->masterAgent;
         $bettingRound = $bet->bettingRound;
-        $masterAgentCommissionRate = (abs($parentAgent->commission_rate - $masterAgent->commission_rate)) / 100;
+        $agentCommission = number_format($parentAgent->commission_rate * $masterAgent->commission_rate, 1);
+        $masterAgentCommissionRate = ( $parentAgent->commission_rate - $agentCommission ) / 100;
         $rate = BigDecimal::of($masterAgentCommissionRate )->toFloat();
 
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
