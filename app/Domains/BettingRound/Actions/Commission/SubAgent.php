@@ -48,5 +48,5 @@ class SubAgent
             ->log("Master Agent #{$parentAgent->id} {$parentAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
 
         return $commissionModel;
-}
+    }
 }

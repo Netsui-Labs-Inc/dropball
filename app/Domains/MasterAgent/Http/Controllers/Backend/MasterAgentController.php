@@ -142,10 +142,21 @@ class MasterAgentController extends Controller
                                         ->first();
         
         $defaultHubCommissionRate = 3;
-        $commissionRate->commission_rate = $defaultHubCommissionRate - $input['commission_rate'];
-        $commissionRate->updated_at = Carbon::now()->toDateTimeString();
-        $commissionRate->save();
+        if($commissionRate)
+        {
+            $commissionRate->commission_rate = $defaultHubCommissionRate - $input['commission_rate'];
+            $commissionRate->updated_at = Carbon::now()->toDateTimeString();
+            $commissionRate->save();
      
+        } else 
+        {
+            CommissionRate::create([
+                'hub_id'          => $input['hub_id'],
+                'master_agent_id' => $user->id,
+                'commission_rate' => 3 - $input['commission_rate']
+            ]);
+        }
+        
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
     }
 
