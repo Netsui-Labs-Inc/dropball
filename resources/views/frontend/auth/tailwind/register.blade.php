@@ -139,7 +139,10 @@
                     </div>
                     <div class="flex flex-col mt-5">
                         <label for="password" class="text-lg font-semibold text-gray-100 fleading-tight">Password</label>
-                        <input required name="password" id="password" class="@error('password') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="password" />
+                        <div class="relative">
+                            <input required name="password" id="password" class="@error('password') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="password" />
+                            <i class="eyecandy"></i>
+                        </div>
                         @error('password')
                         <p class="text-red-500 text-xs italic mt-4">
                             {{ $message }}
