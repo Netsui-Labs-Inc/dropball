@@ -86,10 +86,12 @@ class SubAgentController extends Controller
         if ($request->has('email_verified') || $agent->email_verified_at) {
             $input['active'] = "1";
         }
+
         $input['commission_rate'] = $this->agentCommissionRate;
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
+      
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         } elseif ($user->hasRole('Master Agent')) {
