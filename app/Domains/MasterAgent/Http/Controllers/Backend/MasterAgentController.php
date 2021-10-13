@@ -142,14 +142,12 @@ class MasterAgentController extends Controller
                                         ->first();
         
         $defaultHubCommissionRate = 3;
-        if($commissionRate)
-        {
+        if ($commissionRate) {
             $commissionRate->commission_rate = $defaultHubCommissionRate - $input['commission_rate'];
             $commissionRate->updated_at = Carbon::now()->toDateTimeString();
             $commissionRate->save();
      
-        } else 
-        {
+        } else {
             CommissionRate::create([
                 'hub_id'          => $input['hub_id'],
                 'master_agent_id' => $user->id,
