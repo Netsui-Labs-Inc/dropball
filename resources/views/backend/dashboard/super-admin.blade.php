@@ -37,15 +37,7 @@
                 </x-slot>
             </x-backend.card>
         </div>
-        <div class="col-12 col-md-3">
-            <x-backend.card>
-                <x-slot name="body">
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Over-all Commission")</small>
-                    {!! Form::select('hub_id', $overAllCommissionRates , null , ['class' => 'form-control text-value-lg pb-2']) !!} <br />
-                    <button class="btn btn-sm btn-primary float-right" type="submit">@lang('SAVE')</button>
-                </x-slot>
-            </x-backend.card>
-        </div>
+        <livewire:save-overall-commission-rate />
 
         <div class="col-12">
             <x-backend.card headerClass="bg-gradient-info" class="text-center">

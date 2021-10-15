@@ -260,8 +260,8 @@ Route::get('master-agents/{masterAgent}/edit', [MasterAgentController::class, 'e
     });
 
 Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
-Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'update'])->name('master-agents.update');
-
+Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'updateByAdmin'])->name('master-agents.update');
+Route::put('master-agents-hub/{masterAgent}', [MasterAgentController::class, 'updateByHub'])->name('master-agents.update.hub');
 
 Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])
     ->name('master-agents.info')

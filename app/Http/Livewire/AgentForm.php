@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use App\Domains\Hub\Models\Hub;
 use Livewire\Component;
 
@@ -20,28 +21,49 @@ class AgentForm extends Component
     public $masterAgentsEdit;
     public $hubs;
     public $hubId;
-    public $showRate = true;
+    public $showRate = false;
     public $selectedAgent = false;
     public $firstLoad = true;
     public $masterAgentChange = false;
-
-    public function mount($agent = null, $edit = false, $masterAgentsEdit = false)
+    public $wholeNumberRates;
+    public $decimalNumberRates;
+    public $selectedWholeNumber;
+    public $wholeNumber;
+    public $parentCommissionRate;
+    public $editMode;
+    public $agentHubName;
+    public $agentHubId;
+    public $agentMasterAgentName;
+    public $agentMasterAgentId;
+    public $showButtonCancelRate;
+    public $test = [];
+    public function mount($agent = null, $edit = false, $masterAgentsEdit = false, $editMode = false)
     {
         $this->agent = $agent;
         $this->edit = $edit;
-        $this->masterAgentsEdit = $masterAgentsEdit;
-
-        $this->agentsMasterAgent = $this->setAgent($agent);
-        $masterAgentCommissionRate = auth()->user()->commission_rate;
-        $this->hubs = Hub::all()->pluck('name', 'id');
-        $this->hubId = auth()->user()->hub_id;
-
-        if ($masterAgentCommissionRate === null)
+        $this->editMode = $editMode;
+        if($this->editMode) {
+            $agentHub = Hub::where('id', $agent->hub_id)->get()->first();
+            $this->agentHubId = $agentHub->id;
+            $this->agentHubName = $agentHub->name;
+            $masterAgent = User::where('id', $agent->referred_by)->get()->first();
+            $this->agentMasterAgentId = $masterAgent->id;
+            $this->agentMasterAgentName = $masterAgent->name;
+            $commissionRateService = new CommissionRateService();
+            $currentCommissionRate = $commissionRateService->setCurrentRate($agent);
+            $this->agentCurrentRateWholeNumber = $currentCommissionRate['whole_number'];
+            $this->agentCurrentRateDecimalNumber = $currentCommissionRate['decimal_number'];
+        }
+        if (auth()->user()->hasRole('Administrator')) 
         {
-            $this->getMasterAgents();
+            $this->masterAgentsEdit = $masterAgentsEdit;
+            $this->agentsMasterAgent = $this->setAgent($agent);
+            $this->hubs = Hub::all()->pluck('name', 'id');
+            $this->hubId = auth()->user()->hub_id;
             return;
         }
-        $this->commissionRates = $this->createCommissionRates($masterAgentCommissionRate);
+      
+        $this->showRate(auth()->user());
     }
 
     public function selectHub()
@@ -60,9 +82,6 @@ class AgentForm extends Component
 
     public function setFormWhenSelectedMasterAgent()
     {
-        $this->showRate = true;
-        $this->masterAgentChange = true;
-        $this->firstLoad = false;
         $this->showRate();
     }
 
@@ -82,24 +101,22 @@ class AgentForm extends Component
                 ->where('roles.name', 'Master Agent')
                 ->where('referred_by', null)
                 ->where('hub_id', $hubId)
-                ->get(['users.id','users.name']);
-
+                ->get(['users.id', 'users.name']);
+        $masterAgent = $this->masterAgents->first();
+        $this->showRate(User::where('id', $masterAgent->id)->get()->first());
     }
 
     private function getHub()
     {
-
         if(!$this->hubId) {
             return Hub::all()->first()->id;
         }
 
         return $this->hubId;
-
     }
 
     private function setAgent($agent)
     {
-
         if($agent)
         {
             $masterAgent = User::where('id', $agent->referred_by)->get()->first();
@@ -121,28 +138,48 @@ class AgentForm extends Component
         ];
     }
 
-    private function createCommissionRates($masterAgentCommissionRate)
+    public function showRate($masterAgent = null)
     {
-        $masterAgentCommissionRate -= 0.1;
-        $rates = collect();
-        for ($rate = $masterAgentCommissionRate; $rate > 0  ; $rate -= 0.1) {
-            $formatedRate = number_format($rate, 1);
-            $rates->push(['value' => $formatedRate, 'percentage' => "$formatedRate%"]);
-        }
-        return $rates;
-    }
-
-    public function showRate()
-    {
-
-        $masterAgent = User::where('id', $this->masterAgent)->get()->first();
+        $this->showRate = true;
         if(!$masterAgent)
         {
-            $this->commissionRates = null;
-            return;
+            $masterAgent = User::where('id', $this->masterAgent)->get()->first();
         }
-        $this->commissionRates = $this->createCommissionRates($masterAgent->commission_rate);
+        $hub = Hub::where('id',  $masterAgent->hub_id)->get()->first();
+        $rate = number_format($hub->commission_rate * $masterAgent->commission_rate, 1);
 
+        $this->setRates($rate);
+    }
+    
+    private function setRates($commissionRate)
+    {
+        $commissionRateService = new CommissionRateService();
+        $this->parentCommissionRate = $commissionRate;
+        $this->wholeNumber = floor($commissionRate);
+        $commisionRates = $commissionRateService->setRates($commissionRate, $this->wholeNumber);
+        $this->decimalNumberRates = $commisionRates['decimal_number_rate'];
+        $this->wholeNumberRates = $commisionRates['whole_number_rate'];
+
+    }
+
+    public function checkMaxRateAssignment(CommissionRateService $commissionRateService)
+    {
+        $this->decimalNumberRates = $commissionRateService
+            ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->parentCommissionRate);
+    
+    }
+
+    public function showUpdateRate()
+    {
+        $this->editMode = false;
+        $this->showRate = false;
+        $this->showButtonCancelRate = true;
+    }
+
+    public function cancelEditRate()
+    {
+        $this->editMode = true;
+        $this->showButtonCancelRate = false;
     }
 
     public function render()

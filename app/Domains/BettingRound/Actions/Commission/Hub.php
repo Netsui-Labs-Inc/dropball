@@ -61,9 +61,7 @@ class Hub
             $query->where('master_agent_id', $agent->id);
         }
 
-        return $query->get()
-                ->first()
-                ->commission_rate;
+        return number_format($query->get()->first()->commission_rate * $hub->commission_rate, 1);
 
     }
 }

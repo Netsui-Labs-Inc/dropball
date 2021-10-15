@@ -98,7 +98,11 @@ class MasterAgentsTable extends DataTableComponent
                 ->sortable(),
             Column::make(__('Commission rate'), 'commission_rate')
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    $hubCommissionRate = Hub::where('id', $row->hub_id)->get()->first()->commission_rate;
+                    return number_format($hubCommissionRate * $row->commission_rate, 1) . '%';
+                })->asHtml(),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat, 2);

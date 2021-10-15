@@ -94,29 +94,13 @@ class DashboardController extends Controller
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
-        $overAllCommissionRates = [];
-
-        $currentOverallCommissionRate = OverallCommissionRate::query()
-        ->get()
-        ->first();
-
-        if(!$currentOverallCommissionRate) {
-            $currentOverallCommissionRate = config('dropball.default_overall_commission_rate') . '%';
-        }
-
-        $overAllCommissionRates[0] = $currentOverallCommissionRate;
-       
-        foreach (range(1, 99) as $number) {
-            $overAllCommissionRates[$number] = "$number%";
-        }
-    
+        
         return view('backend.dashboard.super-admin')
             ->with('company', $company->getWallet('income-wallet'))
             ->with('players', $players)
             ->with('events', $events)
             ->with('bettingRound', $bettingRound)
             ->with('bettingEvent', $bettingEvent)
-            ->with('overAllCommissionRates', $overAllCommissionRates)
             ->with('transactions', $company->transactions);
     }
 

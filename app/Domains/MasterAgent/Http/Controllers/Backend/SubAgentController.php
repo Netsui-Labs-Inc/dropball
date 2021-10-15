@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentRequest;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentByMasterAgent;
+use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use Carbon\Carbon;
 
 class SubAgentController extends Controller
@@ -32,6 +33,7 @@ class SubAgentController extends Controller
     protected $permissionService;
 
     private $agentCommissionRate;
+    private $commissionRateService;
 
     /**
      * UserController constructor.
@@ -40,24 +42,32 @@ class SubAgentController extends Controller
      * @param  RoleService  $roleService
      * @param  PermissionService  $permissionService
      */
-    public function __construct(UserService $userService, RoleService $roleService, PermissionService $permissionService)
+    public function __construct(UserService $userService, 
+            RoleService $roleService, 
+            PermissionService $permissionService,
+            CommissionRateService $commissionRateService
+            )
     {
         $this->userService = $userService;
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
-
+        $this->commissionRateService = $commissionRateService;
     }
 
     public function updateByMasterAgent(UpdateAgentByMasterAgent $request, User $agent)
     {
         $input = $request->validated();
-
-        if(!$this->checkMasterAgentCommissionRates($input['referred_by'], $input['commission_rate']))
-        {
+    
+        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        
+        $convertedRateToPercentage = $this->commissionRateService
+            ->getCommissionRate(auth()->user()->hub_id, $AgentCommissionRate, auth()->user()->id);
+        
+        if($convertedRateToPercentage['error']){
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
-        $agent->commission_rate = $this->agentCommissionRate;
+        $agent->commission_rate = $convertedRateToPercentage['commission_rate'];
         $agent->referral_id = $input['referral_id'];
         $agent->save();
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
@@ -78,16 +88,20 @@ class SubAgentController extends Controller
         $user = $request->user();
         $input = $request->validated();
 
-        if(!$this->checkMasterAgentCommissionRates($input['referred_by'], $input['commission_rate']))
-        {
-            return redirect()->back()->withErrors('Something went wrong!');
-        }
-
         if ($request->has('email_verified') || $agent->email_verified_at) {
             $input['active'] = "1";
         }
 
-        $input['commission_rate'] = $this->agentCommissionRate;
+        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        
+        $convertedRateToPercentage = $this->commissionRateService
+            ->getCommissionRate($input['hub_id'], $AgentCommissionRate, $input['referred_by']);
+        
+        if($convertedRateToPercentage['error']){
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+
+        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
@@ -151,23 +165,27 @@ class SubAgentController extends Controller
             ->with('agent', $agent)
             ->with('hubs', $hubs);
     }
+    
+
 
     public function store(StoreSubAgentRequest $request)
     {
         $user = $request->user();
         $input = $request->validated();
 
-        if(!$this->checkMasterAgentCommissionRates($input['referred_by'], $input['commission_rate']))
-        {
-            return redirect()->back()->withErrors('Something went wrong!');
-        }
-
         if ($this->checkHubId($input['hub_id']))
         {
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
-        $input['commission_rate'] = $this->agentCommissionRate;
+        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        $convertedRateToPercentage = $this->commissionRateService
+                                        ->getCommissionRate($input['hub_id'], $AgentCommissionRate, $input['referred_by']);
+        if($convertedRateToPercentage['error']){
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+
+        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
@@ -196,24 +214,6 @@ class SubAgentController extends Controller
             return ((int) $hubId === auth()->user()->hub_id) ? false : true;
         }
         return false;
-    }
-
-    private function checkMasterAgentCommissionRates($masterAgentId, $AgentRate)
-    {
-        $masterAgentCommissionRate = User::where('id', $masterAgentId)
-                                    ->get()->first()->commission_rate;
-        
-        $this->agentCommissionRate = $AgentRate / $masterAgentCommissionRate;
-       
-        $masterAgentCommissionRate -= 0.1;
-        $rates = collect();
-        for ($rate = $masterAgentCommissionRate; $rate > 0  ; $rate -= 0.1) {
-            $formatedRate = number_format($rate, 1);
-            $rates->push($formatedRate);
-        }
-
-
-        return $rates->contains($AgentRate);
     }
 
     public function pending()
