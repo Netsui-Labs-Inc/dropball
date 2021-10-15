@@ -174,9 +174,9 @@ class UserService extends BaseService
         try {
             $user->update([
                 'type' => $user->isMasterAdmin() ? $this->model::TYPE_ADMIN : $data['type'] ?? $user->type,
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'mobile' => $data['mobile'],
+                'name' => $data['name'] ?? null,
+                'email' => $data['email'] ?? null,
+                'mobile' => $data['mobile'] ?? null,
                 'commission_rate' => $data['commission_rate'] ?? null,
                 'hub_id' => $data['hub_id'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
@@ -195,8 +195,9 @@ class UserService extends BaseService
                 }
             }
         } catch (Exception $e) {
-            DB::rollBack();
 
+            DB::rollBack();
+            dd($e);
             throw new GeneralException(__('There was a problem updating this user. Please try again.'));
         }
 

@@ -51,6 +51,13 @@ class HubsTable extends DataTableComponent
                 ->format(function ($value, $column, Hub $row) {
                     return $row->admin->name ?? 'N/A';
                 })->asHtml(),
+            Column::make(__('Commission Rate'), 'commission_rate')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Hub $row) {
+                    $hubRate = number_format($row->commission_rate, 1);
+                    return "$hubRate%";
+                })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
                     return number_format($row->balanceFloat, 2);

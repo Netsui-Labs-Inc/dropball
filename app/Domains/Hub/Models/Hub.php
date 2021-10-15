@@ -58,7 +58,9 @@ class Hub extends Model implements WalletFloat, Wallet
     use HasRoles;
 
     protected $fillable = [
-        'name', 'admin_id',
+        'name', 
+        'admin_id',
+        'commission_rate'
     ];
 
     public function admin()

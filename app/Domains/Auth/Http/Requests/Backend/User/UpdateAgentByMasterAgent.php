@@ -30,7 +30,8 @@ class UpdateAgentByMasterAgent extends FormRequest
     public function rules()
     {
         return [
-            'commission_rate' => 'required',
+            'whole_number_rate' => 'required',
+            'decimal_number_rate' => 'required',
             'referral_id' => ['required', 'max:100', Rule::unique('users')->ignore($this->agent)],
             'referred_by' => 'required',
         ];

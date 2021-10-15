@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use DB;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\Hub\Models\Hub;
 use Brick\Math\BigDecimal;
 
 class Agent
@@ -24,13 +25,15 @@ class Agent
         }
 
         $agentRole = 'Master Agent';
-        $commissionRate = $masterAgent->commission_rate;
+        $hubRate = Hub::where('id', $masterAgent->hub_id)->get()->first()->commission_rate;
+        $commissionRate = number_format($hubRate * $masterAgent->commission_rate, 1);
         if ($masterAgent->referred_by)
         {
             $parentAgent = User::where('id', $masterAgent->referred_by)
                                 ->get()
                                 ->first();
-            $commissionRate = number_format($parentAgent->commission_rate * $masterAgent->commission_rate, 1);
+            $parentAgentRate = number_format($hubRate * $parentAgent->commission_rate, 1);
+            $commissionRate = number_format($parentAgentRate * $masterAgent->commission_rate, 1);
             $agentRole = "Agent";
         }
 
@@ -46,8 +49,6 @@ class Agent
         $masterAgentWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
         $rate = BigDecimal::of($rate * 100)->toFloat();
         $commissionModel = $this->createCommission($bet, $masterAgent, 'master_agent', $commission, $rate,  []);
-
-      
 
         activity($agentRole. ' commissions')
             ->performedOn($masterAgent)

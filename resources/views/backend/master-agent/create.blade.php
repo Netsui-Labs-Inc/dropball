@@ -46,22 +46,7 @@
                         <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Code Name') }}" value="{{ old('referral_id') }}" maxlength="255" required />
                     </div>
                 </div><!--form-group-->
-                @role('Administrator')
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
-                    <div class="col-md-10">
-                    {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-                @endrole
-
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
-                    <div class="col-md-10">
-                        {!! Form::select('commission_rate', ['1' => "1%", '1.25'=> "1.25%", '1.5' => "1.5%", '1.75' => "1.75%", '2' => "2%"] , null , ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-
+                <livewire:master-agent-commission-rate />
                 <div class="form-group row">
                     <label for="password" class="col-md-2 col-form-label">@lang('Password')</label>
 

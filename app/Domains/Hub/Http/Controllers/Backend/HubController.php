@@ -11,6 +11,7 @@ use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
+use App\Models\OverallCommissionRate;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -29,30 +30,64 @@ class HubController extends Controller
 
     public function create()
     {
+        $rates = $this->createRates();
         $hubAdmins = User::role('Virtual Hub')
             ->doesntHave('hubAdmin')
             ->get()->pluck('name', 'id');
-        return view('backend.hub.create')->with([
-            'hubAdmins' => $hubAdmins,
-        ]);
+        return view('backend.hub.create')
+        ->with(['hubAdmins' => $hubAdmins])
+        ->with('wholeNumberRates', $rates['whole-number'])
+        ->with('decimalNumberRates', $rates['decimal-number']);
+    }
+
+    private function createRates($hub = null)
+    {
+        $overAllCommissionRate = OverallCommissionRate::query()
+                                ->get()->first();
+
+        if(!$overAllCommissionRate) {
+            $currentOverallCommissionRate = config('dropball.default_overall_commission_rate');
+        } else {
+            $currentOverallCommissionRate = ($overAllCommissionRate->rate - 1);
+        }
+
+        if ($hub) {
+            $wholeNumberRate[floor($hub->commission_rate)] = floor($hub->commision_rate);
+            $decimal = $hub->commission_rate - floor($hub->commission_rate);
+            $decimalNumberRate[$decimal] = '.' . $decimal * 10;
+        }
+
+        foreach (range(1, $currentOverallCommissionRate) as $number) {
+            $wholeNumberRate[$number] = $number;
+        }
+        
+        foreach (range(0, 9) as $number) {
+            $decimalNumberRate["0.$number"] = ".$number";
+        }
+        
+        return ['whole-number' => $wholeNumberRate, 'decimal-number' => $decimalNumberRate];
     }
 
     public function edit(Hub $hub)
     {
+        
         $hubAdmins = User::role('Virtual Hub')
             ->where(function($query) use ($hub) {
                 $query->doesntHave('hubAdmin')
                     ->orWhere('id', $hub->admin_id);
             })
             ->get()->pluck('name', 'id');
-        return view('backend.hub.edit')->with([
-            'hubAdmins' => $hubAdmins,
-            'hub' => $hub
-        ]);
+        
+        $rates = $this->createRates($hub);
+        return view('backend.hub.edit')
+        ->with(['hubAdmins' => $hubAdmins,'hub' => $hub])
+        ->with('wholeNumberRates', $rates['whole-number'])
+        ->with('decimalNumberRates', $rates['decimal-number']);;
     }
 
     public function store(StoreHubRequest $request)
     {
+
         try {
             $hubDetails = $request->validated();
             $newHub = (new CreateHubAction)($hubDetails);
