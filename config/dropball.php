@@ -8,4 +8,5 @@ return [
     ],
     'minimum_withdrawal' => env('MINIMUM_WITHDRAWAL', 500),
     'streaming_minimum_balance' => env('STREAMING_MINIMUM_BALANCE', 50),
+    'default_overall_commission_rate' => env('DEFAULT_OVERALL_COMMISSION', 3)
 ];

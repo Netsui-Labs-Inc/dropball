@@ -37,7 +37,8 @@ class StoreSubAgentRequest extends FormRequest
             'referred_by' => 'required',
             'hub_id' => 'required',
             'password' => ['max:100'],
-            'commission_rate' => 'required'
+            'whole_number_rate' => 'required',
+            'decimal_number_rate' => 'required'
         ];
     }
 

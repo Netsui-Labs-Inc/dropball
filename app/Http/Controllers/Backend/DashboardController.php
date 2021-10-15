@@ -8,7 +8,9 @@ use App\Domains\BettingRound\Models\BettingRound;
 use App\Domains\Hub\Models\Hub;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
+use App\Models\CommissionRate;
 use App\Models\Company;
+use App\Models\OverallCommissionRate;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -92,7 +94,7 @@ class DashboardController extends Controller
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
-
+        
         return view('backend.dashboard.super-admin')
             ->with('company', $company->getWallet('income-wallet'))
             ->with('players', $players)

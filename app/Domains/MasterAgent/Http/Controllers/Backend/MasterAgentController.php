@@ -4,11 +4,13 @@
 namespace App\Domains\MasterAgent\Http\Controllers\Backend;
 
 use App\Domains\Auth\Http\Requests\Backend\User\StoreMasterAgentRequest;
+use App\Domains\Auth\Http\Requests\Backend\User\UpdateMasterAgentByHubRequest;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateMasterAgentRequest;
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
+use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\MasterAgent\Http\Service\AgentFilter;
 use App\Domains\Wallet\Models\Withdrawal;
@@ -37,6 +39,8 @@ class MasterAgentController extends Controller
      */
     protected $permissionService;
 
+    private $commissionRateService;
+
     /**
      * UserController constructor.
      *
@@ -46,11 +50,16 @@ class MasterAgentController extends Controller
 
      */
 
-    public function __construct(UserService $userService, RoleService $roleService, PermissionService $permissionService)
-    {
+    public function __construct(
+        UserService $userService, 
+        RoleService $roleService, 
+        PermissionService $permissionService,
+        CommissionRateService $commissionRateService
+    ){
         $this->userService = $userService;
         $this->roleService = $roleService;
         $this->permissionService = $permissionService;
+        $this->commissionRateService = $commissionRateService;
     }
     public function index(Request $request)
     {
@@ -74,17 +83,23 @@ class MasterAgentController extends Controller
 
     public function create()
     {
-        $hubs = Hub::all()->pluck('name', 'id');
-        return view('backend.master-agent.create')->with('hubs', $hubs);
+        return view('backend.master-agent.create');
     }
 
     public function edit(User $masterAgent)
     {
         $hubs = Hub::all()->pluck('name', 'id');
+        $hubText = '';
+        if(auth()->user()->hasRole('Virtual Hub'))
+        {
+            $hubText = '.hub';
+        }
 
         return view('backend.master-agent.edit')
             ->with('masterAgent', $masterAgent)
-            ->with('hubs', $hubs);
+            ->with('hubs', $hubs)
+            ->with('hubText', $hubText);
+
     }
 
     public function store(StoreMasterAgentRequest $request)
@@ -100,27 +115,71 @@ class MasterAgentController extends Controller
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         }
+        $masterAgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        $convertedRateToPercentage = $this->getCommissionRate($input['hub_id'], $masterAgentCommissionRate);
         
+        if($convertedRateToPercentage['error']){
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
         $user = $this->userService->store($input);
 
         $user->createWallet([
             'name' => 'Income Wallet',
             'slug' => 'income-wallet',
         ]);
-
+       
         CommissionRate::create([
             'hub_id'          => $input['hub_id'],
             'master_agent_id' => $user->id,
-            'commission_rate' => 3 - $input['commission_rate']
+            'commission_rate' => 1 - $input['commission_rate'] // 1 is equal to 100%
         ]);
 
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");
     }
 
-    public function update(UpdateMasterAgentRequest $request, User $masterAgent)
+    private function getCommissionRate($hubId, $masterAgentCommision)
+    {
+        $hubCommissionRate = Hub::where('id', $hubId)->get()->first()->commission_rate;
+        if($this->commissionRateService->checkCommissionRate($masterAgentCommision, $hubCommissionRate)['error'])
+        {
+            return ['error' => true, 'commission_rate' => null];
+        }
+
+        $masterAgentCommissionRate = $masterAgentCommision / $hubCommissionRate;
+       
+        return ['error' => false, 'commission_rate' => number_format($masterAgentCommissionRate, 2)];
+
+    }
+
+    public function updateByHub(UpdateMasterAgentByHubRequest $request, User $masterAgent)
+    {
+        $input = $request->validated();
+        $input['name'] = $masterAgent->name;
+        $input['email'] = $masterAgent->email;
+        $input['mobile'] = $masterAgent->mobile;
+        $input['referral_id'] = $masterAgent->referral_id;
+        if($this->update($masterAgent, $request, $input))
+        {
+            return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
+        }
+        return redirect()->back()->withErrors('Something went wrong!');
+    }
+
+    public function updateByAdmin(UpdateMasterAgentRequest $request, User $masterAgent)
+    {
+        $input = $request->validated();
+        if($this->update($masterAgent, $request, $input))
+        {
+            return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
+        }
+        return redirect()->back()->withErrors('Something went wrong!');
+       
+    }
+
+    private function update(User $masterAgent, $request, $input)
     {
         $user = $request->user();
-        $input = $request->validated();
         if ($request->has('email_verified') || $masterAgent->email_verified_at) {
             $input['active'] = "1";
         }
@@ -134,6 +193,13 @@ class MasterAgentController extends Controller
             $input['hub_id'] = $user->hub_id;
         }
 
+        $masterAgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        $convertedRateToPercentage = $this->getCommissionRate($input['hub_id'], $masterAgentCommissionRate);
+
+        if($convertedRateToPercentage['error']){
+            return false;
+        }
+        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
         $user = $this->userService->update($masterAgent, $input);
 
         $commissionRate = CommissionRate::where('hub_id', $input['hub_id'])
@@ -141,23 +207,20 @@ class MasterAgentController extends Controller
                                         ->get()
                                         ->first();
         
-        $defaultHubCommissionRate = 3;
-        if($commissionRate)
-        {
-            $commissionRate->commission_rate = $defaultHubCommissionRate - $input['commission_rate'];
+        if ($commissionRate) {
+            $commissionRate->commission_rate = 1 - $input['commission_rate']; //1 is equal to 100%
             $commissionRate->updated_at = Carbon::now()->toDateTimeString();
             $commissionRate->save();
      
-        } else 
-        {
+        } else {
             CommissionRate::create([
                 'hub_id'          => $input['hub_id'],
                 'master_agent_id' => $user->id,
-                'commission_rate' => 3 - $input['commission_rate']
+                'commission_rate' => 1 - $input['commission_rate'] //1 is equal to 100%
             ]);
         }
         
-        return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
+        return true;
     }
 
     public function deposit(User $masterAgent, DepositRequest $request)

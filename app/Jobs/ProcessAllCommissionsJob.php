@@ -74,7 +74,7 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
             $agent = (new Agent)($bet);
             $operator = (new Operator)($bet);
             $hub = (new Hub)($bet);
-            $developer = (new Developer)($bet);
+            //$developer = (new Developer)($bet);
             $subAgent = (new SubAgent)($bet);
 
             $bet->commission_processed = true;

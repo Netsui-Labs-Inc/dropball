@@ -7,6 +7,7 @@ namespace App\Domains\BettingRound\Actions\Commission;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\Hub\Models\Hub;
 use Brick\Math\BigDecimal;
 
 class SubAgent
@@ -25,9 +26,11 @@ class SubAgent
             return false;
         }
         $parentAgent = $masterAgent->masterAgent;
+        $hubRate = Hub::where('id', $masterAgent->hub_id)->get()->first()->commission_rate;
+        $parentAgentRate = $hubRate * $parentAgent->commission_rate;
         $bettingRound = $bet->bettingRound;
-        $agentCommission = number_format($parentAgent->commission_rate * $masterAgent->commission_rate, 1);
-        $masterAgentCommissionRate = ( $parentAgent->commission_rate - $agentCommission ) / 100;
+        $agentCommission = number_format($parentAgentRate * $masterAgent->commission_rate, 1);
+        $masterAgentCommissionRate = ( $parentAgentRate - $agentCommission ) / 100;
         $rate = BigDecimal::of($masterAgentCommissionRate )->toFloat();
 
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();

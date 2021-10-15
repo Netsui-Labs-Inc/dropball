@@ -27,8 +27,10 @@ class StoreHubRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'max:100'],
-            'admin_id' => ['required','exists:users,id'],
+            'name'                => ['required', 'max:100'],
+            'admin_id'            => ['required','exists:users,id'],
+            'whole_number_rate'   => 'required',
+            'decimal_number_rate' => 'required'
         ];
     }
 
