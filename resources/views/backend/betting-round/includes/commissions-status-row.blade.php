@@ -4,11 +4,9 @@
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
         <td><span class='badge badge-danger text-white'>FAILED</span></td>
-        <td><span class='badge badge-danger text-white'>FAILED</span></td>
     @else
         <td>@if($masterAgent) <span class='badge badge-success'>OK</span> @else <span class='badge badge-warning text-white'>PENDING</span>@endif</td>
         <td>@if($hub) <span class='badge badge-success'>OK</span> @else <span class='badge badge-warning text-white'>PENDING</span>@endif</td>
-        <td>@if($developer) <span class='badge badge-success'>OK</span> @else <span class='badge badge-warning text-white'>PENDING</span>@endif</td>
         <td>@if($operator) <span class='badge badge-success'>OK</span> @else <span class='badge badge-warning text-white'>PENDING</span>@endif</td>
     @endif
 

@@ -5,6 +5,7 @@ namespace App\Domains\BettingRound\Actions\Commission;
 
 
 use App\Domains\Bet\Models\Bet;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
 use App\Jobs\Traits\WalletAndCommission;
 use Brick\Math\BigDecimal;
 use DB;
@@ -12,7 +13,7 @@ class Operator
 {
     use WalletAndCommission;
 
-    public function __invoke(Bet $bet)
+    public function __invoke(Bet $bet, CommissionRatesComputation $commissionRatesComputation)
     {
         if($bet->commissions()->where('type', 'operator')->exists()) {
             return true;
@@ -21,7 +22,7 @@ class Operator
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
         $operatorWallet->refreshBalance();
 
-        $rate = $this->hasSubAgent($bet->user) ? .0575 : .06;
+        $rate =  $commissionRatesComputation->operatorCOmmissionRate();
         $bettingRound = $bet->bettingRound;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 

@@ -10,6 +10,7 @@ use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
 use App\Events\BetCommissionsProcessingFailed;
 use App\Events\BetCommissionsProcessingFinished;
+use App\Models\CommissionRate;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,12 +19,15 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
+use Aws\ComputeOptimizer\ComputeOptimizerClient;
 
 class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private Bet $bet;
+    private CommissionRatesComputation $commissionRatesComputation;
 
     /**
      * Create a new job instance.
@@ -32,7 +36,9 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
      */
     public function __construct(Bet $bet)
     {
+        
         $this->bet = $bet;
+        $this->commissionRatesComputation = new CommissionRatesComputation($bet);
     }
 
     /**
@@ -68,14 +74,15 @@ class ProcessAllCommissionsJob implements ShouldQueue, ShouldBeUnique
     public function handle()
     {
         $bet = $this->bet;
+        $commission =  $this->commissionRatesComputation->commission();
 
         try {
             DB::beginTransaction();
-            $agent = (new Agent)($bet);
-            $operator = (new Operator)($bet);
-            $hub = (new Hub)($bet);
+            $agent = (new Agent)($bet, $commission);
+            $operator = (new Operator)($bet, $commission);
+            $hub = (new Hub)($bet, $commission);
             //$developer = (new Developer)($bet);
-            $subAgent = (new SubAgent)($bet);
+            $subAgent = (new SubAgent)($bet, $commission);
 
             $bet->commission_processed = true;
             $bet->save();

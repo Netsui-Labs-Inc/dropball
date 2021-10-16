@@ -2,18 +2,16 @@
 
 namespace App\Domains\BettingRound\Actions\Commission;
 
-use App\Domains\Auth\Models\User;
-use DB;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Domains\Bet\Models\Bet;
-use App\Domains\Hub\Models\Hub;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
 use Brick\Math\BigDecimal;
 
 class Agent
 {
     use WalletAndCommission;
 
-    public function __invoke(Bet $bet)
+    public function __invoke(Bet $bet, CommissionRatesComputation $commissionRatesComputation)
     {
         if($bet->commissions()->where('type', 'master_agent')->exists()) {
             return true;
@@ -25,20 +23,15 @@ class Agent
         }
 
         $agentRole = 'Master Agent';
-        $hubRate = Hub::where('id', $masterAgent->hub_id)->get()->first()->commission_rate;
-        $commissionRate = number_format($hubRate * $masterAgent->commission_rate, 1);
+        $commissionRate = $commissionRatesComputation->masterAgentCommissionRate();
         if ($masterAgent->referred_by)
         {
-            $parentAgent = User::where('id', $masterAgent->referred_by)
-                                ->get()
-                                ->first();
-            $parentAgentRate = number_format($hubRate * $parentAgent->commission_rate, 1);
-            $commissionRate = number_format($parentAgentRate * $masterAgent->commission_rate, 1);
+            $commissionRate = $commissionRatesComputation->agentCommissionRate();
             $agentRole = "Agent";
         }
 
         $bettingRound = $bet->bettingRound;
-        $rate = BigDecimal::of(($commissionRate / 100) ?? .01)->toFloat();
+        $rate = BigDecimal::of(($commissionRate) ?? .01)->toFloat();
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Bet#{$bet->id} Master Agent #{$masterAgent->id} {$masterAgent->name} will receive {$masterAgent->commission_rate}%($commission) commission  from Player#{$player->id} bet of {$bet->bet_amount}");
