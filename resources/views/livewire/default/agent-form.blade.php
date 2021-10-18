@@ -73,7 +73,13 @@
                     <div class="form-group row">
                         <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
                         <div class="col-md-10">
-                        {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control', 'wire:model="hubId"', 'wire:change="selectHub"', 'placeholder' => 'Select Hub']) !!}
+                            <select class="form-control" name="hub_id" wire:change="selectHub" wire:model="hubId">
+                                <option value="">Select Hub</option>
+                                @foreach($hubs as $hub)
+                                    <option value="{{ $hub->id }}">{{ $hub->name }}</option>
+                                @endforeach
+                            </select>
+                       
                         </div>
                     </div>
                 @endif
@@ -87,21 +93,23 @@
                     <div class="form-group row">
                         <label for="email" class="col-md-2 col-form-label">@lang('Master Agent')</label>
                         <div class="col-md-10">
-                            <input type="text" name="hub_name" class="form-control" value="{{ $agentMasterAgentName }}" disabled />
+                            <input type="text" name="master_agent" class="form-control" value="{{ $agentMasterAgentName }}" disabled />
                         </div>
                     </div>
-                @else
+                @endif
+                @if($showMasterAgentList)
                     <div class="form-group row">
                         <label for="referred_by" class="col-md-2 col-form-label">@lang('Master Agent')</label>
                         <div class="col-md-10">
                             <select class="form-control" wire:model="masterAgent" wire:change="setFormWhenSelectedMasterAgent" name="referred_by">
+                                <option value="">Select Master Agent</option>
                                 @foreach ($masterAgents as $masterAgent)
                                     <option value="{{ $masterAgent->id }}">{{ $masterAgent->name }}</option>
                                 @endforeach
                             </select>   
                         </div>
                     </div>
-                @endif
+                    @endif
             @else
                 <input
                     type="hidden"

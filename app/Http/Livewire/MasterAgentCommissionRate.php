@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use App\Domains\Hub\Models\Hub;
 use Livewire\Component;
@@ -15,7 +16,7 @@ class MasterAgentCommissionRate extends Component
     public $showRates = true;
     public $selectedWholeNumber;
     public $wholeNumber;
-    public $entity;
+    public $entityRate;
     public $editMode;
     public $masterAgentHubName;
     public $masterAgentHubId;
@@ -25,8 +26,7 @@ class MasterAgentCommissionRate extends Component
 
     public function mount($editMode = false, $masterAgent = null)
     {
-        $hubs = Hub::all();
-        $this->hubs = $hubs->pluck('name', 'id');
+        $this->hubs = Hub::all();
         $this->editMode = $editMode;
     
         if($this->editMode) {
@@ -70,14 +70,16 @@ class MasterAgentCommissionRate extends Component
     public function showRates(CommissionRateService $commissionRateService)
     {
         $this->showRates = false;
-        $this->entity = Hub::where('id', $this->hub)->get()->first();
-        $this->setRates($this->entity->commission_rate, $commissionRateService);
+        $entity = Hub::where('id', $this->hub)->get()->first();
+        $commissionRateConversion = new CommissionRatesConversion($entity, true);
+        $this->entityRate = $commissionRateConversion->convertHub()->hubCommissionRate();
+        $this->setRates($this->entityRate, $commissionRateService);
     }
 
     private function setRates($commissionRate, $commissionRateService)
     {
         $this->wholeNumber = floor($commissionRate);
-        $commisionRates = $commissionRateService->setRates($commissionRate, $this->wholeNumber);
+        $commisionRates = $commissionRateService->setRates($commissionRate, $this->wholeNumber, 2);
         $this->decimalNumberRates = $commisionRates['decimal_number_rate'];
         $this->wholeNumberRates = $commisionRates['whole_number_rate'];
 
@@ -86,7 +88,7 @@ class MasterAgentCommissionRate extends Component
     public function checkMaxRateAssignment(CommissionRateService $commissionRateService)
     {
         $this->decimalNumberRates = $commissionRateService
-                                    ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->entity->commission_rate);
+            ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->entityRate, 2);
     
     }
 

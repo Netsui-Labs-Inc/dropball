@@ -9,26 +9,58 @@ use Livewire\Component;
 class SaveOverallCommissionRate extends Component
 {
   
-    public $overAllCommissionRates;
+    public $overAllCommissionRatesWholeNumber;
+    public $overAllCommissionRatesDecimalNumber;
     public $disabled = true;
-    public $selectedRate;
+    public $selectedRateWholeNumber;
+    public $selectedRateDecimalNumber;
     public $overallCommissionRate;
+    public $overallCommissionRateValue;
+    public $editMode;
     public function mount()
     {
-        $this->overallCommissionRate = OverallCommissionRate::query()
-                                        ->get()
-                                        ->first();
-        $currentOverallCommissionRate = config('dropball.default_overall_commission_rate') . '%';
+        $this->overallCommissionRate= OverallCommissionRate::query()->first();
+        $this->overallCommissionRateValue = config('dropball.default_overall_commission_rate') . '%';
         if($this->overallCommissionRate) {
-            $currentOverallCommissionRate = $this->overallCommissionRate->rate;
+            $this->overallCommissionRateValue = $this->overallCommissionRate->rate;
+        }
+     
+        foreach (range(0, 10) as $number) {
+            $this->overAllCommissionRatesWholeNumber[$number] = $number;
         }
 
-        $this->overAllCommissionRates[0] = "$currentOverallCommissionRate%";
-       
-        foreach (range(1, 99) as $number) {
-            $this->overAllCommissionRates[$number] = "$number%";
+       $this->setDecimal();
+
+    }
+
+    private function setDecimal()
+    {
+        foreach (range(0, 9) as $number) {
+            $this->overAllCommissionRatesDecimalNumber["0.$number"] = ".$number";     
         }
-    
+    }
+
+    public function adjustDecimal()
+    {
+        if($this->selectedRateWholeNumber === '10')
+        {
+            $this->overAllCommissionRatesDecimalNumber = null;
+            $this->overAllCommissionRatesDecimalNumber["0.0"] = ".0";
+            return;
+        }
+
+        $this->setDecimal();
+
+    }
+
+    public function edit()
+    {
+        $this->editMode = true;
+    }
+
+    public function cancel()
+    {
+        $this->editMode = false;
     }
 
     public function enableButton()
@@ -38,18 +70,36 @@ class SaveOverallCommissionRate extends Component
 
     public function save()
     {
-        $this->disabled = true;
-        if($this->overallCommissionRate)
+        $this->editMode = false;
+        $newOverallRate = $this->selectedRateWholeNumber + $this->selectedRateDecimalNumber;
+        if($this->validateRate($newOverallRate ))
         {
-            $this->overallCommissionRate->rate = $this->selectedRate;
-            $this->overallCommissionRate->updated_at = Carbon::now()->toDateTimeString();
-            $this->overallCommissionRate->save();
             return;
         }
 
-        $this->overallCommissionRate = OverallCommissionRate::create([
-            'rate' => $this->selectedRate
+        if($this->overallCommissionRate)
+        {
+            $this->overallCommissionRate->rate = $newOverallRate;
+            $this->overallCommissionRate->updated_at = Carbon::now()->toDateTimeString();
+            $this->overallCommissionRate->save();
+            $this->overallCommissionRateValue = $this->overallCommissionRate->rate;
+            return;
+        }
+
+        $newRate = $this->overallCommissionRate = OverallCommissionRate::create([
+            'rate' => $this->selectedRateWholeNumber + $this->selectedRateDecimalNumber
         ]);
+        $this->overallCommissionRateValue = $newRate->rate;
+
+    }
+
+    private function validateRate($newOverallRate)
+    {
+        if($newOverallRate > config('dropball.max_overall_commission') 
+        || $newOverallRate <= 0
+        ){
+            return true;
+        }
 
     }
 

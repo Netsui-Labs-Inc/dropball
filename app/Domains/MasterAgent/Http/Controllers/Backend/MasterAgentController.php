@@ -10,6 +10,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\PermissionService;
 use App\Domains\Auth\Services\RoleService;
 use App\Domains\Auth\Services\UserService;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\MasterAgent\Http\Service\AgentFilter;
@@ -112,17 +113,27 @@ class MasterAgentController extends Controller
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
         
+       
         if ($user->hasRole('Virtual Hub')) {
-            $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
+            $input['hub_id'] = $user->hub_id;
         }
+
+        $hub = Hub::where('id', $input['hub_id'])->first();
         $masterAgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
-        $convertedRateToPercentage = $this->getCommissionRate($input['hub_id'], $masterAgentCommissionRate);
-        
-        if($convertedRateToPercentage['error']){
+        $commissionRateConversion = new CommissionRatesConversion($hub, true);
+        $hubRate = $commissionRateConversion->convertHub()->hubCommissionRate();
+        if ($hubRate < $masterAgentCommissionRate || $masterAgentCommissionRate <= 0)
+        {
             return redirect()->back()->withErrors('Something went wrong!');
         }
-        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
+
+        $input['commission_rate'] = $masterAgentCommissionRate;
         $user = $this->userService->store($input);
+        $commissionRateConversion = new CommissionRatesConversion($user);
+        $masterAgentCommissionRate = $commissionRateConversion->converMasterAgentRateToPercentage($user->commission_rate, $input['hub_id']);
+        
+        $user->commission_rate = $masterAgentCommissionRate;
+        $user->save();
 
         $user->createWallet([
             'name' => 'Income Wallet',
@@ -132,24 +143,10 @@ class MasterAgentController extends Controller
         CommissionRate::create([
             'hub_id'          => $input['hub_id'],
             'master_agent_id' => $user->id,
-            'commission_rate' => 1 - $input['commission_rate'] // 1 is equal to 100%
+            'commission_rate' => 1 - $masterAgentCommissionRate // 1 is equal to 100%
         ]);
 
         return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent Created Successfully");
-    }
-
-    private function getCommissionRate($hubId, $masterAgentCommision)
-    {
-        $hubCommissionRate = Hub::where('id', $hubId)->get()->first()->commission_rate;
-        if($this->commissionRateService->checkCommissionRate($masterAgentCommision, $hubCommissionRate)['error'])
-        {
-            return ['error' => true, 'commission_rate' => null];
-        }
-
-        $masterAgentCommissionRate = $masterAgentCommision / $hubCommissionRate;
-       
-        return ['error' => false, 'commission_rate' => number_format($masterAgentCommissionRate, 2)];
-
     }
 
     public function updateByHub(UpdateMasterAgentByHubRequest $request, User $masterAgent)
@@ -194,12 +191,15 @@ class MasterAgentController extends Controller
         }
 
         $masterAgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
-        $convertedRateToPercentage = $this->getCommissionRate($input['hub_id'], $masterAgentCommissionRate);
 
-        if($convertedRateToPercentage['error']){
-            return false;
+        $commissionRateConversion = new CommissionRatesConversion($masterAgent);
+        $masterAgentCommissionRate = $commissionRateConversion->converMasterAgentRateToPercentage($masterAgentCommissionRate, $input['hub_id'],  true);
+        
+        if(!$masterAgentCommissionRate){
+            return redirect()->back()->withErrors('Something went wrong!');
         }
-        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
+        
+        $input['commission_rate'] = $masterAgentCommissionRate;
         $user = $this->userService->update($masterAgent, $input);
 
         $commissionRate = CommissionRate::where('hub_id', $input['hub_id'])

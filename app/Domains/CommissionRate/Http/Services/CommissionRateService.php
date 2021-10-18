@@ -13,7 +13,7 @@ class CommissionRateService
         
     }
 
-    public function setRates($commissionRate, $wholeNumber)
+    public function setRates($commissionRate, $wholeNumber, $startNumber = 0)
     {
       
         $decimal = $commissionRate - $wholeNumber;
@@ -26,14 +26,14 @@ class CommissionRateService
         foreach (range(0, $wholeNumber) as $number) {
             $wholeNumberRate[$number] = $number;
         }
-        $decimalNumberRate = $this->setDecimal();
+        $decimalNumberRate = $this->setDecimal(9, $startNumber);
         return ['whole_number_rate' => $wholeNumberRate, 'decimal_number_rate' => $decimalNumberRate];
 
     }
 
-    private function setDecimal($decimal = 9)
+    private function setDecimal($decimal = 9, $start = 0)
     {
-        foreach (range(0, $decimal) as $number) {
+        foreach (range($start, $decimal) as $number) {
             $decimalNumberRate["0.$number"] = ".$number";
         }
 
@@ -41,17 +41,24 @@ class CommissionRateService
 
     }
 
-    public function checkMaxRateAssignment($selectedNumber, $wholeNumber, $commissionRate)
+    public function checkMaxRateAssignment($selectedNumber, $wholeNumber, $commissionRate, $startNumber)
     {
         if($selectedNumber == $wholeNumber)
         {
-            $decimal = $selectedNumber - $commissionRate;
+            $decimal = abs($selectedNumber - $commissionRate);
             $decimal *= 10;
-
-            if($decimal <= 1) {
+        
+            if(number_format($decimal) <= 1) {
                 return $this->setDecimal(0);
             }
+            return $this->setDecimal($decimal);
         }
+
+        if($selectedNumber === "0")
+        {
+            return $this->setDecimal(9, $startNumber);
+        }
+
         return $this->setDecimal();
     }
 
@@ -66,18 +73,17 @@ class CommissionRateService
 
     public function setCurrentRate($user)
     {
-        $parentCommissionRate = null;
+        $commissionRateConversion = new CommissionRatesConversion($user);
         if($user->hasRole('Master Agent')) {
-            $parentCommissionRate = Hub::where('id', $user->hub_id)->get()->first()->commission_rate;
+            $userCommisionRate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
         }
 
         if($user->hasRole('Master Agent') && $user->referred_by !== null)
         {   
-            $masterAgentRate = User::where('id', $user->referred_by)->get()->first()->commission_rate;
-            $parentCommissionRate = $parentCommissionRate * $masterAgentRate;
+            $userCommisionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
         } 
 
-        $userCommisionRate = number_format($user->commission_rate * $parentCommissionRate, 2);
+       
         $wholeNumber = floor($userCommisionRate);
         $decimal = $userCommisionRate - $wholeNumber;
         $decimalNumberRate[$decimal] = '.' . $decimal * 10;
@@ -86,24 +92,5 @@ class CommissionRateService
             'whole_number' => $wholeNumber,
             'decimal_number' => $decimal
         ];
-    }
-
-    public function getCommissionRate($hubId, $commissionRate, $masterAgentId = null)
-    {
-        $parentCommissionRate = Hub::where('id', $hubId)->get()->first()->commission_rate;
-        if($masterAgentId) 
-        {
-            $masterAgentPercentageRate = User::where('id', $masterAgentId)->get()->first()->commission_rate;
-            $parentCommissionRate = number_format($parentCommissionRate * $masterAgentPercentageRate, 1);
-        }   
-        
-        if($this->checkCommissionRate($commissionRate, $parentCommissionRate)['error'])
-        {
-            return ['error' => true, 'commission_rate' => null];
-        }
-
-        $commissionPercentRate =  $commissionRate / $parentCommissionRate;
-        return ['error' => false, 'commission_rate' => number_format($commissionPercentRate, 2)];
-
     }
 }

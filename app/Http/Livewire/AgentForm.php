@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use App\Domains\Hub\Models\Hub;
 use Livewire\Component;
@@ -37,6 +38,7 @@ class AgentForm extends Component
     public $agentMasterAgentId;
     public $showButtonCancelRate;
     public $test = [];
+    public $showMasterAgentList;
     public function mount($agent = null, $edit = false, $masterAgentsEdit = false, $editMode = false)
     {
         $this->agent = $agent;
@@ -54,11 +56,13 @@ class AgentForm extends Component
             $this->agentCurrentRateWholeNumber = $currentCommissionRate['whole_number'];
             $this->agentCurrentRateDecimalNumber = $currentCommissionRate['decimal_number'];
         }
+        
         if (auth()->user()->hasRole('Administrator')) 
         {
+            $this->notAMasterAgent = true;
             $this->masterAgentsEdit = $masterAgentsEdit;
             $this->agentsMasterAgent = $this->setAgent($agent);
-            $this->hubs = Hub::all()->pluck('name', 'id');
+            $this->hubs = Hub::all();
             $this->hubId = auth()->user()->hub_id;
             return;
         }
@@ -76,6 +80,7 @@ class AgentForm extends Component
     {
         $this->agentsMasterAgent = null;
         $this->selectedAgent = false;
+        $this->showMasterAgentList = true;
         $this->showRate = false;
         $this->firstLoad = false;
     }
@@ -95,15 +100,19 @@ class AgentForm extends Component
 
         $hubId = $this->getHub();
         $this->notAMasterAgent = true;
-
+        
         $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->where('roles.name', 'Master Agent')
                 ->where('referred_by', null)
                 ->where('hub_id', $hubId)
                 ->get(['users.id', 'users.name']);
-        $masterAgent = $this->masterAgents->first();
-        $this->showRate(User::where('id', $masterAgent->id)->get()->first());
+        // $masterAgent = $this->masterAgents->last();
+        // if($masterAgent)
+        // {
+        //     $this->showRate(User::where('id', $masterAgent->id)->get()->first());
+        // }
+        
     }
 
     private function getHub()
@@ -145,9 +154,10 @@ class AgentForm extends Component
         {
             $masterAgent = User::where('id', $this->masterAgent)->get()->first();
         }
-        $hub = Hub::where('id',  $masterAgent->hub_id)->get()->first();
-        $rate = number_format($hub->commission_rate * $masterAgent->commission_rate, 1);
 
+        $commissionRateConversion = new CommissionRatesConversion($masterAgent);
+        $rate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
+        
         $this->setRates($rate);
     }
     
@@ -156,7 +166,7 @@ class AgentForm extends Component
         $commissionRateService = new CommissionRateService();
         $this->parentCommissionRate = $commissionRate;
         $this->wholeNumber = floor($commissionRate);
-        $commisionRates = $commissionRateService->setRates($commissionRate, $this->wholeNumber);
+        $commisionRates = $commissionRateService->setRates($commissionRate, $this->wholeNumber, 1);
         $this->decimalNumberRates = $commisionRates['decimal_number_rate'];
         $this->wholeNumberRates = $commisionRates['whole_number_rate'];
 
@@ -165,7 +175,7 @@ class AgentForm extends Component
     public function checkMaxRateAssignment(CommissionRateService $commissionRateService)
     {
         $this->decimalNumberRates = $commissionRateService
-            ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->parentCommissionRate);
+            ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->parentCommissionRate, 1);
     
     }
 
@@ -180,6 +190,7 @@ class AgentForm extends Component
     {
         $this->editMode = true;
         $this->showButtonCancelRate = false;
+        $this->showMasterAgentList = false;
     }
 
     public function render()

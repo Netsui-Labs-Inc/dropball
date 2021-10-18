@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentRequest;
 use App\Domains\Auth\Http\Requests\Backend\User\UpdateAgentByMasterAgent;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\CommissionRate\Http\Services\CommissionRateService;
 use Carbon\Carbon;
 
@@ -56,18 +57,18 @@ class SubAgentController extends Controller
 
     public function updateByMasterAgent(UpdateAgentByMasterAgent $request, User $agent)
     {
+      
         $input = $request->validated();
-    
+        
         $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        $commissionRateConversion = new CommissionRatesConversion($agent);
+        $AgentCommissionRate = $commissionRateConversion
+            ->convertAgentRateToPercentage($AgentCommissionRate, $input['hub_id'], $input['referred_by'], true);
         
-        $convertedRateToPercentage = $this->commissionRateService
-            ->getCommissionRate(auth()->user()->hub_id, $AgentCommissionRate, auth()->user()->id);
-        
-        if($convertedRateToPercentage['error']){
+        if(!$AgentCommissionRate){
             return redirect()->back()->withErrors('Something went wrong!');
         }
-
-        $agent->commission_rate = $convertedRateToPercentage['commission_rate'];
+        $agent->commission_rate = $AgentCommissionRate;
         $agent->referral_id = $input['referral_id'];
         $agent->save();
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
@@ -81,38 +82,6 @@ class SubAgentController extends Controller
 
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent Created Successfully");
 
-    }
-
-    public function update(UpdateAgentRequest $request, User $agent)
-    {
-        $user = $request->user();
-        $input = $request->validated();
-
-        if ($request->has('email_verified') || $agent->email_verified_at) {
-            $input['active'] = "1";
-        }
-
-        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
-        
-        $convertedRateToPercentage = $this->commissionRateService
-            ->getCommissionRate($input['hub_id'], $AgentCommissionRate, $input['referred_by']);
-        
-        if($convertedRateToPercentage['error']){
-            return redirect()->back()->withErrors('Something went wrong!');
-        }
-
-        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
-        $input['type'] = 'admin';
-        $input['roles'] = ['Master Agent'];
-        $input['timezone'] = 'Asia/Manila';
-      
-        if ($user->hasRole('Virtual Hub')) {
-            $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
-        } elseif ($user->hasRole('Master Agent')) {
-            $input['hub_id'] = $user->hub_id;
-        }
-        $user = $this->userService->update($agent, $input);
-        return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
     }
 
     public function show(User $agent)
@@ -166,7 +135,37 @@ class SubAgentController extends Controller
             ->with('hubs', $hubs);
     }
     
+    public function update(UpdateAgentRequest $request, User $agent)
+    {
+        $user = $request->user();
+        $input = $request->validated();
+       
+        if ($request->has('email_verified') || $agent->email_verified_at) {
+            $input['active'] = "1";
+        }
+        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
 
+        $commissionRateConversion = new CommissionRatesConversion($agent);
+        $AgentCommissionRate = $commissionRateConversion
+            ->convertAgentRateToPercentage($AgentCommissionRate, $input['hub_id'], $input['referred_by'], true);
+        if(!$AgentCommissionRate){
+            return redirect()->back()->withErrors('Something went wrong!');
+        }
+        
+        $input['commission_rate'] = $AgentCommissionRate;
+        $input['type'] = 'admin';
+        $input['roles'] = ['Master Agent'];
+        $input['timezone'] = 'Asia/Manila';
+       
+        if ($user->hasRole('Virtual Hub')) {
+            $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
+        } elseif ($user->hasRole('Master Agent')) {
+            $input['hub_id'] = $user->hub_id;
+        }
+    
+        $user = $this->userService->update($agent, $input);
+        return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
+    }
 
     public function store(StoreSubAgentRequest $request)
     {
@@ -178,21 +177,27 @@ class SubAgentController extends Controller
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
-        $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
-        $convertedRateToPercentage = $this->commissionRateService
-                                        ->getCommissionRate($input['hub_id'], $AgentCommissionRate, $input['referred_by']);
-        if($convertedRateToPercentage['error']){
+        $agentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
+        $masterAgent = User::where('id', $input['referred_by'])->first();
+
+        $commissionRateConversion = new CommissionRatesConversion($masterAgent);
+        $masterAgentRate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
+        if($masterAgentRate < $agentCommissionRate || $agentCommissionRate <= 0)
+        {
             return redirect()->back()->withErrors('Something went wrong!');
         }
 
-        $input['commission_rate'] = $convertedRateToPercentage['commission_rate'];
+        $input['commission_rate'] = $agentCommissionRate;
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
 
 
         $agent = $this->userService->store($input);
-
+        $commissionRateConversion = new CommissionRatesConversion($agent);
+        $agent->commission_rate = $commissionRateConversion->convertAgentRateToPercentage($agent->commission_rate, $agent->hub_id, $agent->referred_by);
+        
+        $agent->save();
         $agent->createWallet([
             'name' => 'Income Wallet',
             'slug' => 'income-wallet',

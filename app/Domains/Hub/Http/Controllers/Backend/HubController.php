@@ -5,6 +5,7 @@ namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\UserService;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\Hub\Actions\CreateHubAction;
 use App\Domains\Hub\Actions\UpdateHubAction;
 use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
@@ -30,42 +31,12 @@ class HubController extends Controller
 
     public function create()
     {
-        $rates = $this->createRates();
+
         $hubAdmins = User::role('Virtual Hub')
             ->doesntHave('hubAdmin')
             ->get()->pluck('name', 'id');
         return view('backend.hub.create')
-        ->with(['hubAdmins' => $hubAdmins])
-        ->with('wholeNumberRates', $rates['whole-number'])
-        ->with('decimalNumberRates', $rates['decimal-number']);
-    }
-
-    private function createRates($hub = null)
-    {
-        $overAllCommissionRate = OverallCommissionRate::query()
-                                ->get()->first();
-
-        if(!$overAllCommissionRate) {
-            $currentOverallCommissionRate = config('dropball.default_overall_commission_rate');
-        } else {
-            $currentOverallCommissionRate = ($overAllCommissionRate->rate - 1);
-        }
-
-        if ($hub) {
-            $wholeNumberRate[floor($hub->commission_rate)] = floor($hub->commision_rate);
-            $decimal = $hub->commission_rate - floor($hub->commission_rate);
-            $decimalNumberRate[$decimal] = '.' . $decimal * 10;
-        }
-
-        foreach (range(1, $currentOverallCommissionRate) as $number) {
-            $wholeNumberRate[$number] = $number;
-        }
-        
-        foreach (range(0, 9) as $number) {
-            $decimalNumberRate["0.$number"] = ".$number";
-        }
-        
-        return ['whole-number' => $wholeNumberRate, 'decimal-number' => $decimalNumberRate];
+        ->with(['hubAdmins' => $hubAdmins]);
     }
 
     public function edit(Hub $hub)
@@ -77,12 +48,9 @@ class HubController extends Controller
                     ->orWhere('id', $hub->admin_id);
             })
             ->get()->pluck('name', 'id');
-        
-        $rates = $this->createRates($hub);
+    
         return view('backend.hub.edit')
-        ->with(['hubAdmins' => $hubAdmins,'hub' => $hub])
-        ->with('wholeNumberRates', $rates['whole-number'])
-        ->with('decimalNumberRates', $rates['decimal-number']);;
+        ->with(['hubAdmins' => $hubAdmins,'hub' => $hub]);
     }
 
     public function store(StoreHubRequest $request)
@@ -91,6 +59,10 @@ class HubController extends Controller
         try {
             $hubDetails = $request->validated();
             $newHub = (new CreateHubAction)($hubDetails);
+            $commissionRateConversion = new CommissionRatesConversion($newHub, true);
+            $convertedCommissionRate = $commissionRateConversion->converHubToPercentage($newHub->commission_rate);
+            $newHub->commission_rate = $convertedCommissionRate;
+            $newHub->save();
             $hubAdmin = User::find($newHub->admin_id);
             $hubAdmin->hub_id = $newHub->id;
             $hubAdmin->save();
@@ -104,6 +76,14 @@ class HubController extends Controller
     {
         try {
             $data = $request->validated();
+            $commissionRate = $data['whole_number_rate'] + $data['decimal_number_rate'];
+            $commissionRateConversion = new CommissionRatesConversion($hub, true);
+            $convertedCommissionRate = $commissionRateConversion->converHubToPercentage($commissionRate, true);
+            if(!$convertedCommissionRate)
+            {
+                return redirect()->back()->withErrors('Something went wrong!');
+            }
+            $data['commission_rate'] = $convertedCommissionRate;
             (new UpdateHubAction)($hub, $data);
             $userService->updateHubId(User::find($data['admin_id']), $hub->id);
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub updated Successfully");
