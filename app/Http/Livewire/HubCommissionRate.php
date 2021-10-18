@@ -90,7 +90,7 @@ class HubCommissionRate extends Component
     public function adjustDecimal()
     {
         if((int) $this->selectedWholeNumber === $this->wholeNumber)
-        {       
+        {
             $numbers = $this->setNumbers($this->overallCommissionRate);
             $this->setDecimal($numbers['decimal'] - 1);
             return;
