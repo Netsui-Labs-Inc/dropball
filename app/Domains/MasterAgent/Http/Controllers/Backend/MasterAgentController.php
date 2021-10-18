@@ -226,7 +226,6 @@ class MasterAgentController extends Controller
     public function deposit(User $masterAgent, DepositRequest $request)
     {
         $user = $request->user();
-
         if (! Hash::check($request->get('password'), $user->password)) {
             return redirect()->back()->withErrors("Invalid Password");
         }
@@ -240,14 +239,12 @@ class MasterAgentController extends Controller
                     'credited_by' => Auth()->user()->id,
                     'deposit' => true
                 ]);
-            }
-            if ($user->hasRole('Administrator')) {
+            } else {
                 $creditedBy = [
                     'credited_by' => Auth()->user()->id
                 ];
                 $masterAgent->depositFloat($request->get('amount'), $creditedBy);
             }
-
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
