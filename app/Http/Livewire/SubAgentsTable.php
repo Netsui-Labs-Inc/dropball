@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -83,12 +84,9 @@ class SubAgentsTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, User $row) {
-                    $hubCommissionRate = Hub::where('id', $row->hub_id)->get()->first()->commission_rate;
-                    $masterAgent = User::where('id', $row->referred_by)
-                                        ->get()
-                                        ->first();
-                    $masterAgentCommissionRate = $hubCommissionRate * $masterAgent->commission_rate;
-                    return number_format($masterAgentCommissionRate * $row->commission_rate, 1) . '%';
+                    $commissionRateConversion = new CommissionRatesConversion($row);
+                    $agentCommissionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
+                    return number_format($agentCommissionRate, 1) . '%';
                 })->asHtml(),
             Column::make(__('Players'))
                 ->searchable()

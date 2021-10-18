@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
@@ -55,7 +56,8 @@ class HubsTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Hub $row) {
-                    $hubRate = number_format($row->commission_rate, 1);
+                    $commissionConversion = new CommissionRatesConversion($row, true);
+                    $hubRate = number_format($commissionConversion->convertHub()->hubCommissionRate(), 1);
                     return "$hubRate%";
                 })->asHtml(),
             Column::make(__('Credit Balance'), 'name')

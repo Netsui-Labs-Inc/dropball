@@ -30,16 +30,7 @@
                         {{Form::select('admin_id', $hubAdmins, $hub->admin_id, ['class' => 'form-control', 'placeholder' =>'Select Admin', 'required'])}}
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="admin" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
-                    <div class="pr-1 pl-3">
-                        {{Form::select('whole_number_rate', $wholeNumberRates, old('admin_id'), ['class' => 'form-control', 'required'])}}
-                    </div>
-                    <div class="pr-1">
-                        {{Form::select('decimal_number_rate', $decimalNumberRates, old('admin_id'), ['class' => 'form-control', 'required'])}}
-                    </div>
-                    <h2 class="">%</h2>
-                </div>
+                <livewire:hub-commission-rate :edit="true" :hub="$hub"/>
             </x-slot>
 
             <x-slot name="footer">

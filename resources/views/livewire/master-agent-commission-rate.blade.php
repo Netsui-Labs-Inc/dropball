@@ -1,26 +1,26 @@
 <div>
     @role('Administrator')
-    @if($editMode)
-        <input type="hidden" name="hub_id" class="form-control" value="{{ $masterAgentHubId }}" />
-        <div class="form-group row">
-            <label for="email" class="col-md-2 col-form-label">@lang('Hub')</label>
-            <div class="col-md-10">
-                <input type="text" name="hub_name" class="form-control" value="{{ $masterAgentHubName }}" disabled />
+        @if($editMode)
+            <input type="hidden" name="hub_id" class="form-control" value="{{ $masterAgentHubId }}" />
+            <div class="form-group row">
+                <label for="email" class="col-md-2 col-form-label">@lang('Hub')</label>
+                <div class="col-md-10">
+                    <input type="text" name="hub_name" class="form-control" value="{{ $masterAgentHubName }}" disabled />
+                </div>
             </div>
-        </div>
-    @else
-        <div class="form-group row">
-            <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
-            <div class="col-md-10">
-            {!! Form::select('hub_id', $hubs , null , [
-                'class' => 'form-control',
-                'wire:change="showRates"',
-                'wire:model="hub"',
-                'placeholder' =>'Select Hub'])
-            !!}
+        @else
+            <div class="form-group row">
+                <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
+                <div class="col-md-10">
+                <select class="form-control" name="hub_id" wire:change="showRates" wire:model="hub">
+                    <option value="">Select Hub</option>
+                    @foreach($hubs as $hub)
+                        <option value="{{ $hub->id }}">{{ $hub->name }}</option>
+                    @endforeach
+                </select>
+                </div>
             </div>
-        </div>
-    @endif
+        @endif
     @endrole
     @if($editMode)
         <div class="form-group row d-none">
@@ -33,7 +33,7 @@
         <div class="form-group row">
             <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
             <div class="col-md-10">
-                <input type="text" name="rate" class="form-control" value="{{ number_format($masterAgentCurrentRateWholeNumber + $masterAgentCurrentRateDecimalNumber, 2) }}%" disabled/>
+                <input type="text" name="rate" class="form-control" value="{{ number_format($masterAgentCurrentRateWholeNumber + $masterAgentCurrentRateDecimalNumber, 1) }}%" disabled/>
             </div>
         </div>
     

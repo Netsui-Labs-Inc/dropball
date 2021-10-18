@@ -47,7 +47,7 @@ class BetForm extends Component
     ];
 
     public $betChoices = [
-        50, 100, 300, 500, 1000, 5000, 10000,
+        20, 50, 100, 300, 500, 1000, 5000, 10000,
     ];
     public $payouts = [
         'pula' => 0,

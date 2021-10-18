@@ -15,6 +15,7 @@ class CommissionRatesComputation
     private $masterAgentReferralCommissionRate;
     private $hubCommissionRate;
     private $operatorCommissionRate;
+    private $overallCommissionRate;
 
     public function __construct($bet)
     {
@@ -39,39 +40,43 @@ class CommissionRatesComputation
         if (! $masterAgent->referred_by) {
             return true;
         }
-
-        $hubRate = Hub::where('id', $masterAgent->hub_id)->get()->first()->commission_rate;
         $parentAgent = User::where('id', $masterAgent->referred_by)->first();
-        $parentAgentRate = number_format($hubRate * $parentAgent->commission_rate, 1);
-        $this->agentCommissionRate = number_format($parentAgentRate * $masterAgent->commission_rate, 1) / 100;
+        $commissionRateConversion = new CommissionRatesConversion($parentAgent);
+        $parentCommissionRate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
+        $this->agentCommissionRate = number_format($parentCommissionRate * $masterAgent->commission_rate, 1) / 100;
 
     }
 
     private function computeMasterAgentCommission($masterAgent)
     {
-        $hubRate = Hub::where('id', $masterAgent->hub_id)->first()->commission_rate;
-        $this->masterAgentCommissionRate = number_format($hubRate * $masterAgent->commission_rate, 1) / 100;
+        $hub = Hub::where('id', $masterAgent->hub_id)->first();
+        $commissionRateConversion = new CommissionRatesConversion($hub, true);
+        $hubCommissionRate = $commissionRateConversion->convertHub()->hubCommissionRate();
+        $this->masterAgentCommissionRate = number_format($hubCommissionRate * $masterAgent->commission_rate, 1) / 100;
 
     }
 
     private function computeHubCommission($hub, $agent)
     {
-        $query = CommissionRate::where('hub_id', $hub->id);
+        $commissionRateConversion = new CommissionRatesConversion($hub, true);
+        $hubCommissionRate = number_format($commissionRateConversion->convertHub()->hubCommissionRate(), 1);
 
         if ($agent->referred_by) {
-            $query->where('master_agent_id', $agent->referred_by);
-        } else {
-            $query->where('master_agent_id', $agent->id);
-        }
-
-        $hubCommissionRate = $query->get()->first()->commission_rate;
-        $this->hubCommissionRate =  number_format($hubCommissionRate * $hub->commission_rate, 1) / 100;
+            $agent = User::where('id', $agent->referred_by)->first();
+        } 
+        
+        $commissionRateConversion = new CommissionRatesConversion($agent);
+        $agentCommissionRate = number_format($commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate(), 1);
+        $this->hubCommissionRate =  abs($hubCommissionRate - $agentCommissionRate) / 100;
 
     }
 
     private function computeOperatorCommission($hub)
     {
-        $this->operatorCommissionRate = abs(OverallCommissionRate::query()->first()->rate - $hub->commission_rate)  / 100;
+        $overAllcommissionRate = OverallCommissionRate::query()->first()->rate;
+        $hubCommissionRate =  $overAllcommissionRate * $hub->commission_rate;
+
+        $this->operatorCommissionRate = abs($overAllcommissionRate - $hubCommissionRate)  / 100;
     }
 
     private function computeMasterAgentReferralCommission($masterAgent)
@@ -80,10 +85,11 @@ class CommissionRatesComputation
         if (! $parentAgent) {
             return true;
         }
-        $hubRate = Hub::where('id', $masterAgent->hub_id)->get()->first()->commission_rate;
-        $parentAgentRate = $hubRate * $parentAgent->commission_rate;
-        $agentCommission = number_format($parentAgentRate * $masterAgent->commission_rate, 1);
-        $this->masterAgentReferralCommissionRate = ( $parentAgentRate - $agentCommission ) / 100;
+
+        $commissionRateConversion = new CommissionRatesConversion($parentAgent);
+        $parentCommissionRate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
+        $agentCommission = number_format($parentCommissionRate * $masterAgent->commission_rate, 1);
+        $this->masterAgentReferralCommissionRate = ( number_format($parentCommissionRate, 1) - $agentCommission ) / 100;
     }
 
     public function agentCommissionRate()
