@@ -39,6 +39,8 @@ class AgentForm extends Component
     public $showButtonCancelRate;
     public $test = [];
     public $showMasterAgentList;
+    public $agentCurrentRateWholeNumber;
+    public $agentCurrentRateDecimalNumber;
     public function mount($agent = null, $edit = false, $masterAgentsEdit = false, $editMode = false)
     {
         $this->agent = $agent;
@@ -107,12 +109,6 @@ class AgentForm extends Component
                 ->where('referred_by', null)
                 ->where('hub_id', $hubId)
                 ->get(['users.id', 'users.name']);
-        // $masterAgent = $this->masterAgents->last();
-        // if($masterAgent)
-        // {
-        //     $this->showRate(User::where('id', $masterAgent->id)->get()->first());
-        // }
-        
     }
 
     private function getHub()
