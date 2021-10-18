@@ -42,7 +42,9 @@ class BetForm extends Component
 
     public $theme = 'default';
 
-    protected $rules;
+    protected $rules = [
+        'amount' => 'required|numeric|min:20',
+    ];
 
     public $betChoices = [
         20, 50, 100, 300, 500, 1000, 5000, 10000,
@@ -55,9 +57,7 @@ class BetForm extends Component
 
     public function mount($bettingEventId, $theme = 'default')
     {
-        $this->rules = [
-            'amount' => 'required|numeric|min:'. config('dropball.streaming_minimum_balance'),
-        ];
+        
         $this->theme = $theme;
         $this->betOptions = BetOption::where('hidden', false)->get();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
