@@ -15,7 +15,7 @@ class CreateOverallCommissionRatesTable extends Migration
     {
         Schema::create('overall_commission_rates', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('rate')->nullable();
+            $table->float('rate')->nullable();
             $table->timestamps();
         });
     }

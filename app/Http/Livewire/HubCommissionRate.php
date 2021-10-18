@@ -67,13 +67,12 @@ class HubCommissionRate extends Component
 
     public function setSelection($wholeNumber, $decimal)
     {
-        
-        if($decimal === 0)
-        {
-            $wholeNumber -= 1;
-            $this->setDecimal(0);
-        }
         $this->wholeNumber = $wholeNumber;
+        if($decimal === "0")
+        {
+            $wholeNumber--;
+            $this->setDecimal(9);
+        }
         $this->setDecimal();
         foreach (range(0, $wholeNumber) as $number) {
             $this->wholeNumberRates[$number] = $number;
@@ -96,6 +95,7 @@ class HubCommissionRate extends Component
             $this->setDecimal($numbers['decimal'] - 1);
             return;
         }
+
         if($this->selectedWholeNumber === "0")
         {
             $this->setDecimal(9, 3);
