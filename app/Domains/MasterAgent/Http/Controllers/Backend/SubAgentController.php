@@ -63,7 +63,7 @@ class SubAgentController extends Controller
         $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
         $commissionRateConversion = new CommissionRatesConversion($agent);
         $AgentCommissionRate = $commissionRateConversion
-            ->convertAgentRateToPercentage($AgentCommissionRate, $input['hub_id'], $input['referred_by'], true);
+            ->convertAgentRateToPercentage($AgentCommissionRate, $agent->hub_id, $agent->referred_by, true);
         
         if(!$AgentCommissionRate){
             return redirect()->back()->withErrors('Something went wrong!');
