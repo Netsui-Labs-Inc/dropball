@@ -50,7 +50,7 @@ class CommissionRatesConversion
                return false;
            }
         }
-        return number_format($commissionRate / $this->overallCommission, 2);
+        return $commissionRate / $this->overallCommission;
     }
 
     public function convertMasterAgent($masterAgent = null)
@@ -77,7 +77,7 @@ class CommissionRatesConversion
            }
         }
 
-        return number_format($commissionRate / $this->hubCommissionRate, 2);
+        return $commissionRate / $this->hubCommissionRate;
     }
 
     public function convertAgent()
@@ -99,7 +99,7 @@ class CommissionRatesConversion
                 return false;
             }
         }
-        return number_format($commissionRate / $this->masterAgentCommissionRate, 2);
+        return $commissionRate / $this->masterAgentCommissionRate;
     }
 
     public function validateCommissionRate($commissionRate, $parentCommissionRate, $minimumCommissionRate)
