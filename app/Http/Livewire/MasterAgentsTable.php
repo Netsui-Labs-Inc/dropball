@@ -104,7 +104,7 @@ class MasterAgentsTable extends DataTableComponent
                     $commissionRateConversion = new CommissionRatesConversion($row);
                     return number_format($commissionRateConversion
                         ->convertMasterAgent()
-                        ->masterAgentCommissionRate(), 1) . '%'; 
+                        ->masterAgentCommissionRate(), 2) . '%'; 
                 })->asHtml(),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
