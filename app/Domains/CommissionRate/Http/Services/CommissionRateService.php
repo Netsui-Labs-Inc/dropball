@@ -43,7 +43,7 @@ class CommissionRateService
 
     public function checkMaxRateAssignment($selectedNumber, $wholeNumber, $commissionRate, $startNumber)
     {
-        if($selectedNumber == $wholeNumber)
+        if((int) $selectedNumber == $wholeNumber)
         {
             $decimal = abs($selectedNumber - $commissionRate);
             $decimal *= 10;
@@ -51,7 +51,8 @@ class CommissionRateService
             if(number_format($decimal) <= 1) {
                 return $this->setDecimal(0);
             }
-            return $this->setDecimal($decimal);
+
+            return $this->setDecimal($decimal - 1);
         }
 
         if($selectedNumber === "0")
