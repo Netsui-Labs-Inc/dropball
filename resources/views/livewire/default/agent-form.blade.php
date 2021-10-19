@@ -128,7 +128,7 @@
                 <div class="form-group row">
                     <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
                     <div class="col-md-10">
-                        <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 1) }}%" disabled/>
+                        <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 2) }}%" disabled/>
                     </div>
                 </div>
                 <div class="form-group row">

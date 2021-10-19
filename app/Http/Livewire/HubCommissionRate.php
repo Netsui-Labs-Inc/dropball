@@ -35,8 +35,7 @@ class HubCommissionRate extends Component
         if($this->edit === true)
         {
             $hubCommission = new CommissionRatesConversion($this->hub, true);
-            $hubCommissionRate = $hubCommission->convertHub()->hubCommissionRate();
-            $this->hubCommissionRate = number_format($hubCommissionRate, 1);
+            $this->hubCommissionRate = $hubCommission->convertHub()->hubCommissionRate();
             $numbers = $this->setNumbers($this->hubCommissionRate);
             $this->defaultWholeNumber  = $numbers['whole_number'];
             $this->defaultDecimalNumber = $numbers['decimal'] / 10;

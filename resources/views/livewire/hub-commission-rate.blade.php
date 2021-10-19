@@ -3,7 +3,7 @@
         <div class="form-group row">
             <label for="admin" class="col-md-2 col-form-label">@lang('Current Commission Rate')</label>
             <div class="col-md-10">
-                <input type="text" name="rate" class="form-control" value="{{ $hubCommissionRate }}%" disabled/><br />
+                <input type="text" name="rate" class="form-control" value="{{ number_format($hubCommissionRate, 2) }}%" disabled/><br />
                 <div class="d-none">
                     <input type="hidden" name="whole_number_rate" class="form-control" value="{{ $defaultWholeNumber }}" /><br />
                     <input type="hidden" name="decimal_number_rate" class="form-control" value="{{ $defaultDecimalNumber }}"/><br />
