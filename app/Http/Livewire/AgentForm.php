@@ -84,7 +84,6 @@ class AgentForm extends Component
         $this->selectedAgent = false;
         $this->showMasterAgentList = true;
         $this->showRate = false;
-        $this->firstLoad = false;
     }
 
     public function setFormWhenSelectedMasterAgent()
@@ -99,8 +98,12 @@ class AgentForm extends Component
 
     public function getMasterAgents()
     {
+        if(!$this->hubId) {
+            $this->showMasterAgentList = false;
+            return;
+        }
 
-        $hubId = $this->getHub();
+        $hubId = $this->hubId;
         $this->notAMasterAgent = true;
         
         $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
@@ -109,15 +112,6 @@ class AgentForm extends Component
                 ->where('referred_by', null)
                 ->where('hub_id', $hubId)
                 ->get(['users.id', 'users.name']);
-    }
-
-    private function getHub()
-    {
-        if(!$this->hubId) {
-            return Hub::all()->first()->id;
-        }
-
-        return $this->hubId;
     }
 
     private function setAgent($agent)
@@ -145,12 +139,18 @@ class AgentForm extends Component
 
     public function showRate($masterAgent = null)
     {
-        $this->showRate = true;
         if(!$masterAgent)
         {
             $masterAgent = User::where('id', $this->masterAgent)->get()->first();
         }
 
+        if(!$masterAgent){
+            $this->showRate = false;
+            return;
+        }
+        
+        $this->showRate = true;
+       
         $commissionRateConversion = new CommissionRatesConversion($masterAgent);
         $rate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
         

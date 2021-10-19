@@ -69,6 +69,12 @@ class MasterAgentCommissionRate extends Component
 
     public function showRates(CommissionRateService $commissionRateService)
     {
+        if(!$this->hub)
+        {
+            $this->showRates = true;
+            return;
+        }
+
         $this->showRates = false;
         $entity = Hub::where('id', $this->hub)->get()->first();
         $commissionRateConversion = new CommissionRatesConversion($entity, true);
