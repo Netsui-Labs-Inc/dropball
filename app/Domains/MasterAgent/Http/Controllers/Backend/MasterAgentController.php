@@ -52,8 +52,8 @@ class MasterAgentController extends Controller
      */
 
     public function __construct(
-        UserService $userService, 
-        RoleService $roleService, 
+        UserService $userService,
+        RoleService $roleService,
         PermissionService $permissionService,
         CommissionRateService $commissionRateService
     ){
@@ -112,8 +112,8 @@ class MasterAgentController extends Controller
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
-        
-       
+
+
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = $user->hub_id;
         }
@@ -131,7 +131,7 @@ class MasterAgentController extends Controller
         $user = $this->userService->store($input);
         $commissionRateConversion = new CommissionRatesConversion($user);
         $masterAgentCommissionRate = $commissionRateConversion->converMasterAgentRateToPercentage($user->commission_rate, $input['hub_id']);
-        
+
         $user->commission_rate = $masterAgentCommissionRate;
         $user->save();
 
@@ -139,7 +139,7 @@ class MasterAgentController extends Controller
             'name' => 'Income Wallet',
             'slug' => 'income-wallet',
         ]);
-       
+
         CommissionRate::create([
             'hub_id'          => $input['hub_id'],
             'master_agent_id' => $user->id,
@@ -171,7 +171,7 @@ class MasterAgentController extends Controller
             return redirect()->to(route('admin.master-agents.index'))->withFlashSuccess("Master Agent updated Successfully");
         }
         return redirect()->back()->withErrors('Something went wrong!');
-       
+
     }
 
     private function update(User $masterAgent, $request, $input)
@@ -194,11 +194,11 @@ class MasterAgentController extends Controller
 
         $commissionRateConversion = new CommissionRatesConversion($masterAgent);
         $masterAgentCommissionRate = $commissionRateConversion->converMasterAgentRateToPercentage($masterAgentCommissionRate, $input['hub_id'],  true);
-        
+
         if(!$masterAgentCommissionRate){
             return redirect()->back()->withErrors('Something went wrong!');
         }
-        
+
         $input['commission_rate'] = $masterAgentCommissionRate;
         $user = $this->userService->update($masterAgent, $input);
 
@@ -206,12 +206,12 @@ class MasterAgentController extends Controller
                                         ->where('master_agent_id', $user->id)
                                         ->get()
                                         ->first();
-        
+
         if ($commissionRate) {
             $commissionRate->commission_rate = 1 - $input['commission_rate']; //1 is equal to 100%
             $commissionRate->updated_at = Carbon::now()->toDateTimeString();
             $commissionRate->save();
-     
+
         } else {
             CommissionRate::create([
                 'hub_id'          => $input['hub_id'],
@@ -219,7 +219,7 @@ class MasterAgentController extends Controller
                 'commission_rate' => 1 - $input['commission_rate'] //1 is equal to 100%
             ]);
         }
-        
+
         return true;
     }
 
@@ -239,12 +239,24 @@ class MasterAgentController extends Controller
                     'credited_by' => Auth()->user()->id,
                     'deposit' => true
                 ]);
-            } else {
+            }
+            if($user->hasRole('Master Agent'))
+            {
+                $user->transferFloat($masterAgent, $request->get('amount'),[
+                    'transfer_to' => $masterAgent->id,
+                    'credited_by' => Auth()->user()->id,
+                    'deposit' => true
+                ]);
+            }
+
+            if($user->hasRole('Administrator'))
+            {
                 $creditedBy = [
                     'credited_by' => Auth()->user()->id
                 ];
                 $masterAgent->depositFloat($request->get('amount'), $creditedBy);
             }
+
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
