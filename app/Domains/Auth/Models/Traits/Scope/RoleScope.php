@@ -17,6 +17,7 @@ trait RoleScope
     {
         return $query->where(function ($query) use ($term) {
             $query->where('name', 'like', '%'.$term.'%')
+                ->orWhere('type', 'like', '%'.$term.'%')
                 ->orWhereHas('permissions', function ($query) use ($term) {
                     $query->where('description', 'like', '%'.$term.'%');
                 });

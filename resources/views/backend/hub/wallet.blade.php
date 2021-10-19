@@ -10,8 +10,9 @@
                 <x-slot name="header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h4 class="h4 text-white mb-0"> @lang("Withdrawal / Deposit History")</h4>
+                            <h4 class="h4 text-white mb-0"> @lang("Transaction History")</h4>
                         </div>
+                        @unlessrole('Processor')
                         <div class="col text-right">
                             <x-utils.link
                                 class="btn btn-info text-white"
@@ -19,6 +20,7 @@
                                 :text="__('Add Cash')"
                             />
                         </div>
+                            @endunlessrole()
                     </div>
                 </x-slot>
                 <x-slot name="body">
@@ -51,8 +53,9 @@
                 <label for="password" class="col col-form-label">@lang('Enter Password')</label>
             </div>
             <div class="form-group row">
-                <div class="col">
+                <div class="col relative">
                     <input type="password" class="form-control" name="password" >
+                    <i class="eyecandy"></i>
                 </div>
             </div>
         </div>

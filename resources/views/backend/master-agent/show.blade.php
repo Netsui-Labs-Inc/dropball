@@ -97,7 +97,7 @@
                         <td>{{ $user->commission_rate ?? 2 }}%</td>
                     </tr>
                     <tr>
-                        <th>@lang('Referral ID')</th>
+                        <th>@lang('Code Name')</th>
                         <td>{{ $user->referral_id }}</td>
                     </tr>
                 @endif

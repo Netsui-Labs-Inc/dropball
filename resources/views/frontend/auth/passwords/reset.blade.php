@@ -26,16 +26,18 @@
                             <div class="form-group row">
                                 <label for="password" class="col-md-4 col-form-label text-md-right">@lang('Password')</label>
 
-                                <div class="col-md-6">
+                                <div class="col-md-6 relative">
                                     <input type="password" id="password" name="password" class="form-control" placeholder="{{ __('Password') }}" maxlength="100" required autocomplete="password" />
+                                    <i class="eyecandy"></i>
                                 </div>
                             </div><!--form-group-->
 
                             <div class="form-group row">
                                 <label for="password_confirmation" class="col-md-4 col-form-label text-md-right">@lang('Password Confirmation')</label>
 
-                                <div class="col-md-6">
+                                <div class="col-md-6 relative">
                                     <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="{{ __('Password Confirmation') }}" maxlength="100" required autocomplete="new-password" />
+                                    <i class="eyecandy"></i>
                                 </div>
                             </div><!--form-group-->
 

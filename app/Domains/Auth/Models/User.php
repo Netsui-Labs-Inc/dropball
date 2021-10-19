@@ -8,11 +8,15 @@ use App\Domains\Auth\Models\Traits\Relationship\UserRelationship;
 use App\Domains\Auth\Models\Traits\Scope\UserScope;
 use App\Domains\Auth\Notifications\Frontend\ResetPasswordNotification;
 use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
+use App\Domains\Hub\Models\Hub;
+use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
+use App\Domains\Wallet\Models\WalletTransaction;
 use App\Models\Traits\HasBetCommission;
 use App\Models\Traits\HasWithdrawal;
 use Bavix\Wallet\Interfaces\Confirmable;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
+use Bavix\Wallet\Models\Transaction;
 use Bavix\Wallet\Traits\CanConfirm;
 use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
@@ -23,6 +27,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -48,8 +53,8 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         UserAttribute,
         UserMethod,
         UserRelationship,
-        UserScope,
         HasWithdrawal,
+        UserScope,
         HasBetCommission;
 
     public const TYPE_ADMIN = 'admin';
@@ -80,12 +85,14 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'timezone',
         'last_login_at',
         'last_login_ip',
+        'last_event_id',
         'to_be_logged_out',
         'provider',
         'provider_id',
         'referral_id',
         'referred_by',
         'hub_id',
+        'winning_streak',
         'commission_rate',
     ];
 
@@ -184,4 +191,15 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     {
         return UserFactory::new();
     }
+
+    public function hub()
+    {
+        return $this->belongsTo(Hub::class);
+    }
+
+    public function approvedWithdrawalRequest()
+    {
+        return $this->hasMany(ApprovedWithdrawalRequest::class);
+    }
+
 }

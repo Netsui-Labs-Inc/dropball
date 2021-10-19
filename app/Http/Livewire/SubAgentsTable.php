@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -25,7 +26,7 @@ class SubAgentsTable extends DataTableComponent
      */
     public $status;
     public $admin;
-
+    public $user;
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
@@ -35,6 +36,7 @@ class SubAgentsTable extends DataTableComponent
     public function mount($status = 'active'): void
     {
         $this->status = $status;
+        $this->user = auth()->user();
     }
 
     /**
@@ -42,12 +44,15 @@ class SubAgentsTable extends DataTableComponent
      */
     public function query(): Builder
     {
-        $user = auth()->user();
-
         $query = User::role('Master Agent')->whereNotNull('referred_by');
 
-        if ($user->hasRole('Master Agent')) {
-            $query->where('referred_by', $user->id);
+        if ($this->user->hasRole('Master Agent')) {
+            $query->where('referred_by', $this->user->id);
+        }
+
+        if ($this->user->hasRole('Virtual Hub')) {
+            $hub = Hub::where('admin_id', $this->user->id)->get()->first();
+            $query->where('hub_id',$hub->id);
         }
 
         if ($this->status === 'unverified') {
@@ -56,7 +61,7 @@ class SubAgentsTable extends DataTableComponent
 
         $query->whereNotNull('email_verified_at');
 
-        return $query->onlyActive();
+        return $query->onlyActive()->latest();
     }
 
     /**
@@ -64,19 +69,56 @@ class SubAgentsTable extends DataTableComponent
      */
     public function columns(): array
     {
-        return [
-            Column::make(__('ID'), 'id')
-                ->searchable()
-                ->sortable(),
+        return $this->setColumns();
+    }
+
+    private function setColumns()
+    {
+
+        $firstSetOfColumn = [
             Column::make(__('Name'))
                 ->searchable()
                 ->sortable(),
-            Column::make(__('E-mail'), 'email')
+            Column::make(__('rate'), 'commission_rate')
                 ->searchable()
-                ->sortable(),
-            Column::make(__('Commission rate'), 'commission_rate')
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    $hubCommissionRate = Hub::where('id', $row->hub_id)->get()->first()->commission_rate;
+                    $masterAgent = User::where('id', $row->referred_by)
+                                        ->get()
+                                        ->first();
+                    $masterAgentCommissionRate = $hubCommissionRate * $masterAgent->commission_rate;
+                    return number_format($masterAgentCommissionRate * $row->commission_rate, 1) . '%';
+                })->asHtml(),
+            Column::make(__('Players'))
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return User::where('referred_by', $row->id)->get()->count();
+                })->asHtml(),
+            Column::make(__('Players'))
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return User::where('referred_by', $row->id)->get()->count();
+                })->asHtml(),
+            Column::make(__('Balance'))
+                ->format(function ($value, $column, User $row) {
+                    return number_format($row->balanceFloat, 2);
+                })->asHtml(),
+        ];
+
+        if ($this->user->hasRole('Virtual Hub'))
+        {
+            array_push($firstSetOfColumn,
+                            Column::make(__('Master Agent'))
+                                ->format(function ($value, $column, User $row) {
+                                    return User::where('id', $row->referred_by)->get()->first()->name;
+                                    })->asHtml()
+                    );
+        }
+
+        $secondSetOfColumn = [
             Column::make(__('Verified'))
                 ->format(function ($value, $column, User $row) {
                     return view('backend.auth.user.includes.verified', ['user' => $row]);
@@ -84,15 +126,17 @@ class SubAgentsTable extends DataTableComponent
                 ->sortable(function ($builder, $direction) {
                     return $builder->orderBy('email_verified_at', $direction);
                 }),
-            Column::make(__('Balance'))
-                ->format(function ($value, $column, User $row) {
-                    return number_format($row->balanceFloat);
-                }),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, User $row) {
                     return $row->created_at->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                })->asHtml()
-        ];
+                })->asHtml(),
+            Column::make(__('Actions'))
+                ->format(function ($value, $column, User $row) {
+                    return view("backend.master-agent.sub-agent.action-list", ['user' => $row]);
+                }),
+            ];
+
+        return array_merge($firstSetOfColumn, $secondSetOfColumn);
     }
 }

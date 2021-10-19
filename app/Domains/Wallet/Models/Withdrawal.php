@@ -3,6 +3,7 @@
 namespace App\Domains\Wallet\Models;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\Traits\Scope\WithdrawalScope;
 use App\Models\Traits\Uuid;
 use Bavix\Wallet\Interfaces\Mathable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 class Withdrawal extends Model
 {
     use Uuid,
+        WithdrawalScope,
         HasFactory;
 
     const PENDING = 'pending';

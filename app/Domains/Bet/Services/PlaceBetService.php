@@ -79,61 +79,30 @@ class PlaceBetService
             throw new \Exception("Invalid bet amount");
         }
 
-        try {
-            DB::beginTransaction();
-            /** @var Bet $bet */
-            $bet = $this->bettingRound->bets()->create([
-                'user_id' => $this->bettor->id,
-                'bet_amount' => $this->amount,
-                'bet' => $this->bet->id,
-                'agent_id' => $this->bettor->masterAgent->id,
-            ]);
+        $bet = $this->bettingRound->bets()->create([
+            'user_id' => $this->bettor->id,
+            'bet_amount' => $this->amount,
+            'bet' => $this->bet->id,
+            'agent_id' => $this->bettor->masterAgent->id,
+        ]);
 
-            $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
+        $this->bettor->forceTransferFloat($bet, $this->amount, ['bet' => $bet->id, 'bettingRound' => $this->bettingRound->id]);
 
-            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, strtolower($bet->option->name)));
+        event(new BettingRoundBetPlaced($bet));
 
-            logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
-            activity('player')
-                ->causedBy($bet)
-                ->performedOn($this->bettor)
-                ->withProperties(['bet' => $bet->id])
-                ->log("Player#{$this->bettor->id} placed a bet to {$bet->option->name} worth {$bet->bet_amount} in betting round #{$this->bettingRound->id}");
-            DB::commit();
+        logger("BettingRound#{$this->bettingRound->id} User#{$bet->user_id} {$bet->user->name} placed a bet to {$bet->option->name} worth {$bet->bet_amount} ");
+        activity('player')
+            ->causedBy($bet)
+            ->performedOn($this->bettor)
+            ->withProperties(['bet' => $bet->id])
+            ->log("Player#{$this->bettor->id} placed a bet to {$bet->option->name} worth {$bet->bet_amount} in betting round #{$this->bettingRound->id}");
 
-        } catch ( \Exception $e) {
-            logger($e->getMessage());
-            \Sentry::captureLastError();
-            DB::rollBack();
-        }
 
         //$this->setPoolMoney($bet);
 
+        $bet->previous_balance = $this->bettor->fresh()->balanceFloat;
+        $bet->save();
+
         return $this->bettingRound;
-    }
-
-    private function setPoolMoney(Bet $userBet)
-    {
-        $faker = Factory::create();
-
-        $bet = $faker->randomElement(['pula', 'puti']);
-
-        $meta = $this->bettingRound->meta;
-
-        $multiplier = $faker->randomNumber(1);
-        $choice = $faker->randomElement([ 50, 100, 300, 500, 1000, 5000, 10000]);
-
-        $betAmount = $choice * $multiplier;
-        $userBetColor = strtolower($userBet->option->name);
-
-        if (($meta[$bet] + $betAmount) <= $meta['win-pool'] && $faker->boolean && $userBetColor != $bet) {
-            $meta[$bet] = $meta[$bet] + $betAmount;
-
-            event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $bet));
-        }
-        $meta[$userBetColor] = $meta[$userBetColor] + $userBet->bet_amount;
-        $this->bettingRound->update(['meta' => $meta]);
-
-        event(new BettingRoundBetPlaced($this->bettingRound, $this->bettor, $userBetColor));
     }
 }

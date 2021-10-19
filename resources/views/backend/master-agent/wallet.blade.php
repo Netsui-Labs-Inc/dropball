@@ -10,7 +10,7 @@
                 <x-slot name="header">
                     <div class="row align-items-center">
                         <div class="col">
-                            <h4 class="h4 text-white mb-0"> @lang("Withdrawal / Deposit History")</h4>
+                            <h4 class="h4 text-white mb-0"> @lang("Wallet History")</h4>
                         </div>
                         <div class="col text-right">
                             <x-utils.link
@@ -51,8 +51,9 @@
                 <label for="password" class="col col-form-label">@lang('Enter Password')</label>
             </div>
             <div class="form-group row">
-                <div class="col">
+                <div class="col relative">
                     <input type="password" class="form-control" name="password" >
+                    <i class="eyecandy"></i>
                 </div>
             </div>
         </div>

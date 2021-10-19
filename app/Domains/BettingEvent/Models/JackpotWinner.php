@@ -14,6 +14,7 @@ class JackpotWinner extends Model
         'jackpot_id',
         'user_id',
         'prize',
+        'winning_streak',
     ];
 
     public function player()

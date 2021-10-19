@@ -16,16 +16,25 @@
             <table class="table table-hover">
                 <tbody>
                 <tr>
-                    <td>Name</td>
+                    <td>@lang('Name')</td>
                     <td>{{$hub->name}}</td>
                 </tr>
                 <tr>
-                    <td>Admin Name</td>
+                    <td>@lang('Admin Name')</td>
                     <td>{{$hub->admin->name}}</td>
                 </tr>
                 <tr>
-                    <td>Admin Email</td>
+                    <td>@lang('Admin Email')</td>
                     <td>{{$hub->admin->email}}</td>
+                </tr>
+                <tr>
+
+                    <td>Hub Credit Balance</td>
+                    <td>{{number_format($hub->balanceFloat ?? 0, 2)}}</td>
+                </tr>
+                <tr>
+                    <td>Hub Income Balance</td>
+                    <td>{{number_format($hub->hasWallet('income-wallet') ? $hub->getWallet('income-wallet')->balanceFloat : 0, 2)}}</td>
                 </tr>
                 <tr>
                     <td>Created at</td>

@@ -81,8 +81,9 @@ class ProcessOtherCommissionsJob implements ShouldQueue
                 ])
                 ->log("Operator #{$operator->id} with balance of $currentBalance received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
-        } catch (\Exception $e) {
-            $this->fail($e);
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessOtherCommissionsJob.error :: ".$e->getMessage());
             DB::rollBack();
         }

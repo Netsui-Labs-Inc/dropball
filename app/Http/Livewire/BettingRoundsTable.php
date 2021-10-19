@@ -19,6 +19,9 @@ class BettingRoundsTable extends DataTableComponent
 
     public int $perPage = 10;
 
+    protected string $pageName = 'betting-rounds';
+
+
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];

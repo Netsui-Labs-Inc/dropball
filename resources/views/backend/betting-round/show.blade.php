@@ -43,8 +43,11 @@
 
             </x-slot>
             <x-slot name="body">
-
-                <livewire:front-end.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
+                @if($bettingRound->bettingEvent->dealer)
+                    <livewire:frontend.select-winning-option theme="tailwind" :bettingOptions="$bettingOptions" :bettingEventId="$bettingEvent->id" />
+                @else
+                    @include('backend.betting-round.includes.control')
+                @endif
                 @can('admin.access.betting-rounds.report')
                     @if ($bettingRound->status == 'ended')
                         <div class="row">
@@ -140,6 +143,25 @@
             @endcan
         </div>
     </div>
+
+    @if ($bettingRound->status == 'ended')
+        <div class="col">
+            <x-backend.card headerClass="bg-primary">
+            <x-slot name="header">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="h3 text-white mb-0">
+                            @lang('Commissions Status')
+                        </h3>
+                    </div>
+                </div>
+            </x-slot>
+            <x-slot name="body">
+                <livewire:commissions-status :bettingRound="$bettingRound"></livewire:commissions-status>
+            </x-slot>
+        </x-backend.card>
+        </div>
+    @endif
 </div>
 @endsection
 @section('page-action')

@@ -80,6 +80,10 @@ Route::post('betting-events/{bettingEvent}/betting-rounds', [BettingEventBetting
     ->name('betting-events.betting-rounds.store');
 Route::post('betting-events/{bettingEvent}/jackpots', [JackpotController::class, 'store'])
     ->name('betting-events.jackpots.store');
+Route::post('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'setAsActive'])
+    ->name('betting-events.jackpots.activate');
+Route::delete('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotController::class, 'setInactive'])
+    ->name('betting-events.jackpots.deactivate');
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}', [BettingEventBettingRoundController::class, 'show'])
     ->name('betting-events.betting-rounds.show')
@@ -163,7 +167,7 @@ Route::group(['middleware' => 'can:admin.access.betting-rounds.moderate'], funct
     Route::post('betting-rounds/{bettingRound}/ends', [BettingRoundController::class, 'endBettingRound'])->name('betting-rounds.end');
     Route::post('betting-rounds/{bettingRound}/cancel', [BettingRoundController::class, 'cancelBettingRound'])->name('betting-rounds.cancel');
     Route::post('betting-rounds/{bettingRound}/draw', [BettingRoundController::class, 'drawBettingRound'])->name('betting-rounds.draw');
-    Route::get('betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
+    Route::match(['GET','POST'],'betting-rounds/{bettingRound}/results', [BettingRoundController::class, 'setResult'])->name('betting-rounds.results');
 });
 
 
@@ -187,6 +191,13 @@ Route::get('players/{player}', [PlayerController::class, 'show'])
         $trail->push("Players", route('admin.players.info', $player));
     });
 
+Route::get('player/{player}/edit', [PlayerController::class, 'edit'])
+    ->name('player.edit')
+    ->middleware('can:admin.access.players.edit')
+    ->breadcrumbs(function (Trail $trail, $player) {
+        $trail->parent('admin.players.index');
+        $trail->push("Player Edit", route('admin.player.edit', $player));
+    });
 Route::get('players/{player}/wallet', [PlayerController::class, 'cashBalance'])
     ->name('players.wallet')
     ->middleware('can:admin.access.players.wallet')
@@ -211,7 +222,7 @@ Route::get('players-withdrawals/{withdrawal}', [WithdrawalController::class, 'sh
         $trail->push("Player Withdrawal", route('admin.players.withdrawals.show', $withdrawal));
     });
 
-Route::post('withdrawals.complete/{withdrawal}', [WithdrawalController::class, 'complete'])->name('withdrawals.complete');
+Route::post('withdrawals.complete', [WithdrawalController::class, 'complete'])->name('withdrawals.complete');
 
 Route::get('players/{player}/bet-histories', [PlayerBetsController::class, 'index'])
     ->name('players.bet-histories')
@@ -224,6 +235,7 @@ Route::get('players/{player}/bet-histories', [PlayerBetsController::class, 'inde
 
 Route::post('players/{player}/wallet', [PlayerController::class, 'deposit'])->name('players.wallet.deposit');
 Route::post('players/{player}/verification', [PlayerController::class, 'verify'])->name('players.verify');
+Route::put('player/{player}', [PlayerController::class, 'update'])->name('player.update');
 
 /** Master Agents */
 
@@ -248,8 +260,8 @@ Route::get('master-agents/{masterAgent}/edit', [MasterAgentController::class, 'e
     });
 
 Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
-Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'update'])->name('master-agents.update');
-
+Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'updateByAdmin'])->name('master-agents.update');
+Route::put('master-agents-hub/{masterAgent}', [MasterAgentController::class, 'updateByHub'])->name('master-agents.update.hub');
 
 Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])
     ->name('master-agents.info')
@@ -269,6 +281,12 @@ Route::get('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 
 
 Route::post('master-agents/{masterAgent}/wallet', [MasterAgentController::class, 'deposit'])->name('master-agents.wallet.deposit');
 
+Route::get('master-agents-withdrawals/{withdrawal}', [WithdrawalController::class, 'show'])
+    ->name('master-agents.withdrawals.show')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $withdrawal) {
+        $trail->push("Master-Agent's Withdrawal", route('admin.master-agents.withdrawals.show', $withdrawal));
+    });
 
 Route::get('master-agent-transactions', [MasterAgentController::class, 'transactions'])->name('master-agents.transactions')
     ->middleware('can:admin.access.master-agents.transactions')
@@ -277,28 +295,85 @@ Route::get('master-agent-transactions', [MasterAgentController::class, 'transact
         $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
     });
 
-Route::get('sub-agents', [SubAgentController::class, 'index'])
-    ->name('sub-agents.index')
+    /** AGENT 's
+     */
+
+Route::get('agents', [SubAgentController::class, 'index'])->name('agents.index')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Sub Agents", route('admin.sub-agents.index'));
+        $trail->push("Agents", route('admin.agents.index'));
     });
 
-Route::get('sub-agents/pending', [SubAgentController::class, 'pending'])
-    ->name('sub-agents.pending')
+Route::get('agents/{agent}/edit', [SubAgentController::class, 'edit'])->name('agents.edit')
+    ->middleware('can:admin.access.master-agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.agents.edit', $agent));
+    });
+
+Route::get('agents-edit/{agent}', [SubAgentController::class, 'masterAgentEdit'])->name('master.agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.master.agents.edit', $agent));
+    });
+
+Route::get('agents/{agent}/wallet', [SubAgentController::class, 'cashBalance'])
+    ->name('agents.wallet')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agent Wallet", route('admin.agents.wallet', $agent));
+    });
+
+Route::get('agents-info/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.pending');
+        $trail->push("Agents Info", route('admin.agents.info', $agent));
+    });
+
+Route::get('agents-info-under-list/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.under.list')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.under.list', $agent));
+    });
+
+Route::get('agents-info-for-master-agent/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.for.master.agent')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.for.master.agent', $agent));
+    });
+
+Route::get('agents/pending', [SubAgentController::class, 'pending'])
+    ->name('agents.pending')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Pending Suba-agents", route('admin.sub-agents.pending'));
+        $trail->push("Pending Agents", route('admin.agents.pending'));
     });
 
-Route::get('sub-agents/create', [SubAgentController::class, 'create'])
-    ->name('sub-agents.create')
+Route::get('agent-transactions', [MasterAgentController::class, 'transactions'])->name('agents.transactions')
+    ->middleware('can:admin.access.master-agents.transactions')
     ->breadcrumbs(function (Trail $trail) {
-        $trail->parent('admin.sub-agents.index');
-        $trail->push("Create Sub Agents", route('admin.sub-agents.create'));
+        $trail->parent('admin.dashboard');
+        $trail->push("Agent Transactions", route('admin.agents.transactions'));
+    });
+
+Route::get('agents/create', [SubAgentController::class, 'create'])
+    ->name('agents.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Create Agents", route('admin.agents.create'));
     });
 
 Route::post('sub-agents', [SubAgentController::class, 'store'])->name('sub-agents.store');
+Route::get('agents-approve/{agent}', [SubAgentController::class, 'approve'])->name('agents.approve');
+Route::post('agents/{agent}', [SubAgentController::class, 'update'])->name('agents.update');
+Route::post('agents-update/{agent}', [SubAgentController::class, 'updateByMasterAgent'])->name('agents.update.by.master.agent');
 
 /** Hubs */
 
@@ -341,6 +416,13 @@ Route::get('hubs/{hub}/wallet', [HubController::class, 'cashBalance'])
         $trail->push("Hub Wallet", route('admin.hubs.wallet', $hub));
     });
 
+Route::get('hubs-withdrawal/{withdrawal}', [WithdrawalController::class, 'show'])
+    ->name('hubs.withdrawals.show')
+    ->middleware('can:admin.access.hubs.wallet')
+    ->breadcrumbs(function (Trail $trail, $withdrawal) {
+        $trail->push("Hub's Withdrawal", route('admin.hubs.withdrawals.show', $withdrawal));
+    });
+
 Route::post('hubs/{hub}/wallet', [HubController::class, 'deposit'])->name('hubs.wallet.deposit');
 Route::post('hubs', [HubController::class, 'store'])->name('hubs.store');
 Route::put('hubs/{hub}', [HubController::class, 'update'])->name('hubs.update');
@@ -363,3 +445,10 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
 Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
+Route::get('/fiat-callback', function () { dd('success on fiat'); });
+Route::get('/crypto-callbback', function () { dd('success on crypto'); });
+
+Route::get('/crypto-withdrawal-callbback', function () { dd('success on crypto withdrawal'); });
+
+Route::post('amend-transaction/{transaction}', [WalletController::class, 'amendTransaction'])
+    ->name('amend.transaction');

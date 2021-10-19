@@ -40,41 +40,28 @@
                 </div><!--form-group-->
 
                 <div class="form-group row">
-                    <label for="referral_id" class="col-md-2 col-form-label">@lang('Referral ID')</label>
+                    <label for="referral_id" class="col-md-2 col-form-label">@lang('Code Name')</label>
 
                     <div class="col-md-10">
-                        <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Referral ID') }}" value="{{ old('referral_id') }}" maxlength="255" required />
+                        <input type="text" name="referral_id" class="form-control" placeholder="{{ __('Code Name') }}" value="{{ old('referral_id') }}" maxlength="255" required />
                     </div>
                 </div><!--form-group-->
-                @role('Administrator')
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
-                    <div class="col-md-10">
-                    {!! Form::select('hub_id', $hubs , null , ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-                @endrole
-
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
-                    <div class="col-md-10">
-                        {!! Form::select('commission_rate', ['1' => "1%", '1.25'=> "1.25%", '1.5' => "1.5%", '1.75' => "1.75%", '2' => "2%"] , null , ['class' => 'form-control']) !!}
-                    </div>
-                </div>
-
+                <livewire:master-agent-commission-rate />
                 <div class="form-group row">
                     <label for="password" class="col-md-2 col-form-label">@lang('Password')</label>
 
-                    <div class="col-md-10">
+                    <div class="col-md-10 relative">
                         <input type="password" name="password" id="password" class="form-control" placeholder="{{ __('Password') }}" maxlength="100" required autocomplete="new-password" />
+                        <i class="eyecandy"></i>
                     </div>
                 </div><!--form-group-->
 
                 <div class="form-group row">
                     <label for="password_confirmation" class="col-md-2 col-form-label">@lang('Password Confirmation')</label>
 
-                    <div class="col-md-10">
+                    <div class="col-md-10 relative">
                         <input type="password" name="password_confirmation" id="password_confirmation" class="form-control" placeholder="{{ __('Password Confirmation') }}" maxlength="100" required autocomplete="new-password" />
+                        <i class="eyecandy"></i>
                     </div>
                 </div><!--form-group-->
             </x-slot>

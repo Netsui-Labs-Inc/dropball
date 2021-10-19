@@ -5,8 +5,18 @@
         <div class="col-md-9">
             <input type="text" name="name" class="form-control" placeholder="{{ __('Name') }}" value="{{ old('name') ?? $logged_in_user->name }}" required autofocus autocomplete="name" />
         </div>
-    </div><!--form-group-->
 
+    </div><!--form-group-->
+    @role('Master Agent')
+        <div class="form-group row">
+            <label for="code-name" class="col-md-3 col-form-label text-md-right">@lang('Code Name')</label>
+
+            <div class="col-md-9">
+                <input type="text" name="code-name" class="form-control" placeholder="{{ __('Code name') }}" value="{{ old('referral_id') ?? $logged_in_user->referral_id }}" required autofocus autocomplete="code-name" />
+            </div>
+
+        </div>
+    @endrole
     @if ($logged_in_user->canChangeEmail())
         <div class="form-group row">
             <label for="email" class="col-md-3 col-form-label text-md-right">@lang('E-mail Address')</label>

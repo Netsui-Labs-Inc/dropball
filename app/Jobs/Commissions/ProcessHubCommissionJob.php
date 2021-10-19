@@ -33,6 +33,16 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
         $this->bet = $bet;
     }
 
+    public function backoff()
+    {
+        return [1, 5, 10, 30];
+    }
+
+
+    public function middleware()
+    {
+        return [(new WithoutOverlapping("hub-".$this->bet->user->hub_id))->releaseAfter(30)];
+    }
 
     /**
      * The unique ID of the job.
@@ -42,11 +52,6 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
     public function uniqueId()
     {
         return "hub-".$this->bet->user->hub_id;
-    }
-
-    public function middleware()
-    {
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-hub-".$this->bet->user->hub->id))->releaseAfter(2)];
     }
 
     public function uniqueVia()
@@ -70,6 +75,7 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
             DB::beginTransaction();;
             $hub->refresh();
             $hubWallet = $this->getWallet($hub, 'Income Wallet');
+            $hubWallet->refreshBalance();
             $currentBalance = $hubWallet->balanceFloat;
             $hubWallet->depositFloat($commission, ['betting_round_id' => $bettingRound->id, 'previous_balance' => $currentBalance,  'commission' => true, 'from_referral' => $player->id, 'bet' => $bet->id]);
             $rate = BigDecimal::of($rate * 100)->toFloat();
@@ -84,8 +90,10 @@ class ProcessHubCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->log("Hub with balance of $currentBalance received $rate%($commission) commission. New Balance is {$hubWallet->balanceFloat}");
 
             DB::commit();
-        } catch (\Exception $e) {
-            \Sentry::captureLastError();
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
+            logger("ProcessHubCommissionJob BettingRound#{$bettingRound->id} Bet#{$bet->id} Hub #{$hub->id} ERROR ".$e->getMessage());
             DB::rollBack();
         }
 

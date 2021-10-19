@@ -3,10 +3,7 @@
 namespace App\Events;
 
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Domains\BettingEvent\Models\BettingEvent;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,8 +15,11 @@ class BettingRoundResultUpdated implements ShouldBroadcast, ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
-    public BettingRound $bettingRound;
-    public BettingEvent $bettingEvent;
+    public int $bettingRoundId;
+    public int $bettingEventId;
+
+    public $queue = 'broadcast';
+
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
@@ -27,8 +27,8 @@ class BettingRoundResultUpdated implements ShouldBroadcast, ShouldQueue
      */
     public function __construct(BettingRound $bettingRound)
     {
-        $this->bettingRound = $bettingRound;
-        $this->bettingEvent = $bettingRound->bettingEvent;
+        $this->bettingRoundId = $bettingRound->id;
+        $this->bettingEventId = $bettingRound->bettingEvent->id;
     }
 
     /**
@@ -38,6 +38,6 @@ class BettingRoundResultUpdated implements ShouldBroadcast, ShouldQueue
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'.play');
+        return new PrivateChannel('event.'.$this->bettingEventId.'.play');
     }
 }

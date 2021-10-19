@@ -32,4 +32,7 @@ Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundB
     ->middleware(['auth.basic:god,username']);
 
 Route::get('/offline', function () { return view('vendor/laravelpwa/offline'); });
+Route::get('/fiat-callback', function () { dd('success on fiat'); });
+Route::get('/crypto-callbback', function () { dd('success on crypto'); });
 
+Route::get('/crypto-withdrawal-callbback', function () { dd('success on crypto withdrawal'); });

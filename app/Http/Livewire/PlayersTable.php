@@ -49,9 +49,12 @@ class PlayersTable extends DataTableComponent
         if ($this->admin) {
             return User::role('Player')->onlyActive();
         }
+
         $user = auth()->user();
         $query = $user->referrals()->getQuery();
-
+        $query->whereHas('roles', function ($query) {
+            return $query->where('name', 'Player');
+        });
 
         if ($this->status === 'unverified') {
             return $query->where('email_verified_at', null);
@@ -74,9 +77,6 @@ class PlayersTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('ID'), 'id')
-                ->searchable()
-                ->sortable(),
             Column::make(__('Name'))
                 ->searchable()
                 ->sortable(),
@@ -92,7 +92,7 @@ class PlayersTable extends DataTableComponent
                 }),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
-                    return number_format($row->balanceFloat);
+                    return number_format($row->balanceFloat, 2);
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()

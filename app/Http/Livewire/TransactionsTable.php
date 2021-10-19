@@ -2,11 +2,16 @@
 
 namespace App\Http\Livewire;
 
+use App\Domains\Auth\Models\User;
+use App\Domains\Wallet\Models\ApprovedWithdrawalRequest;
+use App\Http\Livewire\Services\Filters;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Rappasoft\LaravelLivewireTables\Views\Filter;
+use App\Domains\Wallet\Models\AmendedTransaction;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -29,7 +34,10 @@ class TransactionsTable extends DataTableComponent
     public $wallet;
     public $model;
     public $excludeBetTransactions;
-
+    private $transactionStatus = [
+            'pending'  => 0,
+            'complete' => 1
+        ];
 
     protected $options = [
         'bootstrap.classes.table' => 'table',
@@ -58,13 +66,12 @@ class TransactionsTable extends DataTableComponent
         $query = Transaction::query();
 
         if ($this->user) {
-            $query = $this->user->transactions()->getQuery();
-        }
-        if (! $this->confirmed) {
-            $query->where('confirmed', false);
+            $query = $this->user->transactions()->getQuery()
+                ->where('confirmed', 1);
         }
         if ($this->model) {
-            $query = $this->model->transactions()->getQuery();
+            $query = $this->model->transactions()->getQuery()
+                ->where('confirmed', 1);;
         }
         if ($this->wallet) {
             $query->whereHas('wallet',  fn ($query) => $query->where('slug', $this->wallet));
@@ -74,10 +81,24 @@ class TransactionsTable extends DataTableComponent
             $query->whereNull('meta->bettingRound');
         }
 
+        $query->when($this->getFilter('status'),
+            fn ($query, $term) => $query->where('confirmed', $this->transactionStatus[$term])
+        );
 
+        $query->when($this->getFilter('type'),
+            fn ($query, $term) => $query->where('type', $term)
+        );
+        $query->latest('created_at');
         return $query;
     }
-
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        $filters = new Filters();
+        return $filters->type()->status()->getFilters();
+    }
     /**
      * @return array
      */
@@ -85,34 +106,48 @@ class TransactionsTable extends DataTableComponent
     {
         $user = auth()->user();
         $columns = [
-            Column::make(__('Transaction ID'), 'id')
+            Column::make(__('Type'), 'type')
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
-                    return "#".$row->id;
-                })->asHtml(),
-            Column::make(__('Wallet'), 'wallet')
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->wallet->slug == 'default' ? 'badge-success' : 'badge-info';
+                    $class = 'badge-success';
+                    if ($row->type == 'withdrawal')
+                    {
+                        $class = 'badge-warning';
+                    } elseif ($row->type == 'amendment')
+                    {
+                        $class = 'badge-primary';
+                    }
+                    $amended = '';
 
-                    return "<span class='badge $class'> {$row->wallet->name}</span>";
-                })->asHtml(),
-            Column::make(__('Type'), 'type')
-                ->sortable()
-                ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
+                    if (AmendedTransaction::where('original_transaction_id', $row->id)->get()->count()) {
+                        $amended = "<span class='badge badge-warning'> amended</span>";
+                    }
 
-                    return "<span class='badge $class'> {$row->type}</span>";
+                    return "<span class='badge $class'> {$row->type}</span> $amended" ;
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
+                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
 
-                    return "<div class='$class'>$sign".number_format($row->amountFloat)."</div>";
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                        ->where('original_transaction_id', $row->id)->get();
+
+                    $amount = $row->amountFloat + ($amendedTransactions->sum('amount') / 100);
+
+                    if (count($amendedTransactions) &&
+                            number_format($row->amountFloat, 2) !== number_format($amount, 2)
+                        ) {
+                        return "<s><div class='$class'>$sign".number_format($row->amountFloat, 2)." '
+                        </s><div class='text-warning'>". number_format($amount, 2). "</div></div>";
+                    }
+
+                    return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
-            Column::make(__('Confirmed'), 'confirmed')
+            Column::make(__('STATUS'), 'confirmed')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->confirmed ? 'badge-success': 'badge-warning';
@@ -120,11 +155,33 @@ class TransactionsTable extends DataTableComponent
 
                     return "<span class='badge $class'>$confirmed</span>";
                 })->asHtml(),
-            Column::make(__('Created at'), 'created_at')
+            Column::make(__('Requested at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
+                    if($row->type === 'deposit') {
+                        return 'N/A';
+                    }
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
-                })->asHtml()
+                })->asHtml(),
+             Column::make(__('Approved at'), 'updated_at')
+                 ->sortable()
+                 ->format(function ($value, $column, Transaction $row) {
+                     if($row->type === 'deposit') {
+                         return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                     }
+                     if ($row->created_at->format('Y-m-d H:i:s') === $row->updated_at->format('Y-m-d H:i:s')) {
+                         return 'N/A';
+                     }
+                     return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                 })->asHtml(),
+             Column::make(__('Approved by'), 'approved_by')
+                 ->sortable()
+                 ->format(function ($value, $column, Transaction $row) {
+                     if($row->type === 'deposit') {
+                         return $this->getCreditor($row->meta);
+                     }
+                     return $this->getApprover($row->id);
+                 })->asHtml(),
         ];
 
         if ($this->action) {
@@ -154,5 +211,22 @@ class TransactionsTable extends DataTableComponent
         }
 
         return $columns;
+    }
+
+    private function getCreditor($meta)
+    {
+        if (!$meta) {
+            return 'N/A';
+        }
+        if(array_key_exists('credited_by', $meta)) {
+            return User::find($meta['credited_by'])->name;
+        }
+    }
+
+    private function getApprover($transactionId)
+    {
+        $approvedWithdrawalRequest = ApprovedWithdrawalRequest::query();
+        $approvedRequest = $approvedWithdrawalRequest->where('transaction_id', $transactionId)->get()->first();
+        return ($approvedRequest) ? $approvedRequest->approver->name : 'N/A';
     }
 }

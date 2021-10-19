@@ -39,12 +39,6 @@ class HubsTable extends DataTableComponent
     public function columns(): array
     {
         return [
-            Column::make(__('ID'), 'id')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Hub $row) {
-                    return '#'.$row->id;
-                })->asHtml(),
             Column::make(__('Name'), 'name')
                 ->searchable()
                 ->sortable()
@@ -57,13 +51,32 @@ class HubsTable extends DataTableComponent
                 ->format(function ($value, $column, Hub $row) {
                     return $row->admin->name ?? 'N/A';
                 })->asHtml(),
+            Column::make(__('Commission Rate'), 'commission_rate')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Hub $row) {
+                    $hubRate = number_format($row->commission_rate, 1);
+                    return "$hubRate%";
+                })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
-                    return number_format($row->balanceFloat);
+                    return number_format($row->balanceFloat, 2);
                 })->asHtml(),
             Column::make(__('Income Balance'), 'name')
                 ->format(function ($value, $column, Hub $row) {
-                    return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0);
+                    return number_format($row->getWallet('income-wallet')->balanceFloat ?? 0, 2);
+                })->asHtml(),
+            Column::make(__('Agents'), 'agents')
+                ->format(function ($value, $column,Hub $row) {
+                    return $row->user()->whereHas('roles', function($query) {
+                        $query->where('name', 'Master Agent');
+                    })->get()->count();
+                })->asHtml(),
+            Column::make(__('Players'), 'players')
+                ->format(function ($value, $column, Hub $row) {
+                    return $row->user()->whereHas('roles', function($query) {
+                        $query->where('name', 'Player');
+                    })->get()->count();
                 })->asHtml(),
             Column::make(__('Actions'))
                 ->format(function ($value, $column, Hub $row) {
