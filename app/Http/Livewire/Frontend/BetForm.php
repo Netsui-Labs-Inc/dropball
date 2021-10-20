@@ -57,7 +57,7 @@ class BetForm extends Component
 
     public function mount($bettingEventId, $theme = 'default')
     {
-        
+
         $this->theme = $theme;
         $this->betOptions = BetOption::where('hidden', false)->get();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
@@ -238,7 +238,6 @@ class BetForm extends Component
     {
         $this->validate($this->rules);
         $bet = BetOption::find($betOption['id']);
-
         try {
             DB::beginTransaction();
             $this->validateBalance();

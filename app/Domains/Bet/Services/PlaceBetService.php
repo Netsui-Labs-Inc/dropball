@@ -75,7 +75,7 @@ class PlaceBetService
             throw new \Exception("Cannot add multiple bets");
         }
 
-        if ($this->amount < 50) {
+        if ($this->amount < config('dropball.streaming_minimum_balance')) {
             throw new \Exception("Invalid bet amount");
         }
 
