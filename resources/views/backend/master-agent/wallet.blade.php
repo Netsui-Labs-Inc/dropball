@@ -51,7 +51,7 @@
                 <label for="password" class="col col-form-label">@lang('Enter Password')</label>
             </div>
             <div class="form-group row">
-                <div class="col relative">
+                <div class="col position-relative">
                     <input type="password" class="form-control" name="password" >
                     <i class="eyecandy"></i>
                 </div>

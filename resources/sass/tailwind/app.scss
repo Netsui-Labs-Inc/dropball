@@ -11,6 +11,7 @@
 
 .eyecandy {
     @apply far fa-eye not-italic absolute right-4 top-4 cursor-pointer;
+    mix-blend-mode: difference;
 }
 
 .eyecandy.show {
