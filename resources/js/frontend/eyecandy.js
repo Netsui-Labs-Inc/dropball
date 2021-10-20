@@ -1,7 +1,7 @@
 
 $(function () {
     $('.eyecandy').on('click', function () {
-        const passwordElem = $(this).parent().find('input[name="password"]');
+        const passwordElem = $(this).parent().find('input');
         const currentType = passwordElem.attr('type');
         
         // Toggle Eye Candy
