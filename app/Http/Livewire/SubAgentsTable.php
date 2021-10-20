@@ -86,7 +86,7 @@ class SubAgentsTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     $commissionRateConversion = new CommissionRatesConversion($row);
                     $agentCommissionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
-                    return number_format($agentCommissionRate, 2) . '%';
+                    return number_format($agentCommissionRate, 4) . '%';
                 })->asHtml(),
             Column::make(__('Players'))
                 ->searchable()

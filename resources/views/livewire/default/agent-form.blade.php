@@ -79,7 +79,7 @@
                                     <option value="{{ $hub->id }}">{{ $hub->name }}</option>
                                 @endforeach
                             </select>
-                       
+
                         </div>
                     </div>
                 @endif
@@ -106,7 +106,7 @@
                                 @foreach ($masterAgents as $masterAgent)
                                     <option value="{{ $masterAgent->id }}">{{ $masterAgent->name }}</option>
                                 @endforeach
-                            </select>   
+                            </select>
                         </div>
                     </div>
                     @endif
@@ -128,7 +128,7 @@
                 <div class="form-group row">
                     <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
                     <div class="col-md-10">
-                        <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 2) }}%" disabled/>
+                        <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 4) }}%" disabled/>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -143,9 +143,9 @@
                             <label for="admin" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
                             <div class="pr-1 pl-3">
                                 {{Form::select('whole_number_rate', $wholeNumberRates, old('whole_number_rate'), [
-                                    'class' => 'form-control', 
-                                    'required', 
-                                    'wire:change="checkMaxRateAssignment"', 
+                                    'class' => 'form-control',
+                                    'required',
+                                    'wire:change="checkMaxRateAssignment"',
                                     'wire:model="selectedWholeNumber"'
                                     ])
                                 }}
@@ -159,9 +159,9 @@
                             </div>
                             <h2 class="">%</h2>
                         </div>
-                @endif       
+                @endif
             @endif
-            @if($showButtonCancelRate) 
+            @if($showButtonCancelRate)
                 <div class="form-group row">
                     <label for="email" class="col-md-2 col-form-label">@lang('')</label>
                     <div class="col-md-2">

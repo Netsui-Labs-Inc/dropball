@@ -33,10 +33,10 @@
         <div class="form-group row">
             <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
             <div class="col-md-10">
-                <input type="text" name="rate" class="form-control" value="{{ number_format($masterAgentCurrentRateWholeNumber + $masterAgentCurrentRateDecimalNumber, 2) }}%" disabled/>
+                <input type="text" name="rate" class="form-control" value="{{ number_format($masterAgentCurrentRateWholeNumber + $masterAgentCurrentRateDecimalNumber, 4) }}%" disabled/>
             </div>
         </div>
-    
+
         <div class="form-group row">
             <label for="email" class="col-md-2 col-form-label">@lang('')</label>
             <div class="col-md-2">
@@ -56,9 +56,9 @@
         <label for="admin" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
         <div class="pr-1 pl-3">
             {{Form::select('whole_number_rate', $wholeNumberRates, old('whole_number_rate'), [
-                'class' => 'form-control', 
-                'required', 
-                'wire:change="checkMaxRateAssignment"', 
+                'class' => 'form-control',
+                'required',
+                'wire:change="checkMaxRateAssignment"',
                 'wire:model="selectedWholeNumber"'
                 ])
             }}
@@ -73,7 +73,7 @@
         <h2 class="">%</h2>
     </div>
     @endif
-    @if($showButtonCancelHub) 
+    @if($showButtonCancelHub)
         <div class="form-group row">
             <label for="email" class="col-md-2 col-form-label">@lang('')</label>
             <div class="col-md-2">

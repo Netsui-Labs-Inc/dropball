@@ -57,7 +57,7 @@ class HubsTable extends DataTableComponent
                 ->sortable()
                 ->format(function ($value, $column, Hub $row) {
                     $commissionConversion = new CommissionRatesConversion($row, true);
-                    $hubRate = number_format($commissionConversion->convertHub()->hubCommissionRate(), 2);
+                    $hubRate = number_format($commissionConversion->convertHub()->hubCommissionRate(), 4);
                     return "$hubRate%";
                 })->asHtml(),
             Column::make(__('Credit Balance'), 'name')
