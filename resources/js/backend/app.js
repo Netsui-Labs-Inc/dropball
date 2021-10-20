@@ -8,6 +8,7 @@ require('@coreui/coreui');
 // Boilerplate
 require('../plugins');
 require('../bootstrap');
+require('./eyecandy');
 require('./alert');
 import Echo from 'laravel-echo';
 import AmendmentDetails from './amendment-details';
