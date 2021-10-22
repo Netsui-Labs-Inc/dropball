@@ -94,6 +94,11 @@ class PlayersTable extends DataTableComponent
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat, 2);
                 })->asHtml(),
+            Column::make(__('Referred By'))
+                ->format(function ($value, $column, User $row) {
+                    $referredBy = User::where('id', $row->referred_by)->first();
+                    return $referredBy->name;
+                })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, User $row) {
