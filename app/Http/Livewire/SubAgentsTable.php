@@ -81,7 +81,6 @@ class SubAgentsTable extends DataTableComponent
                 ->searchable()
                 ->sortable(),
             Column::make(__('rate'), 'commission_rate')
-                ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, User $row) {
                     $commissionRateConversion = new CommissionRatesConversion($row);
@@ -89,14 +88,6 @@ class SubAgentsTable extends DataTableComponent
                     return number_format($agentCommissionRate, 4) . '%';
                 })->asHtml(),
             Column::make(__('Players'))
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, User $row) {
-                    return User::where('referred_by', $row->id)->get()->count();
-                })->asHtml(),
-            Column::make(__('Players'))
-                ->searchable()
-                ->sortable()
                 ->format(function ($value, $column, User $row) {
                     return User::where('referred_by', $row->id)->get()->count();
                 })->asHtml(),
@@ -117,13 +108,6 @@ class SubAgentsTable extends DataTableComponent
         }
 
         $secondSetOfColumn = [
-            Column::make(__('Verified'))
-                ->format(function ($value, $column, User $row) {
-                    return view('backend.auth.user.includes.verified', ['user' => $row]);
-                })
-                ->sortable(function ($builder, $direction) {
-                    return $builder->orderBy('email_verified_at', $direction);
-                }),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
                 ->format(function ($value, $column, User $row) {

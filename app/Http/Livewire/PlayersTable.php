@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class BettingRoundsTable.
@@ -83,13 +84,6 @@ class PlayersTable extends DataTableComponent
             Column::make(__('E-mail'), 'email')
                 ->searchable()
                 ->sortable(),
-            Column::make(__('Verified'))
-                ->format(function ($value, $column, User $row) {
-                    return view('backend.auth.user.includes.verified', ['user' => $row]);
-                })
-                ->sortable(function ($builder, $direction) {
-                    return $builder->orderBy('email_verified_at', $direction);
-                }),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat, 2);

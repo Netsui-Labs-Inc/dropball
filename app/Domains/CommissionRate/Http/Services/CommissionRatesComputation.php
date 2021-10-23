@@ -73,7 +73,15 @@ class CommissionRatesComputation
 
     private function computeOperatorCommission($hub)
     {
-        $overAllcommissionRate = OverallCommissionRate::query()->first()->rate;
+        $overAllcommission = OverallCommissionRate::query()->first();
+
+        if(!$overAllcommission)
+        {
+            $overAllcommissionRate = config('dropball.default_overall_commission_rate');
+        } else {
+            $overAllcommissionRate = $overAllcommission->rate;
+        }
+
         $hubCommissionRate =  $overAllcommissionRate * $hub->commission_rate;
 
         $this->operatorCommissionRate = abs($overAllcommissionRate - $hubCommissionRate)  / 100;
