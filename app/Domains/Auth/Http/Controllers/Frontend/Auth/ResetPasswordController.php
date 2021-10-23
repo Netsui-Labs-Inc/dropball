@@ -57,7 +57,7 @@ class ResetPasswordController extends Controller
                     'max:100',
                     new UnusedPassword(request('email')),
                 ],
-                PasswordRules::changePassword(request('email'))
+                PasswordRules::changePassword(request('email'), 'password_confirmation')
             ),
         ];
     }
