@@ -41,21 +41,20 @@ class HubController extends Controller
 
     public function edit(Hub $hub)
     {
-        
+
         $hubAdmins = User::role('Virtual Hub')
             ->where(function($query) use ($hub) {
                 $query->doesntHave('hubAdmin')
                     ->orWhere('id', $hub->admin_id);
             })
             ->get()->pluck('name', 'id');
-    
+
         return view('backend.hub.edit')
         ->with(['hubAdmins' => $hubAdmins,'hub' => $hub]);
     }
 
     public function store(StoreHubRequest $request)
     {
-
         try {
             $hubDetails = $request->validated();
             $newHub = (new CreateHubAction)($hubDetails);

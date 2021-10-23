@@ -44,7 +44,6 @@ class HubCommissionRate extends Component
 
     public function edit()
     {
-        $this->edit = false;
         $this->editMode = true;
     }
 
@@ -106,7 +105,7 @@ class HubCommissionRate extends Component
 
     public function render()
     {
-        
+
         return view('livewire.hub-commission-rate');
     }
 }
