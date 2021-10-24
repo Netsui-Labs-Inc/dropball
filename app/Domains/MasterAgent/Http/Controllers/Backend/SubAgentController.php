@@ -43,8 +43,8 @@ class SubAgentController extends Controller
      * @param  RoleService  $roleService
      * @param  PermissionService  $permissionService
      */
-    public function __construct(UserService $userService, 
-            RoleService $roleService, 
+    public function __construct(UserService $userService,
+            RoleService $roleService,
             PermissionService $permissionService,
             CommissionRateService $commissionRateService
             )
@@ -57,14 +57,14 @@ class SubAgentController extends Controller
 
     public function updateByMasterAgent(UpdateAgentByMasterAgent $request, User $agent)
     {
-      
+
         $input = $request->validated();
-        
+
         $AgentCommissionRate = $input['whole_number_rate'] + $input['decimal_number_rate'];
         $commissionRateConversion = new CommissionRatesConversion($agent);
         $AgentCommissionRate = $commissionRateConversion
             ->convertAgentRateToPercentage($AgentCommissionRate, $agent->hub_id, $agent->referred_by, true);
-        
+
         if(!$AgentCommissionRate){
             return redirect()->back()->withErrors('Something went wrong!');
         }
@@ -134,12 +134,12 @@ class SubAgentController extends Controller
             ->with('agent', $agent)
             ->with('hubs', $hubs);
     }
-    
+
     public function update(UpdateAgentRequest $request, User $agent)
     {
         $user = $request->user();
         $input = $request->validated();
-       
+
         if ($request->has('email_verified') || $agent->email_verified_at) {
             $input['active'] = "1";
         }
@@ -151,18 +151,18 @@ class SubAgentController extends Controller
         if(!$AgentCommissionRate){
             return redirect()->back()->withErrors('Something went wrong!');
         }
-        
+
         $input['commission_rate'] = $AgentCommissionRate;
         $input['type'] = 'admin';
         $input['roles'] = ['Master Agent'];
         $input['timezone'] = 'Asia/Manila';
-       
+
         if ($user->hasRole('Virtual Hub')) {
             $input['hub_id'] = Hub::where('admin_id', $user->id)->first()->id;
         } elseif ($user->hasRole('Master Agent')) {
             $input['hub_id'] = $user->hub_id;
         }
-    
+
         $user = $this->userService->update($agent, $input);
         return redirect()->to(route('admin.agents.index'))->withFlashSuccess("Agent updated Successfully");
     }
@@ -196,7 +196,7 @@ class SubAgentController extends Controller
         $agent = $this->userService->store($input);
         $commissionRateConversion = new CommissionRatesConversion($agent);
         $agent->commission_rate = $commissionRateConversion->convertAgentRateToPercentage($agent->commission_rate, $agent->hub_id, $agent->referred_by);
-        
+
         $agent->save();
         $agent->createWallet([
             'name' => 'Income Wallet',

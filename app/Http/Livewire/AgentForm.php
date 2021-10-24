@@ -23,7 +23,7 @@ class AgentForm extends Component
     public $hubs;
     public $hubId;
     public $showRate = false;
-    public $selectedAgent = false;
+    public $hubWasSelected = false;
     public $firstLoad = true;
     public $masterAgentChange = false;
     public $wholeNumberRates;
@@ -37,19 +37,18 @@ class AgentForm extends Component
     public $agentMasterAgentName;
     public $agentMasterAgentId;
     public $showButtonCancelRate;
-    public $test = [];
     public $showMasterAgentList;
     public $agentCurrentRateWholeNumber;
     public $agentCurrentRateDecimalNumber;
-    public function mount($agent = null, $edit = false, $masterAgentsEdit = false, $editMode = false)
+    public function mount($agent = null, $masterAgentsEdit = false, $editMode = false)
     {
         $this->agent = $agent;
-        $this->edit = $edit;
         $this->editMode = $editMode;
         if($this->editMode) {
             $agentHub = Hub::where('id', $agent->hub_id)->get()->first();
-            $this->agentHubId = $agentHub->id;
+            $this->hubId = $agentHub->id;
             $this->agentHubName = $agentHub->name;
+            $this->hubs = Hub::where('id', '!=', $this->hubId)->get();
             $masterAgent = User::where('id', $agent->referred_by)->get()->first();
             $this->agentMasterAgentId = $masterAgent->id;
             $this->agentMasterAgentName = $masterAgent->name;
@@ -57,33 +56,38 @@ class AgentForm extends Component
             $currentCommissionRate = $commissionRateService->setCurrentRate($agent);
             $this->agentCurrentRateWholeNumber = $currentCommissionRate['whole_number'];
             $this->agentCurrentRateDecimalNumber = $currentCommissionRate['decimal_number'];
+
+        } else {
+            $this->hubs = Hub::all();
         }
-        
-        if (auth()->user()->hasRole('Administrator')) 
+
+        $this->getMasterAgents();
+        if (auth()->user()->hasRole('Administrator'))
         {
             $this->notAMasterAgent = true;
             $this->masterAgentsEdit = $masterAgentsEdit;
             $this->agentsMasterAgent = $this->setAgent($agent);
-            $this->hubs = Hub::all();
-            $this->hubId = auth()->user()->hub_id;
+
             return;
         }
-      
+        $this->notAMasterAgent = false;
+        $this->hubId = auth()->user()->hub_id;
         $this->showRate(auth()->user());
     }
 
     public function selectHub()
     {
-        $this->setFormWhenSelectedHub();
-        $this->getMasterAgents();
+        $this->hubs = null;
+        $this->setSelectedHub();
     }
 
-    private function setFormWhenSelectedHub()
+    private function setSelectedHub()
     {
-        $this->agentsMasterAgent = null;
-        $this->selectedAgent = false;
-        $this->showMasterAgentList = true;
-        $this->showRate = false;
+        $this->hubWasSelected = true;
+        $agentHub = Hub::where('id', $this->hubId)->get()->first();
+        $this->agentHubName = $agentHub->name;
+        $this->hubs = Hub::where('id', '!=', $this->hubId)->get();
+        $this->getMasterAgents();
     }
 
     public function setFormWhenSelectedMasterAgent()
@@ -91,21 +95,15 @@ class AgentForm extends Component
         $this->showRate();
     }
 
-    public function selectRate()
-    {
-        $this->firstLoad = false;
-    }
-
     public function getMasterAgents()
     {
         if(!$this->hubId) {
-            $this->showMasterAgentList = false;
             return;
         }
 
         $hubId = $this->hubId;
         $this->notAMasterAgent = true;
-        
+
         $this->masterAgents = User::join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->where('roles.name', 'Master Agent')
@@ -148,15 +146,13 @@ class AgentForm extends Component
             $this->showRate = false;
             return;
         }
-        
-        $this->showRate = true;
-       
+
         $commissionRateConversion = new CommissionRatesConversion($masterAgent);
         $rate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
-        
+
         $this->setRates($rate);
     }
-    
+
     private function setRates($commissionRate)
     {
         $commissionRateService = new CommissionRateService();
@@ -172,7 +168,7 @@ class AgentForm extends Component
     {
         $this->decimalNumberRates = $commissionRateService
             ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->parentCommissionRate, 1);
-    
+
     }
 
     public function showUpdateRate()

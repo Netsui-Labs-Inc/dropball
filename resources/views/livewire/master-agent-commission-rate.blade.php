@@ -1,7 +1,14 @@
 <div>
     @role('Administrator')
         <div class="form-group row">
-            <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
+            <label for="email" class="col-md-2 col-form-label">
+                @if($editMode)
+                    @lang('Hub')
+                @else
+                    @lang('Select Hub')
+                @endif
+
+            </label>
             <div class="col-md-10">
                 <select class="form-control" name="hub_id" wire:change="showRates" wire:model="hub">
                     @if($editMode)

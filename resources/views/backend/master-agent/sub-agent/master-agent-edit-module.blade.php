@@ -6,6 +6,6 @@
 
 @section('content')
 <x-forms.post wire:ignore.self :action="route('admin.agents.update.by.master.agent', $agent)">
-    <livewire:agent-form  :agent="$agent" :edit="true" :masterAgentsEdit="1">
+    <livewire:agent-form  :agent="$agent" :editMode="true" :masterAgentsEdit="1">
 </x-forms.post>
 @endsection

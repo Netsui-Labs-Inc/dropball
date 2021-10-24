@@ -61,55 +61,47 @@
                 </div>
             </div><!--form-group-->
             @role('Administrator')
-                @if($editMode)
-                    <input type="hidden" name="hub_id" class="form-control" value="{{ $agentHubId }}" />
-                    <div class="form-group row">
-                        <label for="email" class="col-md-2 col-form-label">@lang('Hub')</label>
-                        <div class="col-md-10">
-                            <input type="text" name="hub_name" class="form-control" value="{{ $agentHubName }}" disabled />
-                        </div>
-                    </div>
-                @else
-                    <div class="form-group row">
-                        <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
-                        <div class="col-md-10">
-                            <select class="form-control" name="hub_id" wire:change="selectHub" wire:model="hubId">
+                <div class="form-group row">
+                    <label for="email" class="col-md-2 col-form-label">@lang('Select Hub')</label>
+                    <div class="col-md-10">
+                        <select class="form-control" name="hub_id" wire:change="selectHub" wire:model="hubId">
+                            @if($editMode || $hubWasSelected)
+                                <option value="{{ $hubId }}">{{ $agentHubName }}</option>
+                            @else
                                 <option value="">Select Hub</option>
-                                @foreach($hubs as $hub)
-                                    <option value="{{ $hub->id }}">{{ $hub->name }}</option>
-                                @endforeach
-                            </select>
+                            @endif
 
-                        </div>
+                            @foreach($hubs as $hub)
+                                <option value="{{ $hub->id }}">{{ $hub->name }}</option>
+                            @endforeach
+
+                        </select>
+
                     </div>
-                @endif
+                </div>
             @else
                 <input type="hidden" value="{{ Auth::user()->hub_id }}" name="hub_id" />
             @endrole
 
             @if($notAMasterAgent)
-                @if($editMode)
-                    <input type="hidden" name="referred_by" class="form-control" value="{{ $agentMasterAgentId }}" />
-                    <div class="form-group row">
-                        <label for="email" class="col-md-2 col-form-label">@lang('Master Agent')</label>
-                        <div class="col-md-10">
-                            <input type="text" name="master_agent" class="form-control" value="{{ $agentMasterAgentName }}" disabled />
-                        </div>
-                    </div>
-                @endif
-                @if($showMasterAgentList)
-                    <div class="form-group row">
-                        <label for="referred_by" class="col-md-2 col-form-label">@lang('Master Agent')</label>
-                        <div class="col-md-10">
-                            <select class="form-control" wire:model="masterAgent" wire:change="setFormWhenSelectedMasterAgent" name="referred_by">
+                <div class="form-group row">
+                    <label for="referred_by" class="col-md-2 col-form-label">@lang('Master Agent')</label>
+                    <div class="col-md-10">
+                        <select class="form-control" wire:model="masterAgent" wire:change="setFormWhenSelectedMasterAgent" name="referred_by">
+                            @if(($editMode || $hubWasSelected) && count($masterAgents) > 0)
+                                <option value="{{ $agentMasterAgentId }}">{{ $agentMasterAgentName }}</option>
+                            @else
                                 <option value="">Select Master Agent</option>
+                            @endif
+
+                            @if($masterAgents)
                                 @foreach ($masterAgents as $masterAgent)
                                     <option value="{{ $masterAgent->id }}">{{ $masterAgent->name }}</option>
                                 @endforeach
-                            </select>
-                        </div>
+                            @endif
+                        </select>
                     </div>
-                    @endif
+                </div>
             @else
                 <input
                     type="hidden"
@@ -117,56 +109,42 @@
                     value="{{ Auth::user()->id }}"
                 />
             @endif
-            @if($editMode)
-                <div class="form-group row d-none">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Hub')</label>
-                    <div class="col-md-10">
-                        <input type="hidden" name="whole_number_rate" class="form-control" value={{ $agentCurrentRateWholeNumber }} />
-                        <input type="hidden" name="decimal_number_rate" class="form-control" value={{ $agentCurrentRateDecimalNumber }} />
-                    </div>
+            <div class="form-group row">
+                <label for="email" class="col-md-2 col-form-label">
+                    @lang('Current Commission Rate')
+                </label>
+                <div class="col-md-10">
+                    <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 4) }}%" disabled/>
                 </div>
+            </div>
+            @if($wholeNumberRates && $decimalNumberRates)
                 <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
-                    <div class="col-md-10">
-                        <input type="text" name="rate" class="form-control" value="{{ number_format($agentCurrentRateWholeNumber + $agentCurrentRateDecimalNumber, 4) }}%" disabled/>
+                    <label for="admin" class="col-md-2 col-form-label">
+                        @if($editMode)
+                            @lang('New Commission Rate')
+                        @else
+                            @lang('Commission Rate')
+                        @endif
+
+                    </label>
+
+                    <div class="pr-1 pl-3">
+                        {{Form::select('whole_number_rate', $wholeNumberRates, old('whole_number_rate'), [
+                            'class' => 'form-control',
+                            'required',
+                            'wire:change="checkMaxRateAssignment"',
+                            'wire:model="selectedWholeNumber"'
+                            ])
+                        }}
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('')</label>
-                    <div class="col-md-2">
-                        <button class="btn btn-sm btn-success" type="button" wire:click="showUpdateRate">@lang('Update Rate')</button>
+                    <div class="pr-1">
+                        {{Form::select('decimal_number_rate', $decimalNumberRates, old('decimal_number_rate'), [
+                            'class' => 'form-control',
+                            'required',
+                            ])
+                        }}
                     </div>
-                </div>
-            @else
-                @if($showRate)
-                        <div class="form-group row">
-                            <label for="admin" class="col-md-2 col-form-label">@lang('Commission Rate')</label>
-                            <div class="pr-1 pl-3">
-                                {{Form::select('whole_number_rate', $wholeNumberRates, old('whole_number_rate'), [
-                                    'class' => 'form-control',
-                                    'required',
-                                    'wire:change="checkMaxRateAssignment"',
-                                    'wire:model="selectedWholeNumber"'
-                                    ])
-                                }}
-                            </div>
-                            <div class="pr-1">
-                                {{Form::select('decimal_number_rate', $decimalNumberRates, old('decimal_number_rate'), [
-                                    'class' => 'form-control',
-                                    'required',
-                                    ])
-                                }}
-                            </div>
-                            <h2 class="">%</h2>
-                        </div>
-                @endif
-            @endif
-            @if($showButtonCancelRate)
-                <div class="form-group row">
-                    <label for="email" class="col-md-2 col-form-label">@lang('')</label>
-                    <div class="col-md-2">
-                        <button class="btn btn-sm btn-warning text-white" type="button" wire:click="cancelEditRate">@lang('Cancel Edit Rate')</button>
-                    </div>
+                    <h2 class="">%</h2>
                 </div>
             @endif
             <div class="form-group row">
