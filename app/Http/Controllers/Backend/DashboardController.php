@@ -60,10 +60,22 @@ class DashboardController extends Controller
         $this->logoutUser(!$user->hub_id);
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
+        $agents = User::role('Master Agent')
+            ->where('referred_by', $user->id)
+            ->whereNotNull('referred_by')
+            ->onlyActive()->count();
+        $isAgent = false;
+        if($user->referred_by)
+        {
+            $isAgent = true;
+        }
+
         return view('backend.dashboard.master-agent')
             ->with('user', $user)
             ->with('players', $playersCount)
-            ->with('transactions', $user->transactions);
+            ->with('transactions', $user->transactions)
+            ->with('agents', $agents)
+            ->with('isAgent', $isAgent);
     }
 
     public function betAdmin()
@@ -94,7 +106,7 @@ class DashboardController extends Controller
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
-        
+
         return view('backend.dashboard.super-admin')
             ->with('company', $company->getWallet('income-wallet'))
             ->with('players', $players)
@@ -115,10 +127,16 @@ class DashboardController extends Controller
         $players = User::role('Player')
             ->where('hub_id', $hub->id)
             ->onlyActive()->count();
+        $agents = User::role('Master Agent')
+            ->where('hub_id', $hub->id)
+            ->whereNotNull('referred_by')
+            ->onlyActive()->count();
+
         return view('backend.dashboard.virtual-hub')
             ->with('masterAgents', $masterAgents)
             ->with('hub', $hub)
-            ->with('players', $players);
+            ->with('players', $players)
+            ->with('agents', $agents);
     }
 
     public function operator()

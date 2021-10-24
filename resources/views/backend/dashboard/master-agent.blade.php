@@ -21,6 +21,16 @@
                 </x-slot>
             </x-backend.card>
         </div>
+        @if(!$isAgent)
+            <div class="col-12 col-md-6">
+                <x-backend.card>
+                    <x-slot name="body">
+                        <div class="text-value-lg text-info">{{number_format($agents ?? 0)}}</div>
+                        <small class="text-muted text-uppercase font-weight-bold">@lang("Total Agents")</small>
+                    </x-slot>
+                </x-backend.card>
+            </div>
+        @endif
         <div class="col-12 col-md-6">
             <x-backend.card>
                 <x-slot name="body">
