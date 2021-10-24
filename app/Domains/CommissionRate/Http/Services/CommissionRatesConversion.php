@@ -105,7 +105,7 @@ class CommissionRatesConversion
     public function validateCommissionRate($commissionRate, $parentCommissionRate, $minimumCommissionRate)
     {
         return ($parentCommissionRate < $commissionRate
-        || $commissionRate <= 0 || $commissionRate <= $minimumCommissionRate
+        || $commissionRate <= 0 || $commissionRate < $minimumCommissionRate
         ) ? true : false;
     }
     

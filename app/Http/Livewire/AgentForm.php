@@ -15,17 +15,13 @@ class AgentForm extends Component
     public $notAMasterAgent = false;
     public $masterAgents;
     public $masterAgent;
-    public $isEdit = false;
     public $agent;
     public $agentsMasterAgent;
     public $agentCommisionRate;
     public $masterAgentsEdit;
     public $hubs;
     public $hubId;
-    public $showRate = false;
     public $hubWasSelected = false;
-    public $firstLoad = true;
-    public $masterAgentChange = false;
     public $wholeNumberRates;
     public $decimalNumberRates;
     public $selectedWholeNumber;
@@ -36,8 +32,6 @@ class AgentForm extends Component
     public $agentHubId;
     public $agentMasterAgentName;
     public $agentMasterAgentId;
-    public $showButtonCancelRate;
-    public $showMasterAgentList;
     public $agentCurrentRateWholeNumber;
     public $agentCurrentRateDecimalNumber;
     public function mount($agent = null, $masterAgentsEdit = false, $editMode = false)
@@ -143,7 +137,6 @@ class AgentForm extends Component
         }
 
         if(!$masterAgent){
-            $this->showRate = false;
             return;
         }
 
@@ -168,21 +161,6 @@ class AgentForm extends Component
     {
         $this->decimalNumberRates = $commissionRateService
             ->checkMaxRateAssignment($this->selectedWholeNumber, $this->wholeNumber, $this->parentCommissionRate, 1);
-
-    }
-
-    public function showUpdateRate()
-    {
-        $this->editMode = false;
-        $this->showRate = false;
-        $this->showButtonCancelRate = true;
-    }
-
-    public function cancelEditRate()
-    {
-        $this->editMode = true;
-        $this->showButtonCancelRate = false;
-        $this->showMasterAgentList = false;
     }
 
     public function render()

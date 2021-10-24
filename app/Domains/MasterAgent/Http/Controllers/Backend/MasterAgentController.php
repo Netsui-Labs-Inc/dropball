@@ -194,9 +194,8 @@ class MasterAgentController extends Controller
 
         $commissionRateConversion = new CommissionRatesConversion($masterAgent);
         $masterAgentCommissionRate = $commissionRateConversion->converMasterAgentRateToPercentage($masterAgentCommissionRate, $input['hub_id'],  true);
-
         if(!$masterAgentCommissionRate){
-            return redirect()->back()->withErrors('Something went wrong!');
+            return false;
         }
 
         $input['commission_rate'] = $masterAgentCommissionRate;
