@@ -13,6 +13,11 @@
 
                     <x-slot name="body">
                         <x-forms.post :action="route('frontend.auth.password.email')">
+                            @if (session('status'))
+                                <div class="alert alert-success">
+                                    {{ session('status') }}
+                                </div>
+                            @endif
                             <div class="form-group row">
                                 <label for="email" class="col-md-4 col-form-label text-md-right">@lang('E-mail Address')</label>
 

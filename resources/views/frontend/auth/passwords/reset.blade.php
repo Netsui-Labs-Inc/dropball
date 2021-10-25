@@ -31,11 +31,6 @@
                                         <input type="password" id="password" name="password" class="form-control" placeholder="{{ __('Password') }}" maxlength="100" required autocomplete="password" />
                                         <i class="eyecandy"></i>
                                     </div>
-                                    @error('password')
-                                    <p class="font-italic mt-4 text-danger text-sm">
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
                                 </div>
                             </div><!--form-group-->
 
@@ -47,16 +42,16 @@
                                         <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="{{ __('Password Confirmation') }}" maxlength="100" required autocomplete="new-password" />
                                         <i class="eyecandy"></i>
                                     </div>
-                                    @error('password_confirmation')
-                                    <p class="font-italic mt-4 text-danger text-sm">
-                                        {{ $message }}
-                                    </p>
-                                    @enderror
                                 </div>
                             </div><!--form-group-->
 
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-4">
+                                    @error('password')
+                                    <p class="font-italic mt-4 text-danger text-sm">
+                                        {{ $message }}
+                                    </p>
+                                    @enderror
                                     <button class="btn btn-primary" type="submit">@lang('Reset Password')</button>
                                 </div>
                             </div><!--form-group-->
