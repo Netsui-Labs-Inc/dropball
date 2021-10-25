@@ -41,6 +41,7 @@ class WithdrawalsTable extends DataTableComponent
         ->createWithdrawalRequestTable($this->userType)
         ->getQuery();
         $this->withdrawalQuery = $withdrawalQuery;
+
         return $this->withdrawalQuery->when($this->getFilter('channel'), function($query, $channel) use ($withdrawalQuery) {
             return $withdrawalQuery->where('channel', $channel);
         })->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))

@@ -24,19 +24,44 @@
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-danger">{{number_format($players ?? 0)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Players")</small>
+                    <div class="text-value-lg text-warning">{{number_format($bettingRound ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Betting Rounds")</small>
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
-                    <div class="text-value-lg text-warning">{{number_format($bettingRound ?? 0)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Betting Rounds")</small>
+                    <div class="text-value-lg text-danger">{{number_format($hubs ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Hubs")</small>
                 </x-slot>
             </x-backend.card>
         </div>
+        <div class="col-12 col-md-3">
+            <x-backend.card>
+                <x-slot name="body">
+                    <div class="text-value-lg text-danger">{{number_format($masterAgents ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Master Agents")</small>
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="col-12 col-md-3">
+            <x-backend.card>
+                <x-slot name="body">
+                    <div class="text-value-lg text-danger">{{number_format($agents ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Agents")</small>
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="col-12 col-md-3">
+            <x-backend.card>
+                <x-slot name="body">
+                    <div class="text-value-lg text-danger">{{number_format($players ?? 0)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Players")</small>
+                </x-slot>
+            </x-backend.card>
+        </div>
+
         <livewire:save-overall-commission-rate />
 
         <div class="col-12">

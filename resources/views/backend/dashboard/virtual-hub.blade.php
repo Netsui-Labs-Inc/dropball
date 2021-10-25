@@ -22,7 +22,14 @@
                 </x-slot>
             </x-backend.card>
         </div>
-
+        <div class="col-12 col-md-3">
+            <x-backend.card>
+                <x-slot name="body">
+                    <div class="text-value-lg text-success">{{number_format($commissionRate, 4)}}%</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Commission Rate")</small>
+                </x-slot>
+            </x-backend.card>
+        </div>
         <div class="col-12 col-md-3">
             <x-backend.card>
                 <x-slot name="body">
