@@ -55,9 +55,10 @@ class ResetPasswordController extends Controller
             'password' => array_merge(
                 [
                     'max:100',
+                    // 'confirmed',
                     new UnusedPassword(request('email')),
                 ],
-                PasswordRules::changePassword(request('email'), 'password_confirmation')
+                PasswordRules::changePassword(request('email'))
             ),
         ];
     }
