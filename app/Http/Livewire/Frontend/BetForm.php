@@ -43,11 +43,11 @@ class BetForm extends Component
     public $theme = 'default';
 
     protected $rules = [
-        'amount' => 'required|numeric|min:50',
+        'amount' => 'required|numeric|min:20',
     ];
 
     public $betChoices = [
-        50, 100, 300, 500, 1000, 5000, 10000,
+        20, 50, 100, 300, 500, 1000, 5000, 10000,
     ];
     public $payouts = [
         'pula' => 0,
@@ -57,6 +57,7 @@ class BetForm extends Component
 
     public function mount($bettingEventId, $theme = 'default')
     {
+
         $this->theme = $theme;
         $this->betOptions = BetOption::where('hidden', false)->get();
         $this->bettingEvent = BettingEvent::find($bettingEventId);
@@ -237,7 +238,6 @@ class BetForm extends Component
     {
         $this->validate($this->rules);
         $bet = BetOption::find($betOption['id']);
-
         try {
             DB::beginTransaction();
             $this->validateBalance();

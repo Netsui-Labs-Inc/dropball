@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Backend;
 use App\Domains\Auth\Models\User;
 use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\BettingRound\Models\BettingRound;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\Hub\Models\Hub;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
+use App\Models\CommissionRate;
 use App\Models\Company;
+use App\Models\OverallCommissionRate;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -51,12 +54,35 @@ class DashboardController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
+        $playersCount = User::role('Player')
+                        ->where('referred_by', $user->id)
+                        ->onlyActive()
+                        ->count();
         $this->logoutUser(!$user->hub_id);
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
 
+        $agents = User::role('Master Agent')
+            ->where('referred_by', $user->id)
+            ->whereNotNull('referred_by')
+            ->onlyActive()->count();
+        $isAgent = false;
+        $commissionRateConversion = new CommissionRatesConversion($user);
+        $agentCommissionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
+        if($user->referred_by)
+        {
+            $isAgent = true;
+            $agentCommissionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
+        } else {
+            $agentCommissionRate = $commissionRateConversion->convertMasterAgent()->masterAgentCommissionRate();
+        }
+
         return view('backend.dashboard.master-agent')
             ->with('user', $user)
-            ->with('transactions', $user->transactions);
+            ->with('players', $playersCount)
+            ->with('transactions', $user->transactions)
+            ->with('agents', $agents)
+            ->with('isAgent', $isAgent)
+            ->with('commissionRate', $agentCommissionRate);
     }
 
     public function betAdmin()
@@ -87,6 +113,14 @@ class DashboardController extends Controller
         $events = BettingEvent::count();
         $bettingRound = BettingRound::count();
         $bettingEvent = BettingEvent::today($user->timezone)->first() ?? null;
+        $hubs = Hub::all()->count();
+        $masterAgents = User::role('Master Agent')
+            ->whereNull('referred_by')
+            ->onlyActive()->count();
+
+        $agents = User::role('Master Agent')
+            ->whereNotNull('referred_by')
+            ->onlyActive()->count();
 
         return view('backend.dashboard.super-admin')
             ->with('company', $company->getWallet('income-wallet'))
@@ -94,7 +128,10 @@ class DashboardController extends Controller
             ->with('events', $events)
             ->with('bettingRound', $bettingRound)
             ->with('bettingEvent', $bettingEvent)
-            ->with('transactions', $company->transactions);
+            ->with('transactions', $company->transactions)
+            ->with('hubs', $hubs)
+            ->with('masterAgents', $masterAgents)
+            ->with('agents', $agents);
     }
 
     public function virtualHub()
@@ -105,9 +142,22 @@ class DashboardController extends Controller
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
             ->onlyActive()->count();
+        $players = User::role('Player')
+            ->where('hub_id', $hub->id)
+            ->onlyActive()->count();
+        $agents = User::role('Master Agent')
+            ->where('hub_id', $hub->id)
+            ->whereNotNull('referred_by')
+            ->onlyActive()->count();
+
+        $commissionConversion = new CommissionRatesConversion($hub, true);
+        $hubRate = $commissionConversion->convertHub()->hubCommissionRate();
         return view('backend.dashboard.virtual-hub')
             ->with('masterAgents', $masterAgents)
-            ->with('hub', $hub);
+            ->with('hub', $hub)
+            ->with('players', $players)
+            ->with('agents', $agents)
+            ->with('commissionRate', $hubRate);
     }
 
     public function operator()

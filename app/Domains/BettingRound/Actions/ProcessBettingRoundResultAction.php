@@ -26,7 +26,7 @@ class ProcessBettingRoundResultAction
         (new ProcessWinnersAction)($bettingRound);
         (new ProcessCommissionsAction)($bettingRound);
 
-        ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
+        //ProcessOtherCommissionsJob::dispatch($bettingRound)->onQueue('other-commissions')->delay(now()->addMinute());
     }
 
 }

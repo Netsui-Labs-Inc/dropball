@@ -270,8 +270,8 @@ Route::get('master-agents/{masterAgent}/edit', [MasterAgentController::class, 'e
     });
 
 Route::post('master-agents', [MasterAgentController::class, 'store'])->name('master-agents.store');
-Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'update'])->name('master-agents.update');
-
+Route::put('master-agents/{masterAgent}', [MasterAgentController::class, 'updateByAdmin'])->name('master-agents.update');
+Route::put('master-agents-hub/{masterAgent}', [MasterAgentController::class, 'updateByHub'])->name('master-agents.update.hub');
 
 Route::get('master-agents/{masterAgent}', [MasterAgentController::class, 'show'])
     ->name('master-agents.info')
@@ -305,28 +305,85 @@ Route::get('master-agent-transactions', [MasterAgentController::class, 'transact
         $trail->push("Master Agent Transactions", route('admin.master-agents.transactions'));
     });
 
-Route::get('sub-agents', [SubAgentController::class, 'index'])
-    ->name('sub-agents.index')
+    /** AGENT 's
+     */
+
+Route::get('agents', [SubAgentController::class, 'index'])->name('agents.index')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Sub Agents", route('admin.sub-agents.index'));
+        $trail->push("Agents", route('admin.agents.index'));
     });
 
-Route::get('sub-agents/pending', [SubAgentController::class, 'pending'])
-    ->name('sub-agents.pending')
+Route::get('agents/{agent}/edit', [SubAgentController::class, 'edit'])->name('agents.edit')
+    ->middleware('can:admin.access.master-agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.agents.edit', $agent));
+    });
+
+Route::get('agents-edit/{agent}', [SubAgentController::class, 'masterAgentEdit'])->name('master.agents.edit')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Edit Agent", route('admin.master.agents.edit', $agent));
+    });
+
+Route::get('agents/{agent}/wallet', [SubAgentController::class, 'cashBalance'])
+    ->name('agents.wallet')
+    ->middleware('can:admin.access.master-agents.wallet')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agent Wallet", route('admin.agents.wallet', $agent));
+    });
+
+Route::get('agents-info/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.pending');
+        $trail->push("Agents Info", route('admin.agents.info', $agent));
+    });
+
+Route::get('agents-info-under-list/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.under.list')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.under.list', $agent));
+    });
+
+Route::get('agents-info-for-master-agent/{agent}', [SubAgentController::class, 'show'])
+    ->name('agents.info.for.master.agent')
+    ->middleware('can:admin.access.master-agents.info')
+    ->breadcrumbs(function (Trail $trail, $agent) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Agents Info", route('admin.agents.info.for.master.agent', $agent));
+    });
+
+Route::get('agents/pending', [SubAgentController::class, 'pending'])
+    ->name('agents.pending')
     ->breadcrumbs(function (Trail $trail) {
         $trail->parent('admin.dashboard');
-        $trail->push("Pending Suba-agents", route('admin.sub-agents.pending'));
+        $trail->push("Pending Agents", route('admin.agents.pending'));
     });
 
-Route::get('sub-agents/create', [SubAgentController::class, 'create'])
-    ->name('sub-agents.create')
+Route::get('agent-transactions', [MasterAgentController::class, 'transactions'])->name('agents.transactions')
+    ->middleware('can:admin.access.master-agents.transactions')
     ->breadcrumbs(function (Trail $trail) {
-        $trail->parent('admin.sub-agents.index');
-        $trail->push("Create Sub Agents", route('admin.sub-agents.create'));
+        $trail->parent('admin.dashboard');
+        $trail->push("Agent Transactions", route('admin.agents.transactions'));
+    });
+
+Route::get('agents/create', [SubAgentController::class, 'create'])
+    ->name('agents.create')
+    ->breadcrumbs(function (Trail $trail) {
+        $trail->parent('admin.agents.index');
+        $trail->push("Create Agents", route('admin.agents.create'));
     });
 
 Route::post('sub-agents', [SubAgentController::class, 'store'])->name('sub-agents.store');
+Route::get('agents-approve/{agent}', [SubAgentController::class, 'approve'])->name('agents.approve');
+Route::post('agents/{agent}', [SubAgentController::class, 'update'])->name('agents.update');
+Route::post('agents-update/{agent}', [SubAgentController::class, 'updateByMasterAgent'])->name('agents.update.by.master.agent');
 
 /** Hubs */
 
@@ -398,3 +455,10 @@ Route::get('my-wallet', [WalletController::class, 'myWallet'])->name('my.wallet.
 Route::post('my-wallet', [WalletController::class, 'withdraw'])->name('my.wallet.transactions.withdraw');
 
 Route::get('/my-commissions', [MyCommissionsLogController::class, 'index'])->name('my.commissions.index');
+Route::get('/fiat-callback', function () { dd('success on fiat'); });
+Route::get('/crypto-callbback', function () { dd('success on crypto'); });
+
+Route::get('/crypto-withdrawal-callbback', function () { dd('success on crypto withdrawal'); });
+
+Route::post('amend-transaction/{transaction}', [WalletController::class, 'amendTransaction'])
+    ->name('amend.transaction');

@@ -139,22 +139,46 @@
                     </div>
                     <div class="flex flex-col mt-5">
                         <label for="password" class="text-lg font-semibold text-gray-100 fleading-tight">Password</label>
-                        <input required name="password" id="password" class="@error('password') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="password" />
+                        <div class="relative">
+                            <input required name="password" id="password" class="@error('password') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="password" />
+                            <i class="eyecandy"></i>
+                        </div>
                         @error('password')
                         <p class="text-red-500 text-xs italic mt-4">
                             {{ $message }}
                         </p>
                         @enderror
                     </div>
-                    <div class="flex flex-col mt-5">
-                        <label for="referral" class="text-lg font-semibold text-gray-100 fleading-tight">Referral</label>
-                        <input required name="referral_id" id="referral_id" class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow" type="text" value="{{request()->get('referral',  old('referral_id') )}}" />
-                        @error('referral_id')
-                        <p class="text-red-500 text-xs italic mt-4">
-                            {{ $message }}
-                        </p>
-                        @enderror
-                    </div>
+                    @if(request()->get('r'))
+                        <input
+                            required
+                            name="referral_id" id="referral_id"
+                            class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow"
+                            value="{{ base64_decode(
+                                    request()->get('r',  old('referral_id'))
+                                )}}"
+                            type="hidden"
+                        />
+                    @else
+                        <div class="flex flex-col mt-5">
+                            <label for="referral" class="text-lg font-semibold text-gray-100 fleading-tight">Agent's Code Name</label>
+                            <input
+                                required
+                                name="referral_id" id="referral_id"
+                                class="@error('referral_id') border-red-500 @enderror h-10 px-2 w-full rounded mt-2 text-gray-400 bg-gray-800 border-gray-700 focus:border-red-600 focus:outline-none focus:border  border shadow"
+                                value="{{ base64_decode(
+                                        request()->get('r',  old('referral_id'))
+                                    )}}"
+                                type="text"
+                                />
+                            @error('referral_id')
+                            <p class="text-red-500 text-xs italic mt-4">
+                                {{ $message }}
+                            </p>
+                            @enderror
+                        </div>
+                    @endif
+
                 </div>
                 <div class="pt-6 w-full flex justify-between px-2 sm:px-6">
                     <div class="flex items-center">

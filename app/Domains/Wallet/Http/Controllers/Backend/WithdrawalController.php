@@ -21,6 +21,7 @@ class WithdrawalController extends \App\Http\Controllers\Controller
     private $transaction;
     private $reviewer;
     private $withdrawalAmount;
+
     public function show(Withdrawal $withdrawal)
     {
         if(Auth()->user()->hasRole('Processor')) {
@@ -94,7 +95,13 @@ class WithdrawalController extends \App\Http\Controllers\Controller
     private function depositToWalletHolder($holderFactory)
     {
         $reviewer = $holderFactory->createWalletHolder($this->reviewer);
-        $reviewer->deposit($this->withdrawalAmount, $this->transaction, $this->walletHolder->id);
+        $meta = [
+            'withdrawal'  => true,
+            'user'        =>$this->walletHolder->id,
+            'transaction' => $this->transaction->uuid,
+        ];
+
+        $reviewer->deposit($this->withdrawalAmount, $meta);
 
         return $this;
     }

@@ -7,13 +7,15 @@ namespace App\Domains\BettingRound\Actions\Commission;
 use App\Jobs\Traits\WalletAndCommission;
 use DB;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
+use App\Domains\Hub\Models\Hub;
 use Brick\Math\BigDecimal;
 
 class SubAgent
 {
     use WalletAndCommission;
 
-    public function __invoke(Bet $bet)
+    public function __invoke(Bet $bet, CommissionRatesComputation $commissionRatesComputation)
     {
         if($bet->commissions()->where('type', 'referred_master_agent')->exists()) {
             return true;
@@ -26,7 +28,7 @@ class SubAgent
         }
         $parentAgent = $masterAgent->masterAgent;
         $bettingRound = $bet->bettingRound;
-        $rate = BigDecimal::of(0.0025 )->toFloat();
+        $rate = BigDecimal::of($commissionRatesComputation->masterAgentReferralCommissionRate() )->toFloat();
 
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
@@ -43,8 +45,8 @@ class SubAgent
             ->performedOn($masterAgent)
             ->causedBy($bettingRound)
             ->withProperties(['bet' => $bet->id, 'bettingRound' => $bettingRound->id, 'rate' => $rate, 'commission' => $commission, 'from_referral' => $masterAgent->id, 'previous_balance' => $currentBalance,'new_balance' => $parentAgentWallet->balanceFloat])
-            ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
+            ->log("Master Agent #{$parentAgent->id} {$parentAgent->name} with balance of $currentBalance received $rate%($commission) of bet amount {$bet->bet_amount} commission from his Sub Agent#{$masterAgent->name}. New Balance is {$parentAgentWallet->balanceFloat}");
 
         return $commissionModel;
-}
+    }
 }

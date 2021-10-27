@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 use Rappasoft\LaravelLivewireTables\Views\Filter;
+use App\Domains\Wallet\Models\AmendedTransaction;
 
 class TransactionsTable extends DataTableComponent
 {
@@ -65,10 +66,12 @@ class TransactionsTable extends DataTableComponent
         $query = Transaction::query();
 
         if ($this->user) {
-            $query = $this->user->transactions()->getQuery();
+            $query = $this->user->transactions()->getQuery()
+                ->where('confirmed', 1);
         }
         if ($this->model) {
-            $query = $this->model->transactions()->getQuery();
+            $query = $this->model->transactions()->getQuery()
+                ->where('confirmed', 1);;
         }
         if ($this->wallet) {
             $query->whereHas('wallet',  fn ($query) => $query->where('slug', $this->wallet));
@@ -107,8 +110,21 @@ class TransactionsTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
-                    return "<span class='badge $class'> {$row->type}</span>";
+                    $class = 'badge-success';
+                    if ($row->type == 'withdrawal')
+                    {
+                        $class = 'badge-warning';
+                    } elseif ($row->type == 'amendment')
+                    {
+                        $class = 'badge-primary';
+                    }
+                    $amended = '';
+
+                    if (AmendedTransaction::where('original_transaction_id', $row->id)->get()->count()) {
+                        $amended = "<span class='badge badge-warning'> amended</span>";
+                    }
+
+                    return "<span class='badge $class'> {$row->type}</span> $amended" ;
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->searchable()
@@ -116,6 +132,18 @@ class TransactionsTable extends DataTableComponent
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
+
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                        ->where('original_transaction_id', $row->id)->get();
+
+                    $amount = $row->amountFloat + ($amendedTransactions->sum('amount') / 100);
+
+                    if (count($amendedTransactions) &&
+                            number_format($row->amountFloat, 2) !== number_format($amount, 2)
+                        ) {
+                        return "<s><div class='$class'>$sign".number_format($row->amountFloat, 2)." '
+                        </s><div class='text-warning'>". number_format($amount, 2). "</div></div>";
+                    }
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
@@ -153,7 +181,7 @@ class TransactionsTable extends DataTableComponent
                          return $this->getCreditor($row->meta);
                      }
                      return $this->getApprover($row->id);
-                 })->asHtml()
+                 })->asHtml(),
         ];
 
         if ($this->action) {

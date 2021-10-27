@@ -5,9 +5,12 @@ require('@coreui/coreui');
 // Boilerplate
 require('../bootstrap');
 require('../plugins');
+require('./eyecandy');
 require('./alert');
 require('argon-design-system-free/assets/js/argon-design-system.min.js');
 import Echo from 'laravel-echo';
+import AmendmentDetails from './amendment-details';
+
 window.Pusher = require('pusher-js');
 window.Echo = new Echo({
     broadcaster: 'pusher',
@@ -17,6 +20,10 @@ window.Echo = new Echo({
     disableStats: true,
     encrypted: true,
 });
+
+
+let amendmentDetails = new AmendmentDetails();
+amendmentDetails.init();
 
 datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();

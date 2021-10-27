@@ -6,7 +6,6 @@
             <th>Agent</th>
             <th>Hub</th>
             <th>Operator</th>
-            <th>System</th>
             <th style="width:200px">Action</th>
         </tr>
         </thead>

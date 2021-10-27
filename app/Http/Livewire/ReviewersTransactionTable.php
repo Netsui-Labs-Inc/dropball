@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
+use App\Domains\Wallet\Models\AmendedTransaction;
 
 class ReviewersTransactionTable extends DataTableComponent
 {
@@ -31,6 +32,8 @@ class ReviewersTransactionTable extends DataTableComponent
     public function mount(Request $request)
     {
         Session::put('userType', $request->get('userType'));
+        Session::put('isAgent', $request->get('agent'));
+
     }
 
     /**
@@ -39,7 +42,7 @@ class ReviewersTransactionTable extends DataTableComponent
     public function query(): Builder
     {
         $transactionFactory = new TransactionRoleQueryFactory();
-        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'));
+        $this->transactionsByRole = $transactionFactory->createTransactionTable(Session::get('userType'), Session::get('isAgent'));
         $query = Transaction::query();
         $query = $this->transactionsByRole->morphToPayable($query);
         return $query->where('confirmed', true)
@@ -72,15 +75,38 @@ class ReviewersTransactionTable extends DataTableComponent
                 ->searchable()
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
-                    $class = $row->type == 'deposit' ? 'badge-success' : 'badge-warning';
+                    $class = 'badge-success';
+                    if ($row->type == 'withdrawal')
+                    {
+                        $class = 'badge-warning';
+                    } elseif ($row->type == 'amendment')
+                    {
+                        $class = 'badge-primary';
+                    }
+                    $amended = '';
+                    if (AmendedTransaction::where('original_transaction_id', $row->id)->get()->count()) {
+                        $amended = "<span class='badge badge-warning text-white'> amended</span>";
+                    }
 
-                    return "<span class='badge $class'> {$row->type}</span>";
+                    return "<span class='badge $class'> {$row->type}</span> $amended" ;
                 })->asHtml(),
             Column::make(__('Amount'), 'amount')
                 ->sortable()
                 ->format(function ($value, $column, Transaction $row) {
                     $class = $row->amountFloat < 0 ? 'text-danger': 'text-success';
                     $sign = $row->amountFloat > 0 ? '+' : null;
+
+                    $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
+                        ->where('original_transaction_id', $row->id)->get();
+
+                    $amount = $row->amountFloat + ($amendedTransactions->sum('amount') / 100);
+
+                    if (count($amendedTransactions) &&
+                            number_format($row->amountFloat, 2) !== number_format($amount, 2)
+                        ) {
+                        return "<s><div class='$class'>$sign".number_format($row->amountFloat, 2)." '
+                        </s><div class='text-warning'>". number_format($amount, 2). "</div></div>";
+                    }
 
                     return "<div class='$class'>$sign".number_format($row->amountFloat, 2)."</div>";
                 })->asHtml(),
@@ -105,7 +131,7 @@ class ReviewersTransactionTable extends DataTableComponent
                 })->asHtml(),
             Column::make(__('Approved by'), 'approved_by')
                 ->format(function ($value, $column, Transaction $row) {
-                    if($row->type === 'deposit') {
+                    if($row->type === 'deposit' || $row->type === 'amendment') {
                         return $this->getCreditor($row->meta);
                     }
                     return $this->getApprover($row->id);
@@ -127,6 +153,10 @@ class ReviewersTransactionTable extends DataTableComponent
         }
         if(array_key_exists('credited_by', $meta)) {
             return User::find($meta['credited_by'])->name;
+        }
+
+        if(array_key_exists('approved_by', $meta)) {
+            return User::find($meta['approved_by'])->name;
         }
     }
 

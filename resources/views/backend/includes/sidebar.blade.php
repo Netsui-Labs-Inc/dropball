@@ -43,15 +43,17 @@
         </li>
         @endcan
         @role('Master Agent')
-        <li class="c-sidebar-nav-title">@lang('Sub-agents')</li>
-        <li class="c-sidebar-nav-item">
-            <x-utils.link
-                class="c-sidebar-nav-link"
-                :href="route('admin.sub-agents.index', ['sorts' => ['id' => 'desc']])"
-                :active="activeClass(Route::is('admin.sub-agents.index'), 'c-active')"
-                icon="c-sidebar-nav-icon cil-user"
-                :text="__('Sub-Agents List')" />
-        </li>
+            @if(!Auth::user()->referred_by)
+                <li class="c-sidebar-nav-title">@lang('Agents')</li>
+                <li class="c-sidebar-nav-item">
+                    <x-utils.link
+                        class="c-sidebar-nav-link"
+                        :href="route('admin.agents.index', ['sorts' => ['id' => 'desc']])"
+                        :active="activeClass(Route::is('admin.agents.index'), 'c-active')"
+                        icon="c-sidebar-nav-icon cil-user"
+                        :text="__('Agents List')" />
+                </li>
+            @endif
         @endrole
         @can('admin.access.my-wallet')
         @if(!$logged_in_user->hasRole('Administrator'))
@@ -93,7 +95,7 @@
                     :href="route('admin.master-agents.index', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Request::is('admin/master-agents/*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-user"
-                    :text="__('Master Agents List')" />
+                    :text="__('Master Agent\'s List')" />
             </li>
             <li class="c-sidebar-nav-item">
                 <x-utils.link
@@ -101,15 +103,24 @@
                     :href="route('admin.master-agents.transactions', ['sorts' => ['created_at' => 'desc'], 'userType' => 'Master Agent'])"
                     :active="activeClass(Request::is('admin/master-agents-transactions*'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-wallet"
-                    :text="__('Master Agents Wallet')" />
+                    :text="__('Master Agent\'s Wallet')" />
+            </li>
+            <li class="c-sidebar-nav-title">@lang('Agents')</li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.agents.index', ['sorts' => ['id' => 'desc'], 'agent' => true])"
+                    :active="activeClass(Request::is('admin/agents/*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-user"
+                    :text="__('Agent\'s List')" />
             </li>
             <li class="c-sidebar-nav-item">
                 <x-utils.link
                     class="c-sidebar-nav-link"
-                    :href="route('admin.sub-agents.pending', ['sorts' => ['created_at' => 'desc']])"
-                    :active="activeClass(Route::is('admin.sub-agents.pending'), 'c-active')"
-                    icon="c-sidebar-nav-icon cil-user"
-                    :text="__('Sub-agents Approval')" />
+                    :href="route('admin.agents.transactions', ['sorts' => ['created_at' => 'desc'], 'userType' => 'Master Agent', 'agent' => true])"
+                    :active="activeClass(Request::is('admin/agents-transactions*'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-wallet"
+                    :text="__('Agent\'s Wallet')" />
             </li>
         @endcan
         @can('admin.access.hubs.manage')

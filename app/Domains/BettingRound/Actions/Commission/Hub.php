@@ -3,26 +3,30 @@
 namespace App\Domains\BettingRound\Actions\Commission;
 
 use App\Domains\Bet\Models\Bet;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
 use App\Jobs\Traits\WalletAndCommission;
+use App\Models\CommissionRate;
 use Brick\Math\BigDecimal;
+
 use DB;
 
 class Hub
 {
     use WalletAndCommission;
 
-    public function __invoke(Bet $bet)
+    public function __invoke(Bet $bet, CommissionRatesComputation $commissionRatesComputation)
     {
         if($bet->commissions()->where('type', 'hub')->exists()) {
             return true;
         }
         $player = $bet->user;
-        $masterAgent = $player->masterAgent;
         /** @var Hub $hub */
         $hub = $player->hub;
         $bettingRound = $bet->bettingRound;
-        $percentage = (3 - $masterAgent->commission_rate);
-        $rate = ($percentage / 100) ?? 0.01;
+
+        $percentage = $commissionRatesComputation->hubCommissionRate();
+
+        $rate = ($percentage) ?? 0.01;
         $commission = BigDecimal::of($bet->bet_amount * $rate)->toFloat();
 
         $hubWallet = $this->getWallet($hub, 'Income Wallet');

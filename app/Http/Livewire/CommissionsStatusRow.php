@@ -8,6 +8,8 @@ use App\Domains\BettingRound\Actions\Commission\Developer;
 use App\Domains\BettingRound\Actions\Commission\Hub;
 use App\Domains\BettingRound\Actions\Commission\Operator;
 use App\Domains\BettingRound\Actions\Commission\SubAgent;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesComputation;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Events\BetCommissionsProcessingFailed;
 use App\Events\BetCommissionsProcessingFinished;
 use App\Events\BetCommissionsProcessingStarted;
@@ -40,7 +42,7 @@ class CommissionsStatusRow extends Component
         $bet = $this->bet;
         $this->masterAgent = $bet->commissions()->where('type', 'master_agent')->first();
         $this->hub = $bet->commissions()->where('type', 'hub')->first();
-        $this->developer = $bet->commissions()->where('type', 'system')->first();
+        //$this->developer = $bet->commissions()->where('type', 'system')->first();
         $this->operator = $bet->commissions()->where('type', 'operator')->first();
     }
 
@@ -55,15 +57,18 @@ class CommissionsStatusRow extends Component
 
     public function processCommissions($betId)
     {
+        
         try {
             $bet = Bet::find($betId);
+            $commissionRatesComputation = new CommissionRatesComputation($bet);
+            $commission = $commissionRatesComputation->commission();
             $this->started();
             DB::beginTransaction();
-            $agent = (new Agent)($bet);
-            $operator = (new Operator)($bet);
-            $hub = (new Hub)($bet);
-            $developer = (new Developer)($bet);
-            $subAgent = (new SubAgent)($bet);
+            $agent = (new Agent)($bet, $commission);
+            $operator = (new Operator)($bet, $commission);
+            $hub = (new Hub)($bet, $commission);
+            //$developer = (new Developer)($bet);
+            $subAgent = (new SubAgent)($bet, $commission);
 
             $bet->commission_processed = true;
             $bet->save();
