@@ -20,6 +20,7 @@ class RouteServiceProvider extends ServiceProvider
      * @var string
      */
     protected $namespace = 'App\Http\Controllers';
+    protected $cashInControllers = 'App\Domains\Wallet\Http\Controllers';
 
     /**
      * The path to the "home" route for your application.
@@ -33,6 +34,8 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
+
+
     public function boot()
     {
         // To be able to restore a user, since the default binding is a find and would result in a 404
@@ -75,6 +78,9 @@ class RouteServiceProvider extends ServiceProvider
             ->group(function (Router $router) {
                 $router->impersonate();
             });
+        Route::middleware('web')
+             ->namespace($this->cashInControllers)
+             ->group(base_path('routes/cash-in.php'));
     }
 
     /**

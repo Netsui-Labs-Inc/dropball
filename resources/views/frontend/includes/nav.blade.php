@@ -81,6 +81,13 @@
                                 :active="activeClass(Route::is('frontend.wallet.index'))"
                                 :text="__('Withdrawal/Deposit')"
                                 class="dropdown-item" />
+                                <x-utils.link
+                                    class="dropdown-item"
+                                    dataTarget="#cashIn"
+                                    :text="__('Cash In')"
+                                    data-backdrop="static"
+                                    data-keyboard="false"
+                                />
                             <x-utils.link
                                 :href="route('frontend.bets.index', ['sorts' => ['created_at' => 'desc']])"
                                 :active="activeClass(Route::is('frontend.bets.index'))"
@@ -107,4 +114,6 @@
             </ul>
         </div><!--navbar-collapse-->
     </div><!--container-->
+    @include('cashin.cash-in');
+    <livewire:cash-in-callback />
 </nav>

@@ -14,7 +14,13 @@ $danger:        #e3342f !default;
 @import '~@coreui/coreui/scss/coreui';
 @import '~@coreui/icons/css/free.min.css';
 
+@import '~@fortawesome/fontawesome-free/scss/fontawesome';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/brands';
+
 // CUSTOM
+
 
 .commissions-status-table, .winnings-status-table {
     tr {

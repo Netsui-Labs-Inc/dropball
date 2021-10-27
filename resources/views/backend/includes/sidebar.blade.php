@@ -66,6 +66,14 @@
                     icon="c-sidebar-nav-icon cil-wallet"
                     :text="__('Wallet Transactions')" />
             </li>
+            <li class="c-sidebar-nav-item">
+                <x-utils.link
+                    class="c-sidebar-nav-link"
+                    :href="route('admin.my.cash-in', ['sorts' => ['id' => 'desc']])"
+                    :active="activeClass(Route::is('admin.my.cash-in'), 'c-active')"
+                    icon="c-sidebar-nav-icon cil-money"
+                    :text="__('Cash In')" />
+            </li>
         @endif
         @endcan
         @role('Master Agent')
@@ -216,3 +224,5 @@
 
     <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
 </div><!--sidebar-->
+@include('cashin.cash-in');
+    <livewire:cash-in-callback />
