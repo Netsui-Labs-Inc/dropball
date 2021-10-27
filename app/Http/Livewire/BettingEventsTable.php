@@ -12,6 +12,16 @@ class BettingEventsTable extends DataTableComponent
     /**
      * @var string
      */
+    public string $defaultSortColumn = 'created_at';
+
+    /**
+     * @var string
+     */
+    public string $defaultSortDirection = 'desc';
+
+    /**
+     * @var string
+     */
     public $sortField = 'created_at';
 
     /**
