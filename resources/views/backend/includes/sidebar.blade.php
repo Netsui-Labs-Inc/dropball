@@ -72,7 +72,7 @@
                     :href="route('admin.my.cash-in', ['sorts' => ['id' => 'desc']])"
                     :active="activeClass(Route::is('admin.my.cash-in'), 'c-active')"
                     icon="c-sidebar-nav-icon cil-money"
-                    :text="__('Cash In')" />
+                    :text="__('Cash In History')" />
             </li>
         @endif
         @endcan
@@ -224,5 +224,5 @@
 
     <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent" data-class="c-sidebar-minimized"></button>
 </div><!--sidebar-->
-@include('cashin.cash-in');
+    <livewire:cash-in />
     <livewire:cash-in-callback />

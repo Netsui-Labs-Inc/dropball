@@ -89,7 +89,7 @@
         <div class="c-subheader-nav d-md-down-none mfe-2">
             @yield('page-action')
         </div>
-        @include('cashin.cash-in');
+        <livewire:cash-in />
         <livewire:cash-in-callback />
     </div><!--c-subheader-->
 </header>

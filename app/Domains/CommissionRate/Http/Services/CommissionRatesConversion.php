@@ -9,7 +9,7 @@ use App\Models\OverallCommissionRate;
 
 class CommissionRatesConversion
 {
- 
+
     private $agentCommissionRate;
     private $masterAgentCommissionRate;
     private $masterAgentReferralCommissionRate;
@@ -20,7 +20,15 @@ class CommissionRatesConversion
     private $entity;
     public function __construct($entity, $isHub = false)
     {
-        $this->overallCommission = OverallCommissionRate::query()->first()->rate;
+        $this->overallCommission = OverallCommissionRate::query()->first();
+
+        if($this->overallCommission)
+        {
+            $this->overallCommission = $this->overallCommission->rate;
+        } else {
+            $this->overallCommission = config('dropball.default_overall_commission_rate');
+        }
+
         $this->entity = $entity;
         if($isHub)
         {
@@ -84,7 +92,7 @@ class CommissionRatesConversion
     {
         $this->convertMasterAgent(User::where('id', $this->entity->referred_by)->first());
         $this->agentCommissionRate = $this->masterAgentCommissionRate * $this->entity->commission_rate;
-       
+
         return $this;
     }
 
@@ -108,7 +116,7 @@ class CommissionRatesConversion
         || $commissionRate <= 0 || $commissionRate < $minimumCommissionRate
         ) ? true : false;
     }
-    
+
     public function agentCommissionRate()
     {
         return $this->agentCommissionRate;
