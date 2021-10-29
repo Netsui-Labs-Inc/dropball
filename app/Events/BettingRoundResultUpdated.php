@@ -12,7 +12,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class BettingRoundResultUpdated implements ShouldBroadcastNow, ShouldQueue
+class BettingRoundResultUpdated implements ShouldBroadcast, ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
