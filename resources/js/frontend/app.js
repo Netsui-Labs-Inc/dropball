@@ -8,6 +8,7 @@ require('../bootstrap');
 require('../plugins');
 require('flatpickr');
 require('./alert');
+require('./eyecandy');
 require('argon-design-system-free/assets/js/argon-design-system.min.js');
 // window.Vue = require('vue');
 

@@ -44,7 +44,7 @@ class EventTrend extends Component
 
     public function showResult($data)
     {
-        $this->bettingRound = BettingRound::find($data['bettingRound']['id']);
+        $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->bettingEvent = $this->bettingRound->bettingEvent;
         $this->rounds = $this->bettingEvent->bettingRounds;
     }

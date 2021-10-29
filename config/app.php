@@ -1,5 +1,7 @@
 <?php
 
+use Ixudra\Curl\CurlServiceProvider;
+
 return [
 
     /*
@@ -67,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Manila',
 
     /*
     |--------------------------------------------------------------------------
@@ -179,6 +181,7 @@ return [
         App\Providers\ObserverServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\VaporUiServiceProvider::class,
+        CurlServiceProvider::class,
 
     ],
 
@@ -231,6 +234,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Curl' => \Ixudra\Curl\Facades\Curl::class,
 
     ],
 

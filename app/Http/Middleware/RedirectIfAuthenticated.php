@@ -27,4 +27,9 @@ class RedirectIfAuthenticated
 
         return $next($request);
     }
+
+    protected $except = [
+        '/cash-in-callback',
+        '/cash-in'
+    ];
 }

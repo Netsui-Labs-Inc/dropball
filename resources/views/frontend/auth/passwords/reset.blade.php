@@ -27,7 +27,10 @@
                                 <label for="password" class="col-md-4 col-form-label text-md-right">@lang('Password')</label>
 
                                 <div class="col-md-6">
-                                    <input type="password" id="password" name="password" class="form-control" placeholder="{{ __('Password') }}" maxlength="100" required autocomplete="password" />
+                                    <div class="position-relative">
+                                        <input type="password" id="password" name="password" class="form-control" placeholder="{{ __('Password') }}" maxlength="100" required autocomplete="password" />
+                                        <i class="eyecandy"></i>
+                                    </div>
                                 </div>
                             </div><!--form-group-->
 
@@ -35,12 +38,20 @@
                                 <label for="password_confirmation" class="col-md-4 col-form-label text-md-right">@lang('Password Confirmation')</label>
 
                                 <div class="col-md-6">
-                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="{{ __('Password Confirmation') }}" maxlength="100" required autocomplete="new-password" />
+                                    <div class="position-relative ">
+                                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="{{ __('Password Confirmation') }}" maxlength="100" required autocomplete="new-password" />
+                                        <i class="eyecandy"></i>
+                                    </div>
                                 </div>
                             </div><!--form-group-->
 
                             <div class="form-group row mb-0">
                                 <div class="col-md-6 offset-md-4">
+                                    @error('password')
+                                    <p class="font-italic mt-4 text-danger text-sm">
+                                        {{ $message }}
+                                    </p>
+                                    @enderror
                                     <button class="btn btn-primary" type="submit">@lang('Reset Password')</button>
                                 </div>
                             </div><!--form-group-->

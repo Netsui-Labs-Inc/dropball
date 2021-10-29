@@ -27,6 +27,7 @@ class DashboardController extends Controller
         return view('frontend.user.dashboard')
             ->with('bets', $user->bets()->latest()->limit(5)->get())
             ->with('transactions', $user->transactions()->latest()->whereNull('meta')->take(5)->get())
-            ->with('bettingEvent', $bettingEvent);
+            ->with('bettingEvent', $bettingEvent)
+            ->with('cashIns', $user->cashIns()->latest()->take(5)->get());
     }
 }

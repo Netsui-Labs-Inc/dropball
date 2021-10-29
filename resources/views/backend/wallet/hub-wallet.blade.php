@@ -46,56 +46,10 @@
             </div>
         </div>
     </div>
-    <x-utils.modal
-        title="Request Withdrawal"
-        type="form"
-        targetId="requestWithdrawal"
-        action="{{route('admin.my.wallet.transactions.withdraw')}}"
-        submitBtn="Send Request"
-    >
-        <div>
-            <p class="pb-2 text-center">
-                Current Income Wallet Balance <br>
-                <span class="lead">{{number_format($hubWallet->balanceFloat)}}</span>
-            </p>
-            <div class="row">
-                <label for="amount" class="col col-form-label">@lang('Amount')</label>
-            </div>
-            <div class="form-group row">
-                <div class="col">
-                    <input type="number" class="form-control" name="amount" min="1" step="1">
-                </div>
-            </div>
-            <div class="row">
-                <label for="amount" class="col col-form-label">@lang('Channel')</label>
-            </div>
-            <div class="form-group row">
-                <div class="col">
-                    <select name="channel" class="form-control">
-                        <option value="gcash">GCash</option>
-                        <option value="gcash">Paymaya</option>
-                    </select>
-                </div>
-            </div>
-            <div class="row">
-                <label for="amount" class="col col-form-label">@lang('Details')</label>
-            </div>
-            <div class="form-group row">
-                <div class="col">
-                    <textarea class="form-control" name="details"></textarea>
-                </div>
-            </div>
-
-            <div class="row">
-                <label for="password" class="col col-form-label">@lang('Enter Password')</label>
-            </div>
-            <div class="form-group row">
-                <div class="col">
-                    <input type="password" class="form-control" name="password" >
-                </div>
-            </div>
-        </div>
-    </x-utils.modal>
+    @include('includes.partials.request-withdrawal-form', [
+        'walletBallance' => number_format($hubWallet->balanceFloat),
+        'route' => route('admin.my.wallet.transactions.withdraw')
+        ])
 @endsection
 
 @section('page-action')

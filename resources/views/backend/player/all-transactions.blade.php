@@ -22,10 +22,20 @@
                 role="tab"
                 aria-controls="active"
                 aria-selected="true" >
-                @lang("Withdrawals")
+                @lang("Pending Withdrawals")
                 @if($pendingWithdrawals)
                     <span class="badge badge-danger">{{$pendingWithdrawals}}</span>
                 @endif
+            </x-utils.link>
+            <x-utils.link
+                class="nav-link bg-white"
+                id="active-transaction-tab"
+                data-toggle="pill"
+                href="#amendment-transaction"
+                role="tab"
+                aria-controls="active"
+                aria-selected="true" >
+                @lang("Amendment Transactions")
             </x-utils.link>
         </div>
     </nav>
@@ -33,18 +43,21 @@
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:players-transactions-table :action="true"  />
+                    <livewire:reviewers-transaction-table />
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    @hasrole("Master Agent")
-                        <livewire:player-withdrawals-table :reviewer="auth()->user()->id" />
-                    @else
-                        <livewire:player-withdrawals-table  />
-                    @endhasrole
+                    <livewire:withdrawals-table />
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="tab-pane fade show" id="amendment-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
+            <x-backend.card>
+                <x-slot name="body">
+                    <livewire:amendments-table />
                 </x-slot>
             </x-backend.card>
         </div>

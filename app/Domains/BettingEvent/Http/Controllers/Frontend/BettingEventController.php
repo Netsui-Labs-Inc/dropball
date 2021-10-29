@@ -26,6 +26,9 @@ class BettingEventController extends Controller
         }
         $bettingRound = $bettingEvent->upcomingBettingRound()->first();
 
+        $user->last_event_id = $bettingEvent->id;
+        $user->save();
+
         return view('frontend.pages.betting-event.play')
             ->with('bettingEvent', $bettingEvent)
             ->with('play', $bettingRound);
@@ -34,9 +37,14 @@ class BettingEventController extends Controller
     public function show(BettingEvent $bettingEvent)
     {
         $bettingRound = $bettingEvent->upcomingBettingRound()->first();
-
+        $user = auth()->user();
+        if (! $user) {
+            return view('frontend.index');
+        }
+        $user->last_event_id = $bettingEvent->id;
+        $user->save();
         return view('frontend.pages.betting-event.show')
             ->with('bettingEvent', $bettingEvent)
-            ->with('bettingRound', $bettingRound);
+            ->with('play', $bettingRound);
     }
 }

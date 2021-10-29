@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
+
 /**
  * Class RolesTable.
  */
@@ -17,6 +18,7 @@ class RolesTable extends DataTableComponent
      */
     public function query(): Builder
     {
+
         return Role::with('permissions:id,name,description')
             ->withCount('users')
             ->when($this->getFilter('search'), fn ($query, $term) => $query->search($term));
@@ -28,6 +30,7 @@ class RolesTable extends DataTableComponent
             Column::make(__('Type'))
                 ->sortable(),
             Column::make(__('Name'))
+                ->searchable()
                 ->sortable(),
             Column::make(__('Permissions')),
             Column::make(__('Number of Users'), 'users_count')

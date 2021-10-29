@@ -4,6 +4,7 @@ namespace App\Domains\Hub\Models;
 
 use App\Domains\Auth\Models\User;
 use App\Models\Traits\HasBetCommission;
+use App\Models\Traits\HasWithdrawal;
 use Bavix\Wallet\Interfaces\Wallet;
 use Bavix\Wallet\Interfaces\WalletFloat;
 use Bavix\Wallet\Traits\CanConfirm;
@@ -12,6 +13,8 @@ use Bavix\Wallet\Traits\HasWallets;
 use Database\Factories\HubFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as AuthUser;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * App\Domains\Hub\Models\Hub
@@ -51,9 +54,13 @@ class Hub extends Model implements WalletFloat, Wallet
     use CanConfirm;
     use HasBetCommission;
     use HasFactory;
+    use HasWithdrawal;
+    use HasRoles;
 
     protected $fillable = [
-        'name', 'admin_id',
+        'name', 
+        'admin_id',
+        'commission_rate'
     ];
 
     public function admin()
@@ -65,4 +72,10 @@ class Hub extends Model implements WalletFloat, Wallet
     {
         return HubFactory::new();
     }
+
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
+
 }
