@@ -41,6 +41,7 @@ trait UserScope
         return $query->whereActive(true);
     }
 
+
     /**
      * @param $query
      * @param $type

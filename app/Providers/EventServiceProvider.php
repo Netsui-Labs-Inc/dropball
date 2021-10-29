@@ -24,9 +24,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        BettingRoundResultUpdated::class => [
-            BettingRoundResultListener::class,
-        ],
+//        BettingRoundResultUpdated::class => [
+//            BettingRoundResultListener::class,
+//        ],
     ];
 
     /**

@@ -56,7 +56,7 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
     {
         $agentId =$this->masterAgent->id ?? 0;
 
-        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$agentId))->releaseAfter(1)];
+        return [(new WithoutOverlapping("bet-".$this->bet->id."-master-agent-".$agentId))->releaseAfter(3)];
     }
     /**
      * The unique ID of the job.
@@ -117,9 +117,10 @@ class ProcessMasterAgentCommissionJob implements ShouldQueue, ShouldBeUnique
                 ->log("Master Agent #{$masterAgent->id} {$masterAgent->name} with balance of $currentBalance received $rate%($commission) commission. New Balance is {$masterAgentWallet->balanceFloat}");
 
             DB::commit();
-        } catch (\Exception $exception) {
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessMasterAgentCommissionJob.masterAgent BettingRound#{$bettingRound->id}  Master Agent #{$masterAgent->id} ");
-            \Sentry::captureLastError();
             DB::rollBack();
         }
 

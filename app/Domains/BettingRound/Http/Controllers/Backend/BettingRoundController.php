@@ -2,9 +2,14 @@
 
 namespace App\Domains\BettingRound\Http\Controllers\Backend;
 
-use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Actions\CalculateOddsAction;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\BettingRound\Actions\Commission\Agent;
+use App\Domains\BettingRound\Actions\Commission\Developer;
+use App\Domains\BettingRound\Actions\Commission\Hub;
+use App\Domains\BettingRound\Actions\Commission\Operator;
+use App\Domains\BettingRound\Actions\Commission\SubAgent;
+use App\Domains\BettingRound\Actions\ProcessRefundAction;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
@@ -13,9 +18,8 @@ use App\Events\BettingRoundStatusUpdated;
 use App\Events\ConfirmBetBettingResult;
 use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
-use Faker\Factory;
 use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use App\Domains\BettingRound\Actions\ProcessBettingRoundResultAction;
 
 class BettingRoundController extends Controller
 {
@@ -58,7 +62,6 @@ class BettingRoundController extends Controller
         $bettingRound->refresh();
         event(new BettingRoundBettingWindowUpdated($bettingRound));
 
-        $this->setMixer($bettingRound);
         return redirect()->back()->withFlashSuccess(__('Betting window was opened'));
     }
 
@@ -68,7 +71,7 @@ class BettingRoundController extends Controller
             throw new GeneralException("Cannot Send Last Call");
         }
         $bettingRound->refresh();
-        event(new BettingRoundBettingLastCall($bettingRound));
+        event(new BettingRoundBettingLastCall($bettingRound->betting_event_id));
 
         return redirect()->back()->withFlashSuccess(__('Betting last call was broadcast'));
     }
@@ -124,11 +127,15 @@ class BettingRoundController extends Controller
 
         $bettingRound->status = 'cancelled';
         $bettingRound->result = null;
+        $bettingRound->is_betting_open = false;
 
         $bettingRound->save();
         $bettingRound->refresh();
         event(new BettingRoundStatusUpdated($bettingRound));
         event(new BettingRoundResultUpdated($bettingRound));
+        logger("BettingRound#{$bettingRound->id} was Cancelled");
+        activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
+        (new ProcessRefundAction)($bettingRound);
 
         return redirect()->back()->withFlashSuccess(__('Betting Round Cancelled'));
     }
@@ -141,6 +148,7 @@ class BettingRoundController extends Controller
 
         $bettingRound->status = 'ended';
         $bettingRound->result = null;
+        $bettingRound->is_betting_open = false;
 
         $bettingRound->save();
         $bettingRound->refresh();
@@ -153,6 +161,7 @@ class BettingRoundController extends Controller
     public function setResult(BettingRound $bettingRound, Request $request)
     {
         $this->validateTreshold($bettingRound);
+
         $bettingRound->result = $request->get('result');
         $bettingRound->status = 'ended';
         $bettingRound->payouts = (new CalculateOddsAction)($bettingRound);
@@ -164,8 +173,41 @@ class BettingRoundController extends Controller
         BettingRoundResultUpdated::dispatch($bettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
-        event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
+
+        if($bettingRound->bettingEvent->dealer) {
+            event(new ConfirmBetBettingResult($bettingRound, 'NOTIFYDEALERADMIN'));
+        }
+        if ($bettingRound->status === 'cancelled') {
+            logger("BettingRound#{$bettingRound->id} was Cancelled");
+            activity('betting-round')->performedOn($bettingRound)->log("Betting Round #{$bettingRound->id} was cancelled");
+            (new ProcessRefundAction)($bettingRound);
+        } else {
+            (new ProcessBettingRoundResultAction)($bettingRound);
+        }
+
         return redirect()->back()->withFlashSuccess(__('Result was updated'));
+    }
+
+    public function processCommissions(Bet $bet, $type)
+    {
+        $jobs = [
+            'master_agent' => Agent::class,
+            'developer' => Developer::class,
+            'hub' => Hub::class,
+            'operator' => Operator::class,
+            'sub_agent' => SubAgent::class,
+        ];
+
+        if(!isset($jobs[$type])) {
+            throw new GeneralException('Invalid commission type');
+        }
+
+        $job = (new $jobs[$type])($bet);
+
+        return response()->json([
+            'success' => $job,
+            'type' => $type
+        ], $job ? 200 : 400);
     }
 
     private function validateTreshold(BettingRound $bettingRound)
@@ -187,24 +229,4 @@ class BettingRoundController extends Controller
         return true;
 
     }
-
-    public function setMixer(BettingRound $bettingRound)
-    {
-        $faker = Factory::create();
-        $max = 999999;
-        $diff = $faker->numberBetween(5, 35);
-        $winPool = $faker->numberBetween(400000, $max);
-        $winner = $faker->randomElement(['pula', 'puti']);
-
-        $meta = [
-            'winner' => $winner,
-            'win-pool' => $winPool,
-            'lose-pool' => $winPool - ($diff / 100 * $winPool),
-            'pula' => 0 , 'puti' => 0,
-        ];
-
-        $bettingRound->meta = $meta;
-        $bettingRound->save();
-    }
-
 }

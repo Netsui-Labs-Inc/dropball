@@ -3,16 +3,18 @@
 
 namespace App\Domains\Player\Http\Controllers\Backend;
 
+use App\Domains\Auth\Http\Requests\Backend\User\UpdatePlayerRequest;
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Requests\DepositRequest;
-use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 
 class PlayerController extends Controller
 {
+
     public function index()
     {
         $user = auth()->user();
@@ -30,6 +32,35 @@ class PlayerController extends Controller
         return view('backend.player.show')->with('user', $player);
     }
 
+    public function edit(User $player)
+    {
+        $hubs = Hub::all()->pluck('name', 'id');
+
+        return view('backend.player.edit')
+            ->with('player', $player)
+            ->with('hubs', $hubs);
+    }
+
+    public function update(UpdatePlayerRequest $request, User $player)
+    {
+        $request->user();
+        $input = $request->validated();
+        if ($request->has('email_verified') || $player->email_verified_at) {
+            $input['active'] = "1";
+            $player->active = 1;
+        }
+        $player->timezone = 'Asia/Manila';
+        $player->name = $input['name'];
+        $player->email = $input['email'];
+        if(!Auth()->user()->hasRole('Master Agent')) {
+            $player->hub_id = $request->get('hub_id');
+            $player->referred_by = $request->get('referred_by');
+        }
+        $player->mobile = $input['mobile'];
+        $player->save();
+        return redirect()->to(route('admin.players.index'))->withFlashSuccess("Player updated Successfully");
+    }
+
     public function cashBalance(User $player)
     {
         return view('backend.player.wallet')->with('user', $player);
@@ -44,10 +75,17 @@ class PlayerController extends Controller
 
         try {
             if ($user->hasRole('Master Agent')) {
-                $user->transferFloat($player, $request->get('amount'), ['transfer_to' => $player->id, 'deposit' => true]);
+                $user->transferFloat($player, $request->get('amount'), [
+                    'transfer_to' => $player->id,
+                    'credited_by' => Auth()->user()->id,
+                    'deposit' => true
+                ]);
             }
             if ($user->hasRole('Administrator')) {
-                $player->depositFloat($request->get('amount'));
+                $creditedBy = [
+                    'credited_by' => Auth()->user()->id
+                ];
+                $player->depositFloat($request->get('amount'), $creditedBy);
             }
 
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
@@ -68,11 +106,19 @@ class PlayerController extends Controller
     public function transactions()
     {
         if (auth()->user()->hasRole('Master Agent')) {
-            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)->where('status', Withdrawal::PENDING)->count();
-        } else {
-            $pendingWithdrawals = Withdrawal::where('status', Withdrawal::PENDING)->count();
-        }
+            $pendingWithdrawals = Withdrawal::where('reviewer_id', auth()->user()->id)
+                ->where('status', Withdrawal::PENDING)
+                ->count();
 
+        } else {
+            $pendingWithdrawals = User::join('withdrawals', 'withdrawals.user_id', 'users.id')
+                ->whereHas('roles', function ($query) {
+                    return $query->where('name', 'Player');
+                })
+                ->where('status', Withdrawal::PENDING)
+                ->get()
+                ->count();
+        }
         return view('backend.player.all-transactions')
             ->with('pendingWithdrawals', $pendingWithdrawals);
     }

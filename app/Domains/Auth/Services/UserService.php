@@ -174,12 +174,13 @@ class UserService extends BaseService
         try {
             $user->update([
                 'type' => $user->isMasterAdmin() ? $this->model::TYPE_ADMIN : $data['type'] ?? $user->type,
-                'name' => $data['name'],
-                'email' => $data['email'],
-                'mobile' => $data['mobile'],
+                'name' => $data['name'] ?? null,
+                'email' => $data['email'] ?? null,
+                'mobile' => $data['mobile'] ?? null,
                 'commission_rate' => $data['commission_rate'] ?? null,
                 'hub_id' => $data['hub_id'] ?? null,
                 'timezone' => $data['timezone'] ?? null,
+                'referred_by' => $data['referred_by'] ?? null,
                 'referral_id' => $data['referral_id'] ?? null,
                 'email_verified_at' => isset($data['email_verified']) && $data['email_verified'] === '1' ? now() : $user->email_verified_at,
                 'active' => isset($data['active']) ? $data['active'] === '1' : $user->active,
@@ -194,8 +195,9 @@ class UserService extends BaseService
                 }
             }
         } catch (Exception $e) {
-            DB::rollBack();
 
+            DB::rollBack();
+            dd($e);
             throw new GeneralException(__('There was a problem updating this user. Please try again.'));
         }
 
@@ -212,8 +214,15 @@ class UserService extends BaseService
      *
      * @return User
      */
-    public function updateProfile(User $user, array $data = []): User
+    public function updateProfile(User $user, array $data = [])
     {
+        if ($user->name === $data['name'] && $user->referral_id === $data['code-name']) {
+            return [
+                'error' => true,
+                'message' => 'There is no changes on the profile information.'
+            ];
+        }
+
         $user->name = $data['name'] ?? null;
 
         if ($user->canChangeEmail() && $user->email !== $data['email']) {
@@ -223,8 +232,30 @@ class UserService extends BaseService
             session()->flash('resent', true);
         }
 
-        return tap($user)->save();
+        if (array_key_exists('code-name', $data)) {
+            $countReferral = User::where('referral_id', $data['code-name'])
+                            ->where('id', '!=', $user->id)
+                            ->get()
+                            ->count();
+
+            $user->referral_id = $data['code-name'];
+        }
+
+        if ($countReferral > 0) {
+            return [
+                'error' => true,
+                'message' => 'Code Name not available.'
+            ];
+        }
+
+        tap($user)->save();
+
+        return [
+                'error' => false
+            ];
     }
+
+
 
     /**
      * @param  User  $user
@@ -360,4 +391,11 @@ class UserService extends BaseService
             'active' => $data['active'] ?? false,
         ]);
     }
+
+    public function updateHubId(User $user, $hubId)
+    {
+        $user->hub_id = $hubId ?? null;
+        return tap($user)->save();
+    }
+
 }

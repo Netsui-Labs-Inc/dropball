@@ -46,3 +46,17 @@
 [x-cloak] {
     display: none !important;
 }
+
+.eyecandy {
+    @apply far fa-eye position-absolute;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1.5rem;
+    font-style: normal;
+}
+
+.eyecandy.show {
+    @apply fa-eye-slash;
+}
+

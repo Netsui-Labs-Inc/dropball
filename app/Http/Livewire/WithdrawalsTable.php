@@ -4,47 +4,31 @@ namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Models\Withdrawal;
+use App\Http\Livewire\Services\Filters;
+use App\Http\Livewire\Services\WithdrawalQueryFactory;
 use Bavix\Wallet\Interfaces\Mathable;
 use Bavix\Wallet\Models\Wallet;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
 
 class WithdrawalsTable extends DataTableComponent
 {
-    /**
-     * @var string
-     */
-    public $sortField = 'created_at';
+    public $userType;
+    private $withdrawalQuery;
     public int $perPage = 10;
-    /**
-     * @var string
-     */
-    public $status;
-    /**
-     * @var
-     */
-    public $user;
-    public $confirmed;
-    public $action;
-    public $withUser;
-    public $wallet;
-    public $model;
-    public $excludeBetTransactions;
-
-
     protected $options = [
         'bootstrap.classes.table' => 'table',
     ];
     /**
      * @param  string  $status
      */
-    public function mount($status = 'PENDING', $user = null, $action = false): void
+    public function mount(Request $request): void
     {
-        $this->status = $status;
-        $this->user = $user;
-        $this->action = $action;
+        $this->userType = $request->get('userType');
     }
 
     /**
@@ -52,11 +36,26 @@ class WithdrawalsTable extends DataTableComponent
      */
     public function query(): Builder
     {
-        /** @var User $user */
-        $user = auth()->user();
-        $query = $user::withdrawals();
-        $query->where('status', $this->status);
-        return $query;
+        $tableQueryFactory = new WithdrawalQueryFactory();
+        $withdrawalQuery = $tableQueryFactory
+        ->createWithdrawalRequestTable($this->userType)
+        ->getQuery();
+        $this->withdrawalQuery = $withdrawalQuery;
+
+        return $this->withdrawalQuery->when($this->getFilter('channel'), function($query, $channel) use ($withdrawalQuery) {
+            return $withdrawalQuery->where('channel', $channel);
+        })->when($this->getFilter('type'), fn ($query, $term) => $query->search($term))
+            ->where('status', 'pending')
+            ->latest('withdrawals.created_at');
+    }
+
+    /**
+     * @return array
+     */
+    public function filters(): array
+    {
+        $filter = new Filters();
+        return $filter->channel()->getFilters();
     }
 
     /**
@@ -64,48 +63,68 @@ class WithdrawalsTable extends DataTableComponent
      */
     public function columns(): array
     {
+        $withdrawalQuery = $this->withdrawalQuery;
         $columns = [
-            Column::make(__('Transaction ID'), 'id')
-                ->searchable()
-                ->sortable()
-                ->format(function ($value, $column, Withdrawal $row) {
-                    return "#".$row->id;
+            Column::make(__('Account Number'), 'withdrawals.account_number')
+                ->searchable(function (Builder $query, $searchTerm) use ($withdrawalQuery)  {
+                    return $withdrawalQuery->where('withdrawals.account_number', 'like', '%' . $searchTerm . '%');
+                })
+                ->sortable(function (Builder $query, $direction)  {
+                    return $this->sortable('account_number', $direction);
+                })
+                ->format(function ($value, $column, User $row) {
+                    return $row->account_number;
                 })->asHtml(),
-            Column::make(__('Channel'), 'channel')
-                ->sortable(),
+            Column::make(__('Account Name'), 'withdrawals.account_name')
+                ->searchable(function (Builder $query, $searchTerm) use ($withdrawalQuery)  {
+                    $withdrawalQuery->orWhere('withdrawals.account_name', 'like', '%' . $searchTerm . '%');
+                })
+                ->sortable(function (Builder $query, $direction)  {
+                    return $this->sortable('account_name', $direction);
+                })
+                ->format(function ($value, $column, User $row) {
+                    return $row->account_name ?? "N/A";
+                })->asHtml(),
+            Column::make(__('Channel'), 'withdrawals.channel')
+                ->sortable(function (Builder $query, $direction)  {
+                    return $this->sortable('channel', $direction);
+                })
+                ->format(function ($value, $column, User $row) {
+                    return $row->channel;
+                })->asHtml(),
             Column::make(__('Amount'), 'amount')
-                ->sortable()
-                ->format(function ($value, $column, Withdrawal $row) {
-                    $amount = app(Mathable::class)->div($row->amount, 2);
-                    return "<div class='text-dasnger'>+".number_format($amount, 2)."</div>";
+                ->sortable(function (Builder $query, $direction)  {
+                    return $this->sortable('amount', $direction);
+                })
+                ->format(function ($value, $column, User $row) {
+                    return "<div class='text-danger'>-".$this->formatAmount($row->amount)."</div>";
                 })->asHtml(),
-            Column::make(__('Status'), 'status')
-                ->sortable()
-                ->format(function ($value, $column, Withdrawal $row) {
-                    if($row->status == Withdrawal::COMPLETED) {
-                        $class = 'badge-success';
-                    }elseif ($row->status == Withdrawal::CANCELLED) {
-                        $class = 'badge-danger';
-                    } else {
-                        $class = 'badge-warning';
-                    }
-                    return "<span class='badge $class'>$row->status</span>";
-                })->asHtml(),
-            Column::make(__('Created at'), 'created_at')
-                ->sortable()
-                ->format(function ($value, $column, Wallet $row) {
+            Column::make(__('Requested at'), 'withdrawals.created_at')
+                ->sortable(function (Builder $query, $direction)  {
+                    return $this->sortable('withdrawals.created_at', $direction);
+                })
+                ->format(function ($value, $column, User $row) {
                     return (new Carbon($row->created_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
+                })->asHtml(),
+            Column::make(__('Action'))
+                ->format(function ($value, $column, User $row) {
+                    $tableQueryFactory = new WithdrawalQueryFactory();
+                    $withdrawalRequest = $tableQueryFactory->createWithdrawalRequestTable($this->userType);
+                    return $withdrawalRequest->getView($row);
                 })->asHtml()
         ];
 
-        if ($this->action) {
-            $columns[] = Column::make(__('Action'))
-                ->format(function ($value, $column, Wallet $row) {
-                    return view('backend.wallet.action', ['transaction' => $row]);
-                })->asHtml();
-        }
-
-
         return $columns;
+    }
+
+    private function sortable($column, $direction)
+    {
+        $this->withdrawalQuery->getQuery()->orders = null;
+        return $this->withdrawalQuery->orderBy($column, $direction);
+    }
+
+    private function formatAmount($amount)
+    {
+        return number_format($amount / 100, 2);
     }
 }

@@ -34,7 +34,11 @@ class StoreSubAgentRequest extends FormRequest
             'email' => ['required', 'max:255', 'email', Rule::unique('users')],
             'mobile' => ['required', 'max:100', Rule::unique('users')],
             'referral_id' => ['required', 'max:100', Rule::unique('users')],
+            'referred_by' => 'required',
+            'hub_id' => 'required',
             'password' => ['max:100'],
+            'whole_number_rate' => 'required',
+            'decimal_number_rate' => 'required'
         ];
     }
 

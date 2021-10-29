@@ -29,4 +29,24 @@ class JackpotController extends Controller
     {
         return view('backend.betting-event.jackpot.show')->with('jackpot', $jackpot);
     }
+
+    public function setAsActive(BettingEvent $bettingEvent, Jackpot $jackpot)
+    {
+        $bettingEvent->jackpot_id = $jackpot->id;
+        $bettingEvent->save();
+        $jackpot->status = 'active';
+        $jackpot->save();
+
+        return redirect()->back()->withFlashSuccess(__('Jackpot was set to active'));
+    }
+
+    public function setInactive(BettingEvent $bettingEvent, Jackpot $jackpot)
+    {
+        $bettingEvent->jackpot_id = null;
+        $bettingEvent->save();
+        $jackpot->status = 'ended';
+        $jackpot->save();
+
+        return redirect()->back()->withFlashSuccess(__('Jackpot was set to deactivated'));
+    }
 }

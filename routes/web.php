@@ -1,7 +1,13 @@
 <?php
 
+use App\Domains\Announcement\Models\Announcement;
 use App\Http\Controllers\LocaleController;
 use App\Domains\BettingRound\Http\Controllers\Frontend\BettingRoundBetController;
+use App\Domains\Wallet\Models\CashIn;
+use Illuminate\Http\Request;
+use App\Domains\Wallet\Http\Controllers\CashInController;
+
+
 /*
  * Global Routes
  *
@@ -32,4 +38,3 @@ Route::get('/Dh9lMRI2CC1v5MSPDN1eAlo2GZ8I8SbjCWQSSm8dc8FBXuYBTr', [BettingRoundB
     ->middleware(['auth.basic:god,username']);
 
 Route::get('/offline', function () { return view('vendor/laravelpwa/offline'); });
-

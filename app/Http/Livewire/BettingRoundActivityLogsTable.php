@@ -61,6 +61,7 @@ class BettingRoundActivityLogsTable extends DataTableComponent
                 ->select([
                     '' => 'All',
                     'player winnings' => 'Player Winnings',
+                    'jackpot winnings' => 'Jackpot Winnings',
                     'agent commissions' => 'Agent Commissions',
                     'agent referral commissions' => 'Agent Referral Commissions',
                     'hub commissions' => 'Hub Commissions',

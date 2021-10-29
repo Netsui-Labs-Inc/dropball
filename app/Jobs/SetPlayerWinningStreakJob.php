@@ -41,25 +41,29 @@ class SetPlayerWinningStreakJob implements ShouldQueue
         try {
             DB::beginTransaction();
             $player = $this->bet->user;
-            $winningStreak = (new GetWinningStreakAction)($player);
+            $winningStreak = (new GetWinningStreakAction)($player, $this->bet->bettingRound->bettingEvent);
             logger("SetPlayerWinningStreakJob.handle :: Player#{$player->id} {$player->name} winning streak is $winningStreak");
             $player->winning_streak = $winningStreak;
             $player->update();
-            if($winningStreak === 5) {
-                /** @var User $player */
-                $player = $this->bet->user;
+            if($winningStreak >= config('dropball.jackpot.minimum_streak')) {
                 $bettingRound = $this->bet->bettingRound;
                 /** @var BettingEvent $bettingEvent */
                 $bettingEvent = $bettingRound->bettingEvent;
                 /** @var Jackpot $activeJackpot */
-                $activeJackpot = $bettingEvent->activeJackpot();
+                $activeJackpot = $bettingEvent->activeJackpot;
                 if(!$activeJackpot) {
                     return;
                 }
+
                 logger("AddEntryToJackpotRound.handle Player#{$player->id} won the jackpot");
-                $activeJackpot->winners()->create([
-                    'user_id' => $player->id,
-                ]);
+
+                $activeWinner = $activeJackpot->winners()->where('user_id', $player->id)->first();
+
+                if($activeWinner && $winningStreak > $activeWinner->winning_streak) {
+                    $activeWinner->update(['winning_streak' => $winningStreak]);
+                } else {
+                    $activeJackpot->winners()->create(['user_id' => $player->id, 'winning_streak' => $winningStreak]);
+                }
             }
             DB::commit();
         } catch (\Exception $e) {

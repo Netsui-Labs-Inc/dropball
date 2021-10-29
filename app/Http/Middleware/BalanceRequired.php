@@ -15,7 +15,7 @@ class BalanceRequired
      * @param  \Closure  $next
      * @return mixed
      */
-    public function handle($request, Closure $next, $amount = 100)
+    public function handle($request, Closure $next)
     {
         $user = auth()->user();
 
@@ -33,7 +33,8 @@ class BalanceRequired
                 return $next($request);
             };
         }
-        if ($user->balanceFloat < $amount) {
+       
+        if ($user->balanceFloat < config('dropball.streaming_minimum_balance')) {
             return redirect()->route('frontend.user.dashboard')->withErrors("Insufficient Balance. At least PHP $amount is required");
         }
 

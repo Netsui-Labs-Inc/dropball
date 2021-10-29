@@ -58,7 +58,7 @@
                     <th>@lang('Last Login At')</th>
                     <td>
                         @if($user->last_login_at)
-                            @displayDate($user->last_login_at)
+                            {{ $user->last_login_at->setTimezone(Auth::user()->timezone)->toDateTimeString() }}
                         @else
                             @lang('N/A')
                         @endif
