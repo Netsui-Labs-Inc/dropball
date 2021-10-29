@@ -14,7 +14,7 @@ import AmendmentDetails from './amendment-details';
 window.Pusher = require('pusher-js');
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: process.env.MIX_ABLY_PUBLIC_KEY,
+    key: '12n6rA.Ws5Q3Q',
     wsHost: 'realtime-pusher.ably.io',
     wsPort: 443,
     disableStats: true,
