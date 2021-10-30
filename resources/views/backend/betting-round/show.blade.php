@@ -136,7 +136,7 @@
                 <div class="tab-pane fade show" id="betting-round-bets" role="tabpanel" aria-labelledby="betting-round-bets">
                     <x-backend.card>
                         <x-slot name="body">
-                            <livewire:bets-table :bettingRound="$bettingRound" />
+                            {{-- <livewire:bets-table :bettingRound="$bettingRound" /> --}}
                         </x-slot>
                     </x-backend.card>
                 </div>
