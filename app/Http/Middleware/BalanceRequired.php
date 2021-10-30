@@ -33,8 +33,9 @@ class BalanceRequired
                 return $next($request);
             };
         }
-       
+
         if ($user->balanceFloat < config('dropball.streaming_minimum_balance')) {
+            $amount = config('dropball.streaming_minimum_balance');
             return redirect()->route('frontend.user.dashboard')->withErrors("Insufficient Balance. At least PHP $amount is required");
         }
 
