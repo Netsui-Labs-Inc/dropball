@@ -97,11 +97,11 @@ Route::delete('betting-events/{bettingEvent}/jackpots/{jackpot}', [JackpotContro
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}', [BettingEventBettingRoundController::class, 'show'])
     ->name('betting-events.betting-rounds.show')
-    ->middleware(['permission:admin.access.betting-rounds.show|admin.access.betting-rounds.moderate'])
-    ->breadcrumbs(function (Trail $trail, $bettingEvent, $bettingRound) {
-        $trail->parent('admin.betting-events.show', $bettingEvent);
-        $trail->push("BettingRound #".$bettingRound->id, route('admin.betting-events.betting-rounds.show', [$bettingEvent, $bettingRound]));
-    });
+    ->middleware(['permission:admin.access.betting-rounds.show|admin.access.betting-rounds.moderate']);
+    // ->breadcrumbs(function (Trail $trail, $bettingEvent, $bettingRound) {
+    //     $trail->parent('admin.betting-events.show', $bettingEvent);
+    //     $trail->push("BettingRound #".$bettingRound->id, route('admin.betting-events.betting-rounds.show', [$bettingEvent, $bettingRound]));
+    // });
 
 Route::get('betting-events/{bettingEvent}/betting-rounds/{bettingRound}/reports', [BettingEventBettingRoundController::class, 'report'])
     ->name('betting-events.betting-rounds.report')
