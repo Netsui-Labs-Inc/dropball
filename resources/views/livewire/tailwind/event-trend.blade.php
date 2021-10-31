@@ -19,7 +19,7 @@
                 <i class="text-xs fas fa-circle text-red-500 p-0 "></i>
             @elseif ($round->betOption->name == 'PUTI')
                 <i class="text-xs fas fa-circle text-white p-0 "></i>
-            @elseif ($round->betOption->name == 'BOKYA')
+            @elseif ($round->betOption->name == 'JACKPOT')
                 <i class="text-xs fas fa-circle text-yellow-500 p-0 "></i>
             @endif
         @endforeach
