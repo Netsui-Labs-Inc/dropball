@@ -123,20 +123,17 @@ class EventBettingRound extends Component
 
     public function startingBettingRound($data)
     {
-        $nextBettingRound = $this->bettingEvent->bettingRounds()->where('queue', $this->bettingRound->queue + 1)->first();
-        $title = "<span>Upcoming Betting Round #{$this->bettingRound->queue}</span>";
+        $nextBettingRoundNumber = $this->bettingRound->queue + 1;
+        $title = "<span>Upcoming Betting Round #{$nextBettingRoundNumber}</span>";
         if (! isset($data['bettingRoundId'])) {
             $title = "<span>No Betting Round Available</span>";
-
             $this->bettingRound = null;
         }
 
         $this->bettingRound = BettingRound::find($data['bettingRoundId']);
         $this->emit('swal:alert', [
             'icon' => 'info',
-            'title' => $title,
-            'method' => "echo-private:event.{$this->bettingEvent->id}.play,BettingRoundCancelled",
-            'params' => ['bettingRound' => $nextBettingRound ? $nextBettingRound->toArray() : null]
+            'title' => $title
         ]);
     }
 
