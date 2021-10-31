@@ -36,8 +36,8 @@ import Echo from 'laravel-echo';
 window.Pusher = require('pusher-js');
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    //key: 'e7c1lA.fsp_Aw', //production
-    key: '12n6rA.Ws5Q3Q', //staging
+    key: 'e7c1lA.fsp_Aw', //production
+    // key: '12n6rA.Ws5Q3Q', //staging
     wsHost: 'realtime-pusher.ably.io',
     wsPort: 443,
     disableStats: true,
