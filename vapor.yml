@@ -27,7 +27,7 @@ environments:
       warm: 10
       database: kingpinstagingdb
       queue-concurrency: 1
-      network: vapor-network-1624703899
+      network: dropball-staging
       domain: staging.peryapinoy.com
       cli-memory: 512
       runtime: 'php-8.0:al2'
