@@ -23,6 +23,10 @@
                     <td>{{$withdrawal->uuid}}</td>
                 </tr>
                 <tr>
+                    <th>@lang('Requested at')</th>
+                    <td>{{$withdrawal->created_at}}</td>
+                </tr>
+                <tr>
                     <th>@lang('Requested by')</th>
                     <td>{{$withdrawal->user->name}}</td>
                 </tr>
@@ -38,6 +42,11 @@
                 </tr>
 
                 <tr>
+                    <th>@lang('Account Name')</th>
+                    <td><span class='badge badge-info'> {{$withdrawal->account_name ?? 'N/A'}}</span></td>
+                </tr>
+
+                <tr>
                     <th>@lang('Amount')</th>
                     <td>{{ number_format($withdrawal->amountFloat, 2)}}</td>
                 </tr>
@@ -49,7 +58,7 @@
                 <tr>
                     <th>@lang('Note')</th>
                     <td>
-                        {{$withdrawal->note}}
+                        {{$withdrawal->notes}}
                     </td>
                 </tr>
 
@@ -57,11 +66,65 @@
         </x-slot>
 
         <x-slot name="footer">
-            <small class="float-right">
-                @if($withdrawal->status !== 'completed')
-                    <x-utils.form-button :action="route('admin.withdrawals.complete', $withdrawal)" button-class="btn btn-success ">Approve Withdrawal </x-utils.form-button>
-                @endif
-            </small>
+            @if($withdrawal->status === 'pending')
+            <div class="col text-right">
+                <x-utils.link
+                    class="btn btn-info text-white btnApprove"
+                    dataTarget="#approvalDetails"
+                    :text="__('Approve Withdrawal')"
+                />
+            </div>
+            @endif
         </x-slot>
     </x-backend.card>
+    <x-utils.modal
+        title="Approval Details"
+        type="form"
+        targetId="approvalDetails"
+        action="{{route('admin.withdrawals.complete')}}"
+        submitBtn="Approve"
+    >
+        <div>
+            <input type="hidden" value="{{$withdrawal->id}}" name="withdrawal_id">
+            <input type="hidden" value="{{$withdrawal->created_at}}" class="datepicker-min">
+            <div class="row">
+                <label for="amount" class="col col-form-label"></label>
+            </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Reference #')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <input type="text" class="form-control" name="reference_number" min="1" step="1" required>
+                </div>
+            </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Channel')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <select name="channel" class="form-control">
+                        <option value="gcash">GCash</option>
+                        <option value="paymaya">Paymaya</option>
+                        <option value="bank">Bank</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label for="amount" class="col col-form-label">@lang('Date of Transfer')</label>
+            </div>
+            <div class="form-group row">
+                <div class="col">
+                    <input type="text"
+                           id="datePickerId"
+                           placeholder="Select Date"
+                           class="form-control approvalDatepicker"
+                           name="date_of_transfer"
+                           onfocus="(this.type='date')"
+                           required
+                    >
+                </div>
+            </div>
+        </div>
+    </x-utils.modal>
 @endsection

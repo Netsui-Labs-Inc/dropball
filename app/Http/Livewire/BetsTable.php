@@ -117,6 +117,18 @@ class BetsTable extends DataTableComponent
                 ->format(function ($value, $column, Bet $row) {
                     return $row->gainLossLabel();
                 })->asHtml(),
+            Column::make(__('Previous Balance'), 'previous_balance')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Bet $row) {
+                    return number_format($row->previous_balance, 0);
+                })->asHtml(),
+            Column::make(__('New Balance'), 'new_balance')
+                ->searchable()
+                ->sortable()
+                ->format(function ($value, $column, Bet $row) {
+                    return number_format($row->new_balance , 0);
+                })->asHtml(),
             Column::make(__('Datetime'), 'created_at')
                 ->searchable()
                 ->sortable()

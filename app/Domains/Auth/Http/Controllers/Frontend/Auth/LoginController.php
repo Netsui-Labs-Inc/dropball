@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
 
 /**
@@ -102,8 +103,9 @@ class LoginController extends Controller
     {
         if (! $user->isActive()) {
             auth()->logout();
-
-            return redirect()->route('frontend.auth.login')->withFlashDanger(__('Your account has been deactivated.'));
+            throw ValidationException::withMessages(
+                ['email' => 'Your account is not yet activated or has been deactivated.']
+            );
         }
 
         event(new UserLoggedIn($user));
@@ -112,4 +114,5 @@ class LoginController extends Controller
             auth()->logoutOtherDevices($request->password);
         }
     }
+
 }

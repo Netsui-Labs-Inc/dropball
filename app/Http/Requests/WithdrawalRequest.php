@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Factory;
 
 class WithdrawalRequest extends FormRequest
 {
@@ -24,11 +24,20 @@ class WithdrawalRequest extends FormRequest
     public function rules()
     {
         return [
-            'amount' => 'required|numeric',
+            'account_number' => 'required',
+            'account_name' => 'required',
+            'amount' => 'required|numeric|gte:' . config('dropball.minimum_withdrawal'),
             'channel' => 'required',
             'details' => 'required',
             'note' => 'sometimes',
             'password' => 'required'
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'gte' => 'Please enter minimum amount of ' . config('dropball.minimum_withdrawal') . ' Pesos.'
         ];
     }
 }

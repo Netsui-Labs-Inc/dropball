@@ -5,6 +5,7 @@ namespace App\Jobs\Commissions;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Jobs\Traits\WalletAndCommission;
 use App\Models\Company;
+use App\Models\OverallCommissionRate;
 use Brick\Math\BigDecimal;
 use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
@@ -59,7 +60,8 @@ class ProcessOtherCommissionsJob implements ShouldQueue
         $operator = $this->operator;
 
         $operatorWallet = $this->getWallet($operator, 'Income Wallet');
-        $commissions = BigDecimal::of($bettingRound->pool_money * .095)->toFloat();
+        $commisionRate = (100 - OverallCommissionRate::query()->first()->rate) / 1000;
+        $commissions = BigDecimal::of($bettingRound->pool_money * $commisionRate)->toFloat();
         $remainingMoney = $bettingRound->pool_money - $bettingRound->meta['winningPayout'] - $commissions;
         logger("ProcessOtherCommissionsJob BettingRound#{$bettingRound->id} Remaining Money: $remainingMoney, Winning Payouts: {$bettingRound->meta['winningPayout']}, Commission: $commissions ");
         try {
@@ -81,8 +83,9 @@ class ProcessOtherCommissionsJob implements ShouldQueue
                 ])
                 ->log("Operator #{$operator->id} with balance of $currentBalance received $remainingMoney from the remaining amount. New Balance is {$operatorWallet->balanceFloat}");
             DB::commit();
-        } catch (\Exception $e) {
-            $this->fail($e);
+        } catch (\Throwable $e) {
+            \Sentry::captureException($e);
+            $this->release(3);
             logger("ProcessOtherCommissionsJob.error :: ".$e->getMessage());
             DB::rollBack();
         }

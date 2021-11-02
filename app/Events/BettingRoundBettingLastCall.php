@@ -7,25 +7,25 @@ use App\Domains\BettingEvent\Models\BettingEvent;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class BettingRoundBettingLastCall implements ShouldBroadcast
+class BettingRoundBettingLastCall implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public BettingRound $bettingRound;
-    public BettingEvent $bettingEvent;
+    public $bettingEventId;
+
+    public $queue = 'broadcast';
 
     /**
-     * Create a new event instance.
-     * @param BettingRound $bettingRound
-     * @return void
+     * BettingRoundBettingLastCall constructor.
+     * @param int $bettingEventId
      */
-    public function __construct(BettingRound $bettingRound)
+    public function __construct( int $bettingEventId)
     {
-        $this->bettingRound = $bettingRound;
-        $this->bettingEvent = $bettingRound->bettingEvent;
+        $this->bettingEventId = $bettingEventId;
     }
 
     /**
@@ -35,6 +35,6 @@ class BettingRoundBettingLastCall implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'.play');
+        return new PrivateChannel('event.'.$this->bettingEventId.'.play');
     }
 }

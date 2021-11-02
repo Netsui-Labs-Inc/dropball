@@ -4,7 +4,7 @@
         <div>
         <i class="fas fa-circle text-white p-0 "></i> = PUTI
         <i class="fas fa-circle text-danger p-0 "></i> = PULA
-        <i class="fas fa-circle p-0 text-warning "></i> = BOKYA
+        <i class="fas fa-circle p-0 text-warning "></i> = JACKPOT
         <i class="fas fa-circle p-0 text-muted "></i> = CANCELLED
         <i class="fas fa-dot-circle p-0 text-muted "></i> = PENDING
         </div>

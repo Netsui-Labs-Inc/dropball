@@ -4,12 +4,15 @@
 namespace App\Domains\Hub\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Auth\Services\UserService;
+use App\Domains\CommissionRate\Http\Services\CommissionRatesConversion;
 use App\Domains\Hub\Actions\CreateHubAction;
 use App\Domains\Hub\Actions\UpdateHubAction;
 use App\Domains\Hub\Http\Requests\Backend\StoreHubRequest;
 use App\Domains\Hub\Models\Hub;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepositRequest;
+use App\Models\OverallCommissionRate;
 use Bavix\Wallet\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -28,16 +31,17 @@ class HubController extends Controller
 
     public function create()
     {
+
         $hubAdmins = User::role('Virtual Hub')
             ->doesntHave('hubAdmin')
             ->get()->pluck('name', 'id');
-        return view('backend.hub.create')->with([
-            'hubAdmins' => $hubAdmins,
-        ]);
+        return view('backend.hub.create')
+        ->with(['hubAdmins' => $hubAdmins]);
     }
 
     public function edit(Hub $hub)
     {
+
         $hubAdmins = User::role('Virtual Hub')
             ->where(function($query) use ($hub) {
                 $query->doesntHave('hubAdmin')
@@ -45,28 +49,42 @@ class HubController extends Controller
             })
             ->get()->pluck('name', 'id');
 
-        return view('backend.hub.edit')->with([
-            'hubAdmins' => $hubAdmins,
-            'hub' => $hub
-        ]);
+        return view('backend.hub.edit')
+        ->with(['hubAdmins' => $hubAdmins,'hub' => $hub]);
     }
 
     public function store(StoreHubRequest $request)
     {
         try {
-            $data = $request->validated();
-            (new CreateHubAction)($data);
+            $hubDetails = $request->validated();
+            $newHub = (new CreateHubAction)($hubDetails);
+            $commissionRateConversion = new CommissionRatesConversion($newHub, true);
+            $convertedCommissionRate = $commissionRateConversion->converHubToPercentage($newHub->commission_rate);
+            $newHub->commission_rate = $convertedCommissionRate;
+            $newHub->save();
+            $hubAdmin = User::find($newHub->admin_id);
+            $hubAdmin->hub_id = $newHub->id;
+            $hubAdmin->save();
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub Created Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
         }
     }
 
-    public function update(StoreHubRequest $request, Hub $hub)
+    public function update(StoreHubRequest $request, Hub $hub, UserService $userService)
     {
         try {
             $data = $request->validated();
+            $commissionRate = $data['whole_number_rate'] + $data['decimal_number_rate'];
+            $commissionRateConversion = new CommissionRatesConversion($hub, true);
+            $convertedCommissionRate = $commissionRateConversion->converHubToPercentage($commissionRate, true);
+            if(!$convertedCommissionRate)
+            {
+                return redirect()->back()->withErrors('Something went wrong!');
+            }
+            $data['commission_rate'] = $convertedCommissionRate;
             (new UpdateHubAction)($hub, $data);
+            $userService->updateHubId(User::find($data['admin_id']), $hub->id);
             return redirect()->to(route('admin.hubs.index'))->withFlashSuccess("Hub updated Successfully");
         } catch (\Exception $e) {
             return redirect()->back()->withErrors($e->getMessage());
@@ -86,11 +104,11 @@ class HubController extends Controller
         }
 
         try {
-            if ($user->hasRole('Satoshi')) {
-                $hub->depositFloat($request->get('amount'));
-            } elseif ($user->hasRole('Administrator')) {
-                $hub->depositFloat($request->get('amount'));
-            }
+            $creditedBy = [
+                'credited_by' => Auth()->user()->id
+            ];
+
+            $hub->depositFloat($request->get('amount'), $creditedBy);
 
             return redirect()->back()->withFlashSuccess("Cash Added Successfully");
         } catch (\Exception $e) {
@@ -109,10 +127,12 @@ class HubController extends Controller
 
     public function transactions()
     {
+        if(User::role('Processor')->get()->count() < 1) {
+            return redirect()->back()->withErrors('Unable to Access. Please Create a withdrawal Processor account to continue.');
+        }
         $pendingTransactions = Transaction::query()
             ->where("payable_type", Hub::class)
             ->where('confirmed', false);
-
         return view('backend.hub.transactions')->with('pendingTransactions', $pendingTransactions);
     }
 }

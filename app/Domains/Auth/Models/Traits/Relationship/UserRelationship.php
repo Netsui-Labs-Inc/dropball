@@ -5,6 +5,7 @@ namespace App\Domains\Auth\Models\Traits\Relationship;
 use App\Domains\Auth\Models\PasswordHistory;
 use App\Domains\Auth\Models\User;
 use App\Domains\Bet\Models\Bet;
+use App\Domains\BettingEvent\Models\BettingEvent;
 use App\Domains\Hub\Models\Hub;
 
 /**
@@ -43,5 +44,10 @@ trait UserRelationship
     public function hubAdmin()
     {
         return $this->hasOne(Hub::class, 'admin_id');
+    }
+
+    public function bettingEvent()
+    {
+        return $this->belongsTo(BettingEvent::class, 'last_event_id');
     }
 }

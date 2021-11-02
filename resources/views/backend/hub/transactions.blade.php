@@ -24,20 +24,37 @@
                 aria-selected="true" >
                 @lang("Pending Withdrawal") @if($pendingTransactions->count()) <span class="badge badge-danger">{{$pendingTransactions->count()}}</span>@endif
             </x-utils.link>
+            <x-utils.link
+                class="nav-link bg-white"
+                id="active-transaction-tab"
+                data-toggle="pill"
+                href="#amendment-transaction"
+                role="tab"
+                aria-controls="active"
+                aria-selected="true" >
+                @lang("Amendment Transactions")
+            </x-utils.link>
         </div>
     </nav>
     <div class="tab-content" id="tabsContent">
         <div class="tab-pane fade show active" id="active-transaction" role="tabpanel" aria-labelledby="active-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:hubs-transactions-table :with-user="true" :action="true" />
+                    <livewire:reviewers-transaction-table :with-user="true" :action="true" />
                 </x-slot>
             </x-backend.card>
         </div>
         <div class="tab-pane fade show" id="pending-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
             <x-backend.card>
                 <x-slot name="body">
-                    <livewire:hubs-transactions-table :confirmed="false" :action="true" :with-user="true" />
+                    <livewire:withdrawals-table />
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="tab-pane fade show" id="amendment-transaction" role="tabpanel" aria-labelledby="pending-transaction-tab">
+            <x-backend.card>
+                <x-slot name="body">
+                    <livewire:amendments-table />
                 </x-slot>
             </x-backend.card>
         </div>

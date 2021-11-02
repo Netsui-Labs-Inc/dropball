@@ -19,9 +19,13 @@
                 @error('amount')<div class="invalid-feedback">{{ $message }}</div> @enderror
             </div>
             <div class="mt-2">
-                @foreach($betChoices as $choice)
-                    <button class="btn btn-sm {{$amount == $choice ? 'btn-danger' : 'btn-white' }}" wire:click="$emit('amountUpdated', {{$choice}})" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
-                @endforeach
+                <button class="btn btn-sm {{$amount == 50 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(50)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 100 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(100)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 300 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(300)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 500 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(500)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 1000 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(1000)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 5000 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(5000)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
+                <button class="btn btn-sm {{$amount == 10000 ? 'btn-danger' : 'btn-white' }}" wire:click="setAmount(10000)" {{$userCanBet ? '': 'disabled'}}>{{number_format($choice)}}</button>
             </div>
             @if (session()->has('error'))
                 <div class="alert alert-danger mt-2 mb-0">

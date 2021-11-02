@@ -30,6 +30,7 @@
                         {{Form::select('admin_id', $hubAdmins, old('admin_id'), ['class' => 'form-control', 'placeholder' =>'Select Admin', 'required'])}}
                     </div>
                 </div>
+                <livewire:hub-commission-rate />
             </x-slot>
 
             <x-slot name="footer">

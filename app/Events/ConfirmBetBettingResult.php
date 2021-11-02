@@ -3,24 +3,24 @@
 namespace App\Events;
 
 use App\Domains\BettingRound\Models\BettingRound;
-use App\Domains\BettingEvent\Models\BettingEvent;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
+class ConfirmBetBettingResult implements ShouldBroadcastNow, ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels, InteractsWithQueue;
 
-    public BettingRound $bettingRound;
-    public BettingEvent $bettingEvent;
-    private  $eventId;
+    private int $eventId;
+
+    public $queue = 'broadcast';
+
+
     /**
      * Create a new event instance.
      * @param BettingRound $bettingRound
@@ -28,9 +28,7 @@ class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
      */
     public function __construct(BettingRound $bettingRound, $eventId)
     {
-        $this->bettingRound = $bettingRound;
-        $this->bettingEvent = $bettingRound->bettingEvent;
-        $this->eventId =  $eventId;
+        $this->eventId =  $bettingRound->betting_event_id;
 
     }
 
@@ -41,6 +39,6 @@ class ConfirmBetBettingResult implements ShouldBroadcast, ShouldQueue
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('event.'.$this->bettingEvent->id.'_'.$this->eventId.'.play');
+        return new PrivateChannel('event.'.$this->eventId.'_'.$this->eventId.'.play');
     }
 }

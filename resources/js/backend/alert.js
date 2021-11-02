@@ -66,7 +66,6 @@ const SwalAlert = (icon, title, timeout = 7000) => {
         title
     })
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     window.livewire.on('swal:modal', data => {
         SwalModal(data.icon, data.title, data.text, data.show_confirm_button,  data.outside_click)
@@ -90,15 +89,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.livewire.on('swal:alert', data => {
         SwalAlert(data.icon, data.title, data.timeout)
-    })
+    });
 
     window.livewire.on('place-bets-puti', data => {
         const element = document.querySelector('.puti-pool');
         element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-3');
-    })
+    });
 
     window.livewire.on('place-bets-pula', data => {
         const element = document.querySelector('.pula-pool');
         element.classList.add('animate__animated', 'animate__heartBeat', 'animate__repeat-3');
-    })
-})
+    });
+
+});
+

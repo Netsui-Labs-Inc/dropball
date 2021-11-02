@@ -3,6 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -32,7 +33,7 @@ class PendingSubAgentsTable extends DataTableComponent
     /**
      * @param  string  $status
      */
-    public function mount($status = 'active'): void
+    public function mount(User $row, $status = 'active'): void
     {
         $this->status = $status;
     }
@@ -43,11 +44,16 @@ class PendingSubAgentsTable extends DataTableComponent
     public function query(): Builder
     {
         $user = auth()->user();
-
         $query = User::role('Master Agent')->whereNotNull('referred_by');
 
+        if($user->hasRole('Virtual Hub'))
+        {
+            $hub = Hub::where('admin_id', $user->id)->get()->first();
+            $query->where('hub_id', $hub->id);
+        }
 
-        return $query->whereNull('email_verified_at');
+        return $query->whereNull('email_verified_at')
+                    ->latest();
     }
 
     /**
@@ -71,7 +77,7 @@ class PendingSubAgentsTable extends DataTableComponent
                 })->asHtml(),
             Column::make(__('Hub'), 'hub_id')
                 ->format(function ($value, $column, User $row) {
-                    return $row->hub->name;
+                    return $row->hub->name ?? 'N/A';
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()

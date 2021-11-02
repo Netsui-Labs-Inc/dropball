@@ -1,6 +1,6 @@
 window._ = require('lodash');
 window.Swal = require('sweetalert2');
-
+require('./cashInCallBack');
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
@@ -34,12 +34,14 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 import Echo from 'laravel-echo';
 
 window.Pusher = require('pusher-js');
-
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: process.env.MIX_ABLY_PUBLIC_KEY,
+    //key: 'e7c1lA.fsp_Aw', //production
+    key: '12n6rA.Ws5Q3Q', //staging
     wsHost: 'realtime-pusher.ably.io',
     wsPort: 443,
     disableStats: true,
     encrypted: true,
 });
+
+

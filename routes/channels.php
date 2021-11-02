@@ -18,3 +18,11 @@
 Broadcast::channel('event.{eventId}.play', function ($user, $eventId) {
     return true;
 });
+
+Broadcast::channel('event.update_cash_in_status', function ($user) {
+    return true;
+});
+
+Broadcast::channel('bet.{betId}.status', function ($user, $betId) {
+    return true;
+});
