@@ -12,7 +12,7 @@ class CashIn extends Component
     public $referenceNumber = '123-2321';
     public function createInvoice(Request $request)
     {
-        dd($request->ip());
+
         $invoice = Http::withBasicAuth(config('cash-in.CASH_IN_API_KEY'), '')
             ->withBody(json_encode([
                 'transaction_reference_number' => $this->referenceNumber,
