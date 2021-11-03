@@ -14,6 +14,23 @@
 
         <x-slot name="body">
             <table class="table table-hover">
+                @if($hub)
+                    <tr>
+                        <th>@lang('Hub Name')</th>
+                        <td><a href="{{ $walletRoute }}" >{{$hub->name}}</a></td>
+                    </tr>
+
+                @else
+                    <tr>
+                        <th>@lang('Name')</th>
+                        <td><a href="{{ $walletRoute }}" >{{$user->name}}</a></td>
+                    </tr>
+                    <tr>
+                        <th>@lang('Role')</th>
+                        <td>{{$user->role}}</td>
+                    </tr>
+                @endif
+
                 <tr>
                     <th>@lang('ID')</th>
                     <td>{{$transaction->id}}</td>
