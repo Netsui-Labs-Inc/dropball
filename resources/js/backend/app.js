@@ -22,9 +22,10 @@ window.Echo = new Echo({
     encrypted: true,
 });
 
-
 let amendmentDetails = new AmendmentDetails();
 amendmentDetails.init();
+
+console.log(amendmentDetails);
 
 datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();
