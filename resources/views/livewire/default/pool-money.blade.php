@@ -4,11 +4,11 @@
         <div class="h4 text-success">{{number_format($poolMoney)}}</div>
     </div>
     <div class="col">
-        <span class="h6 surtitle">PUTI / Payout</span>
+        <span class="h6 surtitle">WALA / Payout</span>
         <div class="h4 text-gray">{{number_format($puti)}} / <strong>{{number_format($payouts['puti'])}}</strong></div>
     </div>
     <div class="col">
-        <span class="h6 surtitle">PULA / Payout</span>
+        <span class="h6 surtitle">MERON / Payout</span>
         <div class="h4 text-gray text-danger">{{number_format($pula)}} / <strong>{{number_format($payouts['pula'])}}</strong></div>
     </div>
    <div class="col">
@@ -24,7 +24,7 @@
         <div class="h4 text-warning">{{number_format($jackpot * 5)}}</div>
     </div>
     <div class="col">
-        <span class="h6 surtitle">PULA + PUTI</span>
+        <span class="h6 surtitle">MERON + WALA</span>
         <div class="h4 text-success">{{number_format($pula + $puti)}}</div>
     </div>
 

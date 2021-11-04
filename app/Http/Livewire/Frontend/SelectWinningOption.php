@@ -84,7 +84,7 @@ class SelectWinningOption extends Component
         DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
         $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
-        $popUp = $messagePopUp->confirmSelection('PULA');
+        $popUp = $messagePopUp->confirmSelection('MERON');
         $this->emit($popUp['type'], $popUp['params']);
 
     }
@@ -94,7 +94,7 @@ class SelectWinningOption extends Component
         DealerAdminPopUpMessage $dealerAdminPopUpMessage
     ){
         $messagePopUp = $this->setMesssagePopUp($betAdminPopUpMessage, $dealerAdminPopUpMessage);
-        $popUp = $messagePopUp->confirmSelection('PUTI');
+        $popUp = $messagePopUp->confirmSelection('WALA');
         $this->emit($popUp['type'], $popUp['params']);
 
     }

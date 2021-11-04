@@ -219,11 +219,11 @@ class BettingRoundController extends Controller
         $totalJackpot = $bettingRound->totalBetType(Bet::JACKPOT);
 
         if($totalJackpot * 5 > ($totalPula + $totalPuti)) {
-            throw new GeneralException("Jackpot Payout is greater than the PULA + PUTI pool money. You must cancel this round");
+            throw new GeneralException("Jackpot Payout is greater than the MERON + WALA pool money. You must cancel this round");
         }
 
         if($payouts['puti'] < 120 || $payouts['pula'] < 120) {
-            throw new GeneralException("PULA or PUTI odds is below 120. You must cancel this round");
+            throw new GeneralException("MERON or WALA odds is below 120. You must cancel this round");
         }
 
         return true;

@@ -8,8 +8,6 @@ class AmendmentDetails {
         this.created_by =  $('.amended-by');
         this.created_at =  $('.amended-date');
         this.note =  $('.amended-note');
-
-        console.log(this.amendedTransaction);
     }
 
     init() {

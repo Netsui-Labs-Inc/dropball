@@ -38,9 +38,9 @@
             <p class="text-center text-yellow-500 font-semibold">
                 @if($userBet)
                     @if($userBet->bet == 1)
-                        <span class="text-xs p-0 text-red-500">PULA</span>
+                        <span class="text-xs p-0 text-red-500">MERON</span>
                     @elseif ($userBet->bet == 2)
-                        <span class="text-xs p-0 text-gray-50">PUTI</span>
+                        <span class="text-xs p-0 text-gray-50">WALA</span>
                     @else
                         <span class="text-xs p-0 text-yellow-400">JACKPOT</span>
                     @endif
@@ -53,13 +53,13 @@
         <div class="flex-auto w-1/2">
             <div class="py-2 bg-red-500 text-center rounded-sm">
                 <p class="font-semibold leading-5 text-white">@if ($bettingRound) {{ number_format($bettingRound->totalBetType(1) ?? 0)}}  @endif</p>
-                <p class="leading-none text-xs text-white pt-1">PULA</p>
+                <p class="leading-none text-xs text-white pt-1">MERON</p>
             </div>
         </div>
         <div class="flex-auto w-1/2">
             <div class="py-2 bg-gray-100 rounded-sm text-center">
                 <p class="font-semibold leading-5 text-gray-500">@if ($bettingRound){{ number_format($bettingRound->totalBetType(2) ?? 0)}} @endif</p>
-                <p class="leading-none text-xs text-gray-500 pt-1">PUTI</p>
+                <p class="leading-none text-xs text-gray-500 pt-1">WALA</p>
             </div>
         </div>
     </div>
@@ -78,12 +78,12 @@
     <div class="flex space-x-2">
         <div class="flex-auto w-1/2">
             <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-red-600 hover:bg-red-500 rounded text-white px-5 py-4 text-sm" wire:click="confirmBet(1)" {{$userCanBet ? '': 'disabled'}}>
-                <i class="fas fa-plus-circle"></i> BET PULA
+                <i class="fas fa-plus-circle"></i> BET MERON
             </button>
         </div>
         <div class="flex-auto w-1/2">
             <button class="disabled:opacity-50 w-full transition duration-150 ease-in-out bg-white hover:bg-gray-200 rounded text-gray-700 px-5 py-4 text-sm" wire:click="confirmBet(2)" {{$userCanBet ? '': 'disabled'}}>
-                <i class="fas fa-plus-circle"></i> BET PUTI
+                <i class="fas fa-plus-circle"></i> BET WALA
             </button>
         </div>
     </div>

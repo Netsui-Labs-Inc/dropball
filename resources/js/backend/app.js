@@ -7,14 +7,9 @@ require('../bootstrap');
 require('../plugins');
 require('./eyecandy');
 require('./alert');
-require('argon-design-system-free/assets/js/argon-design-system.min.js');
+// require('argon-design-system-free/assets/js/argon-design-system.min.js');
 import Echo from 'laravel-echo';
 import AmendmentDetails from './amendment-details';
-
-let amendmentDetails = new AmendmentDetails();
-amendmentDetails.init();
-
-console.log(amendmentDetails);
 
 window.Pusher = require('pusher-js');
 window.Echo = new Echo({
@@ -26,6 +21,9 @@ window.Echo = new Echo({
     disableStats: true,
     encrypted: true,
 });
+
+let amendmentDetails = new AmendmentDetails();
+amendmentDetails.init();
 
 datePickerId.max = new Date().toISOString().split("T")[0];
 let min = $('.datepicker-min').val();

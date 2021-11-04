@@ -10,7 +10,7 @@
                         <circle cx="6.5" cy="17" r="4" />
                         <circle cx="17.5" cy="17" r="4" />
                     </svg>
-                    <h3 class="text-base text-white font-bold tracking-normal leading-tight ml-3 hidden lg:block"><strong class="text-red-600">PULA</strong> PUTI</h3>
+                    <h3 class="text-base text-white font-bold tracking-normal leading-tight ml-3 hidden lg:block"><strong class="text-red-600">MERON</strong> WALA</h3>
                 </div>
                 <ul class="hidden xl:flex items-center h-full">
                     <li class="cursor-pointer h-full flex items-center text-sm text-yellow-500 tracking-normal transition duration-150 ease-in-out">
@@ -178,7 +178,7 @@
                     <circle cx="17.5" cy="17" r="4" />
                 </svg>
             </div>
-            <p class="text-base text-white font-bold tracking-normal leading-tight "><strong class="text-red-600">PULA</strong> PUTI</p>
+            <p class="text-base text-white font-bold tracking-normal leading-tight "><strong class="text-red-600">MERON</strong> WALA</p>
             <div>
                 <div id="menu" class="text-white" onclick="sidebarHandler(true)">
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -206,7 +206,7 @@
                                         <circle cx="6.5" cy="17" r="4" />
                                         <circle cx="17.5" cy="17" r="4" />
                                         </svg>
-                                        <p class="text-base  text-white ml-3"><strong class="text-red-600">PULA</strong> PUTI</p>
+                                        <p class="text-base  text-white ml-3"><strong class="text-red-600">MERON</strong> WALA</p>
                                     </div>
                                     <div id="cross" class="text-white" onclick="sidebarHandler(false)">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">

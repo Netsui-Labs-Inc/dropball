@@ -69,8 +69,8 @@
             @foreach ($bettingOptions as $option)
                 <div class="col-12 col-md-3 p-2">
                     @php
-                        $borderColor = ($option->name === 'PUTI') ? 'border:1px solid black' : '';
-                        $buttonType = ($option->name === 'PULA') ? 'btn-danger' : '';
+                        $borderColor = ($option->name === 'WALA') ? 'border:1px solid black' : '';
+                        $buttonType = ($option->name === 'MERON') ? 'btn-danger' : '';
                     @endphp
                     <button class="btn-lg btn-block btn {{ $buttonType }}" style="background-color:{{$option->color}}; {{$borderColor}}"
                             wire:click="$emit('confirmSelection', '{{$option->id}}')">

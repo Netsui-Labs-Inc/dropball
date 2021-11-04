@@ -38,13 +38,13 @@
         <div class="row align-items-center py-3">
             <div class="col justify-content-center text-center p-0">
                 <div class="p-3 mb-2 bg-danger border-default" style="border-radius: 6px 0 0 6px">
-                    <div class="text-white h4 mb-0">PULA</div>
+                    <div class="text-white h4 mb-0">MERON</div>
                 </div>
                 <div class="pula-pool text-warning h1">{{ number_format($bettingRound->meta['pula'] ?? 0) }}</div>
             </div>
             <div class="col justify-content-center text-center p-0">
                 <div class="p-3 mb-2 bg-white border-default" style="border-radius: 0 6px 6px 0">
-                    <div class="text-muted h4 mb-0">PUTI</div>
+                    <div class="text-muted h4 mb-0">WALA</div>
                 </div>
                 <div class="puti-pool h1 text-warning">{{ number_format($bettingRound->meta['puti'] ?? 0) }}</div>
             </div>

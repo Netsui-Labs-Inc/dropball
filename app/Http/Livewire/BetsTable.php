@@ -67,8 +67,8 @@ class BetsTable extends DataTableComponent
             'bet' => Filter::make('Bet')
                 ->select([
                     '' => 'All',
-                    Bet::PUTI => 'PUTI',
-                    Bet::PULA => 'PULA',
+                    Bet::PUTI => 'WALA',
+                    Bet::PULA => 'MERON',
                     Bet::JACKPOT => 'JACKPOT',
                 ]),
         ];
