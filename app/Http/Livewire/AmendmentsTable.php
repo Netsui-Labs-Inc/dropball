@@ -45,8 +45,12 @@ class AmendmentsTable extends DataTableComponent
             ->join('model_has_roles AS model_role', 'model_role.model_id', '=', 'amended_transactions.user')
             ->join('roles', 'roles.id', '=', 'model_role.role_id')
             ->where('roles.name', Session::get('userType'));
-       return $this->agentFilter->setAgent($query, Session::get('isAgent'))->getQuery();
+        if(Session::get('userType') === 'Master Agent')
+        {
+            return $this->agentFilter->setAgent($query, Session::get('isAgent'))->getQuery();
+        }
 
+        return $query;
     }
 
     /**
@@ -74,7 +78,7 @@ class AmendmentsTable extends DataTableComponent
                 ->sortable()
                 ->format(function ($value, $column, AmendedTransaction $row) {
                    $transaction = AmendedTransaction::where('amendment_transaction_id', $row->amendment_transaction_id)->get()->first();
-                    return $transaction->created_at;
+                   return $transaction->created_at;
                 })->asHtml(),
             Column::make(__('Approve by'), 'approved_by')
                 ->format(function ($value, $column, AmendedTransaction $row) {
