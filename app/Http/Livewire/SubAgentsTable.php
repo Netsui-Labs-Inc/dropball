@@ -80,6 +80,9 @@ class SubAgentsTable extends DataTableComponent
             Column::make(__('Name'))
                 ->searchable()
                 ->sortable(),
+            Column::make(__('E-mail'), 'email')
+                ->searchable()
+                ->sortable(),
             Column::make(__('rate'), 'commission_rate')
                 ->sortable()
                 ->format(function ($value, $column, User $row) {

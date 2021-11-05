@@ -7,7 +7,7 @@ require('../bootstrap');
 require('../plugins');
 require('./eyecandy');
 require('./alert');
-require('argon-design-system-free/assets/js/argon-design-system.min.js');
+// require('argon-design-system-free/assets/js/argon-design-system.min.js');
 import Echo from 'laravel-echo';
 import AmendmentDetails from './amendment-details';
 

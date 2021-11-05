@@ -86,7 +86,7 @@
         <div class="c-subheader-nav mfe-2">
             @yield('breadcrumb-links')
         </div>
-        <div class="c-subheader-nav d-md-down-none mfe-2">
+        <div class="c-subheader-nav mfe-2">
             @yield('page-action')
         </div>
         <livewire:cash-in />

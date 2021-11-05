@@ -4,6 +4,7 @@
 namespace App\Domains\Wallet\Http\Controllers\Backend;
 
 use App\Domains\Auth\Models\User;
+use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Http\Service\TransactionAmendmentService;
 use App\Domains\Wallet\Http\Service\WalletHolderFactory;
 use App\Domains\Wallet\Models\AmendedTransaction;
@@ -43,6 +44,7 @@ class WalletController extends \App\Http\Controllers\Controller
 
     public function show(Transaction $transaction)
     {
+
         $approvedWithdrawalRequest = ApprovedWithdrawalRequest::where('transaction_id', $transaction->id)
                                                         ->get()->first();
         $amendedTransactions = AmendedTransaction::join('transactions', 'amended_transactions.amendment_transaction_id', '=' , 'transactions.id')
@@ -57,14 +59,54 @@ class WalletController extends \App\Http\Controllers\Controller
                                                     'transactions.meta'
                                                 ]);
         $currentAmount = 0;
+        $hub = null;
+        if($transaction->payable_type === Hub::class)
+        {
+            $hub = Hub::where('id', $transaction->payable_id)->first();
+        }
+
+        $user = User::where('users.id', $transaction->payable_id)
+            ->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->select('roles.name as role', 'users.name as name', 'users.id', 'users.hub_id')
+            ->first();
+
+        $walletRoute = $this->getWalletRoute($user, $hub);
         return view('backend.wallet.show')
             ->with('transaction', $transaction)
             ->with('amendedAmount', $this->getAmendedAmount($transaction, $amendedTransactions))
             ->with('creditedBy', $this->getCreditedBy($transaction))
             ->with('currentAmount', $currentAmount)
             ->with('totalAmendment', 0)
+            ->with('user', $user)
+            ->with('hub', $hub)
+            ->with('walletRoute', $walletRoute)
             ->with('amendmentTransactions', $amendedTransactions)
             ->with('approvedWithdrawal', $approvedWithdrawalRequest);
+    }
+
+    private function getWalletRoute($user, $hub)
+    {
+        if($hub)
+        {
+            return  route('admin.hubs.wallet', $hub);
+        }
+
+        if($user->role === 'Player')
+        {
+            return route('admin.players.wallet', $user);
+        }
+
+        if($user->role === 'Master Agent')
+        {
+            return route('admin.master-agents.wallet', $user);
+        }
+
+        if($user->role === 'Virtual Hub')
+        {
+
+        }
+
     }
 
     private function getCreditedBy($transaction)
