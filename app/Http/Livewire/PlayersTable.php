@@ -164,6 +164,11 @@ class PlayersTable extends DataTableComponent
             Column::make(__('E-mail'), 'email')
                 ->searchable()
                 ->sortable(),
+            Column::make(__('Verified'), 'email_verified_at')
+                ->sortable()
+                ->format(function ($value, $column, User $row) {
+                    return view('backend.auth.user.includes.verified', ['user' => $row]);
+                }),
             Column::make(__('Balance'))
                 ->format(function ($value, $column, User $row) {
                     return number_format($row->balanceFloat, 2);
@@ -171,7 +176,7 @@ class PlayersTable extends DataTableComponent
             Column::make(__('Referred By'))
                 ->format(function ($value, $column, User $row) {
                     $referredBy = User::where('id', $row->referred_by)->first();
-                    return $referredBy->name;
+                    return !is_null($referredBy) ? $referredBy->name : '<i>No Referrer</i>';
                 })->asHtml(),
             Column::make(__('Created at'), 'created_at')
                 ->sortable()
