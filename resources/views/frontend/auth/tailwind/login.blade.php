@@ -106,7 +106,7 @@
                 <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">
                     <img src="{{asset('/img/brand/sabong.png')}}" class="object-contain w-full" >
                 </div>
-                <div class="pt-12 px-2 flex flex-col items-center justify-center">
+                <div class="px-2 flex flex-col items-center justify-center">
                     <h3 class="text-2xl sm:text-3xl xl:text-2xl font-bold text-gray-100 leading-tight">Sign-in to your account</h3>
                 </div>
                 <div class="mt-12 w-full px-2 sm:px-6">

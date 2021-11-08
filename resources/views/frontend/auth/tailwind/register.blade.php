@@ -103,10 +103,10 @@
             </div>
             <x-forms.post :action="route('frontend.auth.register')" class="w-full sm:w-4/6 md:w-3/6 lg:w-4/12 xl:w-3/12 text-gray-800 mb-32 sm:mb-0 my-40 sm:my-12 px-2 sm:px-0">
 
-{{--                <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">--}}
-{{--                    <img src="/img/brand/kingpinlogo.png" alt="">--}}
-{{--                </div>--}}
-                <div class="pt-8 px-2 flex flex-col items-center justify-center">
+               <div class="px-2 flex flex-col items-center justify-center mt-8 sm:mt-0">--}}
+                <img src="{{asset('/img/brand/sabong.png')}}" class="object-contain w-full" >
+               </div>
+                <div class="px-2 flex flex-col items-center justify-center">
                     <h3 class="text-2xl sm:text-3xl xl:text-2xl font-bold text-gray-100 leading-tight">Create your account</h3>
                 </div>
                 <div class="mt-8 w-full px-2 sm:px-6">
