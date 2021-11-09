@@ -25,7 +25,7 @@ environments:
       gateway-version: 2
       memory: 1024
       warm: 10
-      database: kingpinstagingdb
+      database: kingpinstaging
       queue-concurrency: 1
       network: vapor-network-1624703899
       domain: staging.peryapinoy.com
