@@ -13,6 +13,7 @@ use App\Domains\BettingRound\Actions\ProcessRefundAction;
 use App\Domains\BettingRound\Models\BettingRound;
 use App\Events\BettingRoundBettingLastCall;
 use App\Events\BettingRoundBettingWindowUpdated;
+use App\Events\BettingRoundStarting;
 use App\Events\BettingRoundResultUpdated;
 use App\Events\BettingRoundStatusUpdated;
 use App\Events\ConfirmBetBettingResult;
@@ -171,6 +172,9 @@ class BettingRoundController extends Controller
         $bettingRound->refresh();
 
         BettingRoundResultUpdated::dispatch($bettingRound);
+        
+        $nextBettingRound = $bettingRound->bettingEvent->bettingRounds()->where('queue', $bettingRound->queue + 1)->first();
+        BettingRoundStarting::dispatch($nextBettingRound);
 
         logger("BettingRound#{$bettingRound->id} has ended the result is {$bettingRound->betOption->name}");
 
