@@ -41,7 +41,6 @@
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($totalCredit ?? 0, 2)}}</div>
-                    {{-- <div class="text-value-lg text-success">Unlimited</div> --}}
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Total Distributed Credit Balance")</small>
                 </x-slot>
             </x-backend.card>
