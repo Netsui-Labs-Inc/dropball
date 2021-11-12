@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CommissionRate;
 use App\Models\Company;
 use App\Models\OverallCommissionRate;
+use Bavix\Wallet\Models\Transaction;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -123,6 +124,7 @@ class DashboardController extends Controller
             ->onlyActive()->count();
 
         return view('backend.dashboard.super-admin')
+            ->with('totalCredit', (int)Transaction::where(['meta' => '{"credited_by":1}'])->sum('amount') * 0.01)
             ->with('company', $company->getWallet('income-wallet'))
             ->with('players', $players)
             ->with('events', $events)
