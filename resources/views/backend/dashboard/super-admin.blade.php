@@ -9,7 +9,7 @@
             <x-backend.card>
                 <x-slot name="body">
                     <div class="text-value-lg text-success">{{number_format($company->balanceFloat ?? 0, 2)}}</div>
-                    <small class="text-muted text-uppercase font-weight-bold">@lang("Operator Total Balance")</small>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Income Balance")</small>
                 </x-slot>
             </x-backend.card>
         </div>
@@ -34,6 +34,14 @@
                 <x-slot name="body">
                     <div class="text-value-lg text-danger">{{number_format($hubs ?? 0)}}</div>
                     <small class="text-muted text-uppercase font-weight-bold">@lang("Total Hubs")</small>
+                </x-slot>
+            </x-backend.card>
+        </div>
+        <div class="col-12 col-md-3">
+            <x-backend.card>
+                <x-slot name="body">
+                    <div class="text-value-lg text-success">{{number_format($totalCredit ?? 0, 2)}}</div>
+                    <small class="text-muted text-uppercase font-weight-bold">@lang("Total Distributed Credit Balance")</small>
                 </x-slot>
             </x-backend.card>
         </div>
