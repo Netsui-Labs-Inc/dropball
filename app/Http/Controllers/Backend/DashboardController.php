@@ -143,6 +143,7 @@ class DashboardController extends Controller
         $this->logoutUser(!$hub);
         $masterAgents = User::role('Master Agent')
             ->where('hub_id', $hub->id)
+            ->whereNull('referred_by')
             ->onlyActive()->count();
         $players = User::role('Player')
             ->where('hub_id', $hub->id)
