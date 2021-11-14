@@ -6,7 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Http\Service\BaseWithdrawalTransaction;
 use App\Domains\Wallet\Interfaces\WalletTransactionInterface;
-
+use App\Domains\Wallet\Models\Withdrawal;
 
 class MasterAgentWalletTransactions
 extends BaseWithdrawalTransaction
@@ -28,8 +28,11 @@ implements WalletTransactionInterface
     public function getWallet() : array
     {
         $this->checkWallet();
+
         return [
-            'view' => view('backend.wallet.master-agent-wallet')->with('user',   $this->holder),
+            'view' => view('backend.wallet.master-agent-wallet')
+                ->with('user',   $this->holder)
+                ->with('withdrawal', Withdrawal::where(['user_id' => $this->holder->id])->get()),
             'error' => null
         ];
     }
