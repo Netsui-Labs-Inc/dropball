@@ -5,7 +5,7 @@ environments:
       gateway-version: 2
       memory: 1024
       warm: 10
-      database: kingpindb
+      database: kingpindbstorage1
       queue-concurrency: 1
       domain: peryapinoy.com
       cli-memory: 512
