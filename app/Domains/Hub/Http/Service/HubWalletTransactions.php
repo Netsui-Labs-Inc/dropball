@@ -6,6 +6,7 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Http\Service\BaseWithdrawalTransaction;
 use App\Domains\Wallet\Interfaces\WalletTransactionInterface;
+use App\Domains\Wallet\Models\Withdrawal;
 
 class HubWalletTransactions
 extends BaseWithdrawalTransaction
@@ -41,7 +42,12 @@ implements WalletTransactionInterface
             $error =  'Wallet is unavailable. please contact the account administrator';
         }
         return [
-            'view' => view('backend.wallet.hub-wallet')->with('hub', $this->holder)->with('hubWallet', $wallet),
+            'view' => view('backend.wallet.hub-wallet')
+                ->with('hub', $this->holder)->with('hubWallet', $wallet)
+                ->with('withdrawal', Withdrawal::where([
+                    'user_id' => $this->holder->id,
+                    'status' => 'pending'
+                ])->get()),
             'error' => $error
         ];
 

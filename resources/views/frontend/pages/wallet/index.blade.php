@@ -13,11 +13,21 @@
                                 <h2 class="h2 text-white mb-0"> @lang("Withdrawal / Deposit History")</h2>
                             </div>
                             <div class="col text-right">
-                                <x-utils.link
-                                    class="btn btn-sm btn-white"
-                                    dataTarget="#requestWithdrawal"
-                                    :text="__('Request Withdrawal')"
-                                />
+                                @if ($withdrawal->count() > 0)
+                                    <button
+                                        href="#" 
+                                        class="btn btn-sm btn-white"
+                                        disabled
+                                    >
+                                        Pending Withdrawal
+                                    </button>
+                                @else
+                                    <x-utils.link
+                                        class="btn btn-sm btn-white"
+                                        dataTarget="#requestWithdrawal"
+                                        :text="__('Request Withdrawal')"
+                                    />
+                                @endif
                             </div>
                         </div>
                     </x-slot>

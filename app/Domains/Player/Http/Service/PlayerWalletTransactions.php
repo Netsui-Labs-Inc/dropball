@@ -6,8 +6,9 @@ use App\Domains\Auth\Models\User;
 use App\Domains\Hub\Models\Hub;
 use App\Domains\Wallet\Http\Service\BaseWithdrawalTransaction;
 use App\Domains\Wallet\Interfaces\WalletTransactionInterface;
+use App\Domains\Wallet\Models\Withdrawal;
 
-class PlayerWalletTransactions
+class PlayerWalletTransactions 
 extends BaseWithdrawalTransaction
 implements WalletTransactionInterface
 {
@@ -27,7 +28,11 @@ implements WalletTransactionInterface
     {
         return [
             'view' => view('frontend.pages.wallet.index')
-                ->with('user', $this->holder),
+                ->with('user', $this->holder)
+                ->with('withdrawal', Withdrawal::where([
+                    'user_id' => $this->holder->id,
+                    'status' => 'pending'
+                ])->get()),
             'error' => null
         ];
     }

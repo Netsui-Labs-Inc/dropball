@@ -5,6 +5,7 @@ namespace App\Domains\Wallet\Http\Controllers\Frontend;
 
 use App\Domains\Auth\Models\User;
 use App\Domains\Wallet\Http\Service\WalletHolderFactory;
+use App\Domains\Wallet\Models\Withdrawal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WithdrawalRequest;
 use Illuminate\Http\Request;
@@ -33,6 +34,10 @@ class WalletController extends Controller
         $user = $request->user();
         if (! Hash::check($request->get('password'), $user->password)) {
             return redirect()->back()->withErrors("Invalid Password");
+        }
+
+        if (Withdrawal::where(['user_id' => $user->id, 'status' => 'pending'])->count() > 0) {
+            return redirect()->back()->withErrors("You have pending request withdrawal");
         }
 
         $this->holder = $this->holderFactory->createWalletHolder($request->user());
