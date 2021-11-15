@@ -36,9 +36,7 @@ class WalletController extends Controller
             return redirect()->back()->withErrors("Invalid Password");
         }
 
-        $withdrawal = Withdrawal::where(['user_id' => $user->id])->get();
-
-        if ($withdrawal->count() > 0) {
+        if (Withdrawal::where(['user_id' => $user->id, 'status' => 'pending'])->count() > 0) {
             return redirect()->back()->withErrors("You have pending request withdrawal");
         }
 

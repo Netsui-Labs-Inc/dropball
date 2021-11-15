@@ -32,7 +32,10 @@ implements WalletTransactionInterface
         return [
             'view' => view('backend.wallet.master-agent-wallet')
                 ->with('user',   $this->holder)
-                ->with('withdrawal', Withdrawal::where(['user_id' => $this->holder->id])->get()),
+                ->with('withdrawal', Withdrawal::where([
+                    'user_id' => $this->holder->id,
+                    'status' => 'pending'
+                ])->get()),
             'error' => null
         ];
     }
