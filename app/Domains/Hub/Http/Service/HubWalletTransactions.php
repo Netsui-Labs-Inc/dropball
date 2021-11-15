@@ -44,7 +44,10 @@ implements WalletTransactionInterface
         return [
             'view' => view('backend.wallet.hub-wallet')
                 ->with('hub', $this->holder)->with('hubWallet', $wallet)
-                ->with('withdrawal', Withdrawal::where(['user_id' => $this->holder->id])->get()),
+                ->with('withdrawal', Withdrawal::where([
+                    'user_id' => $this->holder->id,
+                    'status' => 'pending'
+                ])->get()),
             'error' => $error
         ];
 
