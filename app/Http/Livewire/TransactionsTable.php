@@ -175,7 +175,6 @@ class TransactionsTable extends DataTableComponent
                      return (new Carbon($row->updated_at))->setTimezone(auth()->user()->timezone ?? 'Asia/Manila');
                  })->asHtml(),
              Column::make(__('Approved by'), 'approved_by')
-                 ->sortable()
                  ->format(function ($value, $column, Transaction $row) {
                      if($row->type === 'deposit') {
                          return $this->getCreditor($row->meta);

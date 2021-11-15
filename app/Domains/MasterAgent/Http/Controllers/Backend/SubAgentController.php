@@ -86,7 +86,12 @@ class SubAgentController extends Controller
 
     public function show(User $agent)
     {
-        return view('backend.master-agent.sub-agent.show')->with('user', $agent);
+        $commissionRateConversion = new CommissionRatesConversion($agent);
+        $agentCommissionRate = $commissionRateConversion->convertAgent()->agentCommissionRate();
+
+        return view('backend.master-agent.sub-agent.show')
+            ->with('user', $agent)
+            ->with('commissionRate', number_format($agentCommissionRate, 4) . '%');
     }
 
     public function index(Request $request)
